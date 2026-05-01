@@ -1,9 +1,5 @@
-﻿// Huragok and SubanUnity (C) ManiaVali, 2026
+﻿// Huragok (C) ManiaVali, 2026
 // Is it bad that I feel like every project I do is the worst code I've ever written?
-
-// This is a helper program which works alongside its UnityEngine component, SubanUnity, to import data from the Halo engine.
-// Because ManagedBlam is a hybrid DLL, Unity cannot load it natively, which is why this exists at all.
-// Huragok is not meant to be run directly, and will often produce Unity-specific data.
 
 using System.CommandLine;
 using Huragok.Serializer;
