@@ -1,0 +1,46 @@
+<Project>
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H2AMP'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H2AMP</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H2AMP'">
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\common\H2AMPEK\bin\ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H3'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H3</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H3'">
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\common\H3EK\bin\ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H3ODST'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H3ODST</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H3ODST'">
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\common\H3ODSTEK\bin\ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(BlamVariant)' == 'HR'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_HR</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'HR'">
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\common\HREK\bin\ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H4'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H4</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H4'">
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\common\H4EK\bin\ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+</Project>
