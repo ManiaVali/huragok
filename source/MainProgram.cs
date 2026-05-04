@@ -56,10 +56,19 @@ namespace Huragok {
 
 
         internal static void Panic(string panicMessage, sbyte exitCode = 1) {
-            if (!string.IsNullOrWhiteSpace(panicMessage)) 
+            if (!string.IsNullOrWhiteSpace(panicMessage))
                 Console.Error.WriteLine(panicMessage);
 
             Environment.Exit(exitCode);
+        }
+
+        internal static void WriteFullLine(string content) {
+            int width = Console.WindowWidth;
+
+            if (content.Length > width)
+                content = content[..width];
+
+            Console.Write(content.PadRight(width));
         }
     }
 }

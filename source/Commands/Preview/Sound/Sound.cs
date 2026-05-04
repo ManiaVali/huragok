@@ -79,7 +79,7 @@ namespace Huragok.Commands.Preview {
                 bool paused = false;
                 while (true) {
                     Console.CursorVisible = false;
-                    Console.Write($"\r sound preview: [space] {(paused ? "resume" : "pause")}, [left arrow] reset, [esc] exit -- ({player.ProgressInteger}%{(paused ? ", paused" : "")})         ");
+                    WriteFullLine($"\r sound preview: [space] {(paused ? "resume" : "pause")}, [left arrow] reset, [esc] exit -- ({player.ProgressInteger}%{(paused ? ", paused" : "")})");
 
                     if (Console.KeyAvailable) {
                         var key = Console.ReadKey(true);
@@ -101,14 +101,14 @@ namespace Huragok.Commands.Preview {
 
                             case ConsoleKey.Escape:
                                 player.Dispose();
-                                Console.WriteLine("\r  sound preview: exited.                                                                      ");
+                                WriteFullLine("\r  sound preview: exited.");
                                 return;
                         }
                     }
 
                     if (player.State == PlaybackState.Stopped) {
                         player.Dispose();
-                        Console.WriteLine("\r  sound preview: reached end of audio sample.                                                              ");
+                        WriteFullLine("\r  sound preview: reached end of audio sample.");
                         return;
                     }
 
