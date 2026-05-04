@@ -1,6 +1,7 @@
 ﻿// Huragok (C) ManiaVali, 2026
 // Is it bad that I feel like every project I do is the worst code I've ever written?
 
+global using static Huragok.MainProgram;
 using System.CommandLine;
 using Huragok.Serializer;
 using Huragok.Configuration;
@@ -12,17 +13,21 @@ namespace Huragok {
         internal static string originalWorkingDirectory = string.Empty;
         internal static DataSerializationFormat defaultSerializationFormat;
 
+        /// <summary>
+        /// CLI entry point
+        /// </summary>
         private static int Main(string[] args) {
             try {
                 RootCommand rootCmd = new($"Helper program for extracting and converting data from the Halo engine into formats other programs can understand.\n{GlobalConstants.ENGINE_PRETTY_NAME} build.");
                 originalWorkingDirectory = Environment.CurrentDirectory;
 
 #if !USING_BLAM_HR
-                throw new NotImplementedException($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
+                throw new NotImplementException($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
 #endif
 
                 rootCmd.AddCommand(Commands.Serialize.Base.Register());
                 rootCmd.AddCommand(Commands.Export.Base.Register());
+                rootCmd.AddCommand(Commands.Preview.Base.Register());
 
                 var configOption = CommonArgsAndOpts.ConfigFile;
                 rootCmd.AddOption(configOption);
@@ -47,6 +52,14 @@ namespace Huragok {
                 Console.Error.WriteLine($"{GlobalConstants.PROGRAM_NAME} has encountered a fatal error: {ex.Message}");
                 return 1;
             }
+        }
+
+
+        internal static void Panic(string panicMessage, sbyte exitCode = 1) {
+            if (!string.IsNullOrWhiteSpace(panicMessage)) 
+                Console.Error.WriteLine(panicMessage);
+
+            Environment.Exit(exitCode);
         }
     }
 }

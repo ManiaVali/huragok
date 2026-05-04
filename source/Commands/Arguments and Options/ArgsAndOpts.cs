@@ -5,7 +5,7 @@ using Huragok.Utilities;
 using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
 
 namespace Huragok.Commands.Base {
-    public class ArgsAndOpts {
+    public partial class ArgsAndOpts {
         /// <summary>
         /// The path to a tag file on the disk.
         /// </summary>
