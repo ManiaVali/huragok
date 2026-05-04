@@ -3,37 +3,65 @@ using NAudio.Wave;
 using NVorbis;
 
 namespace Huragok.Utilities.Sound {
-    public class SoundPlayer {
-        // Setting the buffer length from the sound tag's length means the ENTIRE SAMPLE is buffered at once.
-        public static void PlayVorbis(byte[] vorbisBytes, float bufferLength = 30) {
-            using var ms = new MemoryStream(vorbisBytes);
-            using var vorbis = new VorbisReader(ms, false);
+    public class SoundPlayer : IDisposable {
+        private WaveOutEvent output;
+        private BufferedWaveProvider provider;
+        private VorbisReader vorbis;
+        private MemoryStream stream;
+
+        private byte[] originalData;
+
+        public void Load(byte[] vorbisBytes, float bufferLength = 30) {
+            this.originalData = vorbisBytes;
+
+            this.stream = new MemoryStream(vorbisBytes);
+            this.vorbis = new VorbisReader(this.stream, false);
 
             var waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(
-                vorbis.SampleRate,
-                vorbis.Channels);
+                this.vorbis.SampleRate,
+                this.vorbis.Channels);
 
-            var provider = new BufferedWaveProvider(waveFormat);
+            this.provider = new BufferedWaveProvider(waveFormat) {
+                BufferDuration = TimeSpan.FromSeconds(bufferLength + 5)
+            };
 
-            using var output = new WaveOutEvent();
-            output.Init(provider);
-            output.Play();
+            this.output = new WaveOutEvent();
+            this.output.Init(this.provider);
 
+            this.FillBuffer();
+        }
+
+        private void FillBuffer() {
             float[] readBuffer = new float[4096];
             byte[] byteBuffer = new byte[readBuffer.Length * sizeof(float)];
 
-            provider.BufferDuration = TimeSpan.FromSeconds(bufferLength + 5);
-
             int samplesRead;
-            while ((samplesRead = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0) {
+            while ((samplesRead = this.vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0) {
                 Buffer.BlockCopy(readBuffer, 0, byteBuffer, 0, samplesRead * sizeof(float));
-                provider.AddSamples(byteBuffer, 0, samplesRead * sizeof(float));
+                this.provider.AddSamples(byteBuffer, 0, samplesRead * sizeof(float));
             }
+        }
 
-            // wait until playback finishes
-            while (output.PlaybackState == PlaybackState.Playing) {
-                Thread.Sleep(100);
-            }
+        public void Play() => this.output?.Play();
+        public void Pause() => this.output?.Pause();
+
+        public void Reset() {
+            this.output?.Stop();
+
+            // Reload
+            this.Dispose();
+            this.Load(this.originalData);
+            this.Play();
+        }
+
+        public PlaybackState State => this.output?.PlaybackState ?? PlaybackState.Stopped;
+
+        public void Dispose() {
+            GC.SuppressFinalize(this);
+
+            this.output?.Dispose();
+            this.vorbis?.Dispose();
+            this.stream?.Dispose();
         }
     }
 }
