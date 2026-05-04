@@ -72,7 +72,7 @@ namespace Huragok.Commands.Preview {
                 var permutation = range.permutations[permutationIndex];
 
                 var player = new VorbisSoundPlayer();
-                player.Load(permutation.rawSampleData.bytes, permutation.lengthSeconds);
+                player.Load(permutation.rawSampleData.bytes, loop);
 
                 player.Play();
 
@@ -96,7 +96,7 @@ namespace Huragok.Commands.Preview {
                                 break;
 
                             case ConsoleKey.LeftArrow:
-                                player.Reset();
+                                player.Reset(loop);
                                 break;
 
                             case ConsoleKey.Escape:
@@ -107,13 +107,9 @@ namespace Huragok.Commands.Preview {
                     }
 
                     if (player.State == PlaybackState.Stopped) {
-                        if (loop) {
-                            player.Reset();
-                        } else {
-                            player.Dispose();
-                            Console.WriteLine("\r  sound preview: reached end of audio sample.                                                              ");
-                            return;
-                        }
+                        player.Dispose();
+                        Console.WriteLine("\r  sound preview: reached end of audio sample.                                                              ");
+                        return;
                     }
 
                     Thread.Sleep(50);
