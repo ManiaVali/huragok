@@ -3,43 +3,45 @@ using NAudio.Wave;
 using NVorbis;
 
 namespace Huragok.Utilities.Sound {
-    public class SoundPlayer : IDisposable {
+
+    public class VorbisSampleProvider : ISampleProvider {
+        private readonly VorbisReader vorbis;
+        public WaveFormat WaveFormat { get; }
+        public double Progress => this.vorbis.TotalSamples > 0
+            ? (double)this.vorbis.SamplePosition / this.vorbis.TotalSamples : 0f;
+
+        public VorbisSampleProvider(Stream stream) {
+            this.vorbis = new VorbisReader(stream, false);
+
+            this.WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(
+                this.vorbis.SampleRate,
+                this.vorbis.Channels
+            );
+        }
+
+        public int Read(float[] buffer, int offset, int count) => this.vorbis.ReadSamples(buffer, offset, count);
+    }
+
+    public class VorbisSoundPlayer : IDisposable {
+        #pragma warning disable CS8618 // Shut up about nulls
         private WaveOutEvent output;
-        private BufferedWaveProvider provider;
-        private VorbisReader vorbis;
+        private VorbisSampleProvider provider;
         private MemoryStream stream;
 
         private byte[] originalData;
+
+        public double Progress => this.provider.Progress * 100;
+        public int ProgressInteger => (int)Math.Round(this.Progress);
+        #pragma warning restore CS8618
 
         public void Load(byte[] vorbisBytes, float bufferLength = 30) {
             this.originalData = vorbisBytes;
 
             this.stream = new MemoryStream(vorbisBytes);
-            this.vorbis = new VorbisReader(this.stream, false);
-
-            var waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(
-                this.vorbis.SampleRate,
-                this.vorbis.Channels);
-
-            this.provider = new BufferedWaveProvider(waveFormat) {
-                BufferDuration = TimeSpan.FromSeconds(bufferLength + 5)
-            };
+            this.provider = new VorbisSampleProvider(this.stream);
 
             this.output = new WaveOutEvent();
             this.output.Init(this.provider);
-
-            this.FillBuffer();
-        }
-
-        private void FillBuffer() {
-            float[] readBuffer = new float[4096];
-            byte[] byteBuffer = new byte[readBuffer.Length * sizeof(float)];
-
-            int samplesRead;
-            while ((samplesRead = this.vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0) {
-                Buffer.BlockCopy(readBuffer, 0, byteBuffer, 0, samplesRead * sizeof(float));
-                this.provider.AddSamples(byteBuffer, 0, samplesRead * sizeof(float));
-            }
         }
 
         public void Play() => this.output?.Play();
@@ -60,7 +62,6 @@ namespace Huragok.Utilities.Sound {
             GC.SuppressFinalize(this);
 
             this.output?.Dispose();
-            this.vorbis?.Dispose();
             this.stream?.Dispose();
         }
     }

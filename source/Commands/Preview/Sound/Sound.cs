@@ -24,18 +24,29 @@ namespace Huragok.Commands.Preview {
             );
             cmd.AddTagInput(tagHandler);
 
+            var pitchRangeOpt = ArgsAndOpts.SoundPitchRangeOption;
+            var permOpt = ArgsAndOpts.SoundPermutationOption;
+            var loopOpt = ArgsAndOpts.SoundLoopOption;
+            cmd.AddOption(pitchRangeOpt);
+            cmd.AddOption(permOpt);
+            cmd.AddOption(loopOpt);
+
             // Command Handler
             cmd.SetHandler(ctx => {
                 var tagInputContext = ctx.ParseResult.Resolve(tagHandler);
                 string tag = tagInputContext.Paths.ToArray()[0];
 
-                PreviewSoundFile(tag ?? "");
+                int pitchRange = ctx.ParseResult.GetValueForOption(pitchRangeOpt);
+                int permutation = ctx.ParseResult.GetValueForOption(permOpt);
+                bool loop = ctx.ParseResult.GetValueForOption(loopOpt);
+
+                PreviewSoundFile(tag ?? "", pitchRange, permutation, loop);
             });
 
             return cmd;
         }
 
-        private static void PreviewSoundFile(string soundTagFilepath) {
+        private static void PreviewSoundFile(string soundTagFilepath, int rangeIndex, int permutationIndex, bool loop) {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
                 Panic(CommonArgsAndOpts.NO_VALID_TAGS, CommonArgsAndOpts.NO_TAGS_CODE);
 
@@ -52,20 +63,24 @@ namespace Huragok.Commands.Preview {
                 var soundTagPath = TagPath.FromPathAndExtension(tagRelPath, "sound");
                 using var soundTag = new SoundTag(soundTagPath);
 
-                // hardcoded for testing
-                if (soundTag.PitchRanges.Count > 1)
-                    Panic("Sound tag has more than one pitch range; specify which one to play with `--pitch-range NUMBER`");
+                if (rangeIndex > soundTag.PitchRanges.Count - 1)
+                    Panic($"Pitch range index too large! Sound tag only has {soundTag.PitchRanges.Count} range(s)!", 1);
+                var range = soundTag.PitchRanges[rangeIndex];
 
+                if (permutationIndex > range.permutations.Count - 1)
+                    Panic($"Permutation index too large! Pitch range {range.index} only has {range.permutations.Count} range(s)!", 1);
+                var permutation = range.permutations[permutationIndex];
 
-                var player = new SoundPlayer();
-                player.Load(soundTag.PitchRanges[0].permutations[0].rawSampleData.bytes,
-                            soundTag.PitchRanges[0].permutations[0].lengthSeconds);
+                var player = new VorbisSoundPlayer();
+                player.Load(permutation.rawSampleData.bytes, permutation.lengthSeconds);
 
                 player.Play();
 
-                Console.Write("\r sound preview: [space] pause, [left arrow] reset, [esc] exit");
-
+                bool paused = false;
                 while (true) {
+                    Console.CursorVisible = false;
+                    Console.Write($"\r sound preview: [space] {(paused ? "resume" : "pause")}, [left arrow] reset, [esc] exit -- ({player.ProgressInteger}%{(paused ? ", paused" : "")})         ");
+
                     if (Console.KeyAvailable) {
                         var key = Console.ReadKey(true);
 
@@ -73,10 +88,10 @@ namespace Huragok.Commands.Preview {
                             case ConsoleKey.Spacebar:
                                 if (player.State == PlaybackState.Playing) {
                                     player.Pause();
-                                    Console.Write("\r sound preview: [space] resume, [left arrow] reset, [esc] exit");
+                                    paused = true;
                                 } else {
                                     player.Play();
-                                    Console.Write("\r sound preview: [space] pause, [left arrow] reset, [esc] exit    ");
+                                    paused = false;
                                 }
                                 break;
 
@@ -86,15 +101,19 @@ namespace Huragok.Commands.Preview {
 
                             case ConsoleKey.Escape:
                                 player.Dispose();
-                                Console.WriteLine("\r  sound preview: exited.                                          ");
+                                Console.WriteLine("\r  sound preview: exited.                                                                      ");
                                 return;
                         }
                     }
 
                     if (player.State == PlaybackState.Stopped) {
-                        player.Dispose();
-                        Console.WriteLine("\r  sound preview: reached end of audio sample.                                          ");
-                        return;
+                        if (loop) {
+                            player.Reset();
+                        } else {
+                            player.Dispose();
+                            Console.WriteLine("\r  sound preview: reached end of audio sample.                                                              ");
+                            return;
+                        }
                     }
 
                     Thread.Sleep(50);
@@ -102,6 +121,7 @@ namespace Huragok.Commands.Preview {
 
             } finally {
                 BlamFunctions.Teardown();
+                Console.CursorVisible = true;
             }
         }
     }
