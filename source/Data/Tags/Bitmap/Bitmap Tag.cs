@@ -33,8 +33,8 @@ namespace Huragok.Data.Tags {
             this.bitmapFlags = exportOptions;
 
             try {
-            using var gBitmap = new GameBitmap(this.sourceTag, sequenceIndex: 0, spriteFrameIndex: 0);
-            this.BitmapData = gBitmap.GetBitmap();
+                using var gBitmap = new GameBitmap(this.sourceTag, sequenceIndex: 0, spriteFrameIndex: 0);
+                this.BitmapData = gBitmap.GetBitmap();
             } catch (Exception e) {
                 throw new Exception($"Failed to build GameBitmap for `{this.sourceTag.Path.RelativePathWithExtension}`; {e.Message}");
             }

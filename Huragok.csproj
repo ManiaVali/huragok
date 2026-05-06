@@ -11,7 +11,7 @@
     <TargetName>Huragok</TargetName>
     <AssemblyName>Huragok</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <VersionPrefix>0.5.0</VersionPrefix>
+    <VersionPrefix>0.5.1</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,6 +38,10 @@
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.6" />
     <PackageReference Include="Fmod5Sharp" Version="3.1.0" />
     <PackageReference Include="YamlDotNet" Version="17.0.1" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="FFMpegCore" Version="5.3.0" />
+    <PackageReference Include="FFMpegCore.Extensions.Downloader" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

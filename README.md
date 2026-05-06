@@ -44,12 +44,17 @@ Huragok is a helper program for extracting and converting data from the Halo eng
 
 ## Credits & Attributions
 - ManiaVali -- primary developer.
-- ILoveAGoodCrisp -- general guidance on using ManagedBlam.
+- ILoveAGoodCrisp -- general guidance on using ManagedBlam and creator of [Foundry](https://github.com/ILoveAGoodCrisp/Foundry), the code of which I studied.
+- Gravemind2401 -- creator of [Reclaimer](https://github.com/Gravemind2401/Reclaimer), the code of which I studied.
 
 ## To do, for now.
 - [x] Add option for batch exporting of bitmaps
 - [x] Add option for batch exporting of render models
 - [ ] Add functionality for exporting scenario structure BSP
+- [ ] Add functionality to preview bitmaps
+- [x] Add functionality to preview sound tags
+- [ ] Add option to sound exporter to transcode to formats other than OGG
+- [ ] Add functionality to preview sound_looping tags
 - [x] Add functionality for exporting sound tags
 - [x] Add new intermediate formats with conversion modes
     - [x] RealPoint2d
@@ -61,7 +66,6 @@ Huragok is a helper program for extracting and converting data from the Halo eng
     - [ ] RealPlane3d
 - [ ] Add documentation to publicly exposed classes and members.
 - [x] Replace each tags bespoke meta commands with a proper serialization system
-- [ ] Expand shader command to display shader category selections
 - [x] Expand shader command to more accurately expose functions and internal data
 - [x] Add support for reading functions
 - [x] Unify model and render-model intermediate formats
