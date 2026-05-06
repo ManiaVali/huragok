@@ -22,6 +22,7 @@ namespace Huragok.Commands.Preview {
 
             // Command attachment
             cmd.AddCommand(Sound.Register());
+            cmd.AddCommand(SoundLooping.Register());
 
             return cmd;
         }
