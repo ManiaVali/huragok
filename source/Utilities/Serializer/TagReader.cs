@@ -1,12 +1,12 @@
 using System.Numerics;
 using Huragok.Data.IntermediateFormats;
 
-namespace Huragok.Serializer {
+namespace Huragok.Utilities.Serializer {
     /// <summary>
     /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="DataSerializer"/>.</para>
     /// <para>Should not be used when constructing tags for export, as it processes the entire tag when we rarely need that.</para>
     /// </summary>
-    public static class TagSerializer {
+    internal static class TagSerializer {
         // Do not bother parsing these types of fields. (Yet)
         private static readonly List<TagFieldType> skipTypes = [
             TagFieldType.Explanation,
@@ -14,7 +14,7 @@ namespace Huragok.Serializer {
 
         private static IEnumerable<string>? skipFields;
 
-        public static object ReadTag(TagFile tagFile, IEnumerable<string>? skipFieldNames = null) {
+        internal static object ReadTag(TagFile tagFile, IEnumerable<string>? skipFieldNames = null) {
             skipFields = skipFieldNames?.ToHashSet();
             return ReadFields(tagFile.Fields);
         }

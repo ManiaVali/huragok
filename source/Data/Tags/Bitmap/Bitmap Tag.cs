@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using Huragok.Utilities.Imaging;
 
 namespace Huragok.Data.Tags {
-    public enum BitmapFormat {
+    internal enum BitmapFormat {
         PNG,
         JPG,
         TIFF,
@@ -12,17 +12,17 @@ namespace Huragok.Data.Tags {
     }
 
     [Flags]
-    public enum BitmapExportFlags {
+    internal enum BitmapExportFlags {
         None = 0,
         CubemapsToSphere = 1 << 0,
         ReconstructZ = 1 << 1,
         FlipGreen = 1 << 2,
     }
 
-    public sealed class BitmapTag : BaseTag<BitmapFormat> {
-        public Bitmap BitmapData { get; private set; }
-        public bool IsNormalMap => this.GetImporterType() == "normalMap";
-        public bool IsCubeMap => this.GetImporterType() == "cubemap";
+    internal sealed class BitmapTag : BaseTag<BitmapFormat> {
+        internal Bitmap BitmapData { get; private set; }
+        internal bool IsNormalMap => this.GetImporterType() == "normalMap";
+        internal bool IsCubeMap => this.GetImporterType() == "cubemap";
         protected override string TagExtension => "bitmap";
 
         private readonly BitmapExportFlags bitmapFlags;
@@ -40,7 +40,7 @@ namespace Huragok.Data.Tags {
             }
         }
 
-        public override bool TryExportToDisk(string outputDirectory, BitmapFormat fileExtension, out List<string> finalFileLocations) {
+        internal override bool TryExportToDisk(string outputDirectory, BitmapFormat fileExtension, out List<string> finalFileLocations) {
             finalFileLocations = new();
 
             string extension = fileExtension.ToString().ToLowerInvariant();

@@ -1,24 +1,25 @@
 
+using Fmod5Sharp.FmodTypes;
 using Huragok.Data.IntermediateFormats.Sound;
 using Huragok.Utilities.Sound;
 
 namespace Huragok.Data.Tags {
-    public enum SoundOutExtension {
+    internal enum SoundOutExtension {
         OGG,
         WAV,
         MP3
     }
 
-    public sealed class SoundTag : BaseTag<SoundOutExtension> {
+    internal sealed class SoundTag : BaseTag<SoundOutExtension> {
         #region Properties/Fields
         protected override string TagExtension => "sound";
         private TagFieldBlock BlockPitchRanges => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:pitch ranges");
         private readonly List<IF_PitchRange> pitchRanges = new();
-        public IReadOnlyList<IF_PitchRange> PitchRanges => this.pitchRanges;
+        internal IReadOnlyList<IF_PitchRange> PitchRanges => this.pitchRanges;
         #endregion
 
         #region Sound Decoding
-        public SoundTag(TagPath tagPath) : base(tagPath) {
+        internal SoundTag(TagPath tagPath) : base(tagPath) {
             foreach (var range in this.BlockPitchRanges.Elements.Cast<TagFieldBlockElement>()) {
                 this.pitchRanges.Add(new IF_PitchRange(range, this));
             }
@@ -26,16 +27,17 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region Export Funcs
-        public override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileType, out List<string> finalFileLocations) {
+        internal override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileType, out List<string> finalFileLocations) {
             string extension = fileType.ToString().ToLower() ?? "ogg";
             List<string> outPaths = new();
 
             foreach (var range in this.PitchRanges) {
                 foreach (var perm in range.permutations) {
-                    if (perm.rawSampleData.bytes.Length == 0) continue;
-                    byte[] data = VorbisConverter.ConvertOGGTo(perm.rawSampleData.bytes, fileType).Result;
+                    if (perm.SampleAsVorbisBytes.Length == 0) continue;
 
-                    string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.rawSampleData.samplePath), extension);
+                    byte[] data = VorbisConverter.ConvertOGGTo(perm.SampleAsVorbisBytes, fileType).Result;
+
+                    string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.OriginalSamplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? outputDirectory);
                     
@@ -48,7 +50,7 @@ namespace Huragok.Data.Tags {
             return true;
         }
 
-        public override string BuildOutputPath(string outputDirectory, string extension) => throw new NotSupportedException($"{nameof(BuildOutputPath)} not supported; use BuildSoundOutputPath.");
+        internal override string BuildOutputPath(string outputDirectory, string extension) => throw new NotSupportedException($"{nameof(BuildOutputPath)} not supported; use BuildSoundOutputPath.");
         #endregion
     }
 }

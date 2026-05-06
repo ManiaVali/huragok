@@ -4,7 +4,7 @@ using Huragok.Data.Tags;
 using Huragok.ManagedBlam;
 using Huragok.Utilities.Sound;
 using NAudio.Wave;
-using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
+using CommonConstants = Huragok.Commands.Base.Constants;
 
 namespace Huragok.Commands.Preview {
     internal enum PlaybackPhase {
@@ -52,15 +52,17 @@ namespace Huragok.Commands.Preview {
 
         private static void PreviewLoopingSoundFile(string soundTagFilepath, int trackIndex, bool altTracks) {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                Panic(CommonArgsAndOpts.NO_VALID_TAGS, CommonArgsAndOpts.NO_TAGS_CODE);
+                throw new Exception(CommonConstants.NO_VALID_TAGS);
 
             BlamFunctions.InitializeBlam();
 
             try {
-                if (string.IsNullOrWhiteSpace(soundTagFilepath)) Panic($"Sound preview failed; tag path is null!");
+                if (string.IsNullOrWhiteSpace(soundTagFilepath)) 
+                    throw new ArgumentNullException(nameof(soundTagFilepath));
 
                 var tagPath = TagPath.FromPathAndExtension(BlamFunctions.GetValidTagPath(soundTagFilepath), "sound_looping");
-                if (!BlamFunctions.ValidateTag(tagPath, "sound_looping")) Panic($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
+                if (!BlamFunctions.ValidateTag(tagPath, "sound_looping")) 
+                    throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
 
                 string tagRelPath = BlamFunctions.GetValidTagPath(soundTagFilepath);
 
@@ -68,7 +70,7 @@ namespace Huragok.Commands.Preview {
                 using var soundLoopingTag = new SoundLoopingTag(soundTagPath);
 
                 if (trackIndex > soundLoopingTag.Tracks.Count - 1)
-                    Panic($"Track index too large! Sound tag only has {soundLoopingTag.Tracks.Count} range(s)!", 1);
+                    throw new IndexOutOfRangeException($"Track index too large! Sound tag only has {soundLoopingTag.Tracks.Count} range(s)!");
 
                 var track = soundLoopingTag.Tracks[trackIndex];
                 var player = new VorbisSoundPlayer();
@@ -94,7 +96,7 @@ namespace Huragok.Commands.Preview {
                 }
 
                 if (loopClip is null)
-                    Panic($"Looping sound tag `{soundLoopingTag.sourceTag.Path.ShortNameWithExtension}` has no loop track!");
+                    throw new InvalidDataException($"Looping sound tag `{soundLoopingTag.sourceTag.Path.ShortNameWithExtension}` has no loop track!");
 
                 // holy booleans, batman!
                 bool paused = false;
@@ -114,7 +116,7 @@ namespace Huragok.Commands.Preview {
                         _ => throw new NotImplementedException(),
                     };
 
-                    WriteFullLine($"\r> looping sound preview: [space] {(paused ? "resume" : "pause")}{(phase == PlaybackPhase.Loop && !exitTransitionRequested ? ", [right arrow] transition out" : "")}, [esc] exit -- ({stage})");
+                    Logger.Message($"\r> looping sound preview: [space] {(paused ? "resume" : "pause")}{(phase == PlaybackPhase.Loop && !exitTransitionRequested ? ", [right arrow] transition out" : "")}, [esc] exit -- ({stage})", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
 
                     HandleInput();
 
@@ -122,7 +124,7 @@ namespace Huragok.Commands.Preview {
                         case PlaybackPhase.In:
                             if (inClip != null) {
                                 if (player.State == PlaybackState.Stopped && !startedIn) {
-                                    player.Load(inClip.PitchRanges[0].permutations[0].rawSampleData.bytes);
+                                    player.Load(inClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
                                     player.Play();
                                     startedIn = true;
                                 } else if (startedIn && player.State == PlaybackState.Stopped) {
@@ -135,7 +137,7 @@ namespace Huragok.Commands.Preview {
 
                         case PlaybackPhase.Loop:
                             if (player.State == PlaybackState.Stopped && !exitTransitionRequested) {
-                                player.Load(loopClip!.PitchRanges[0].permutations[0].rawSampleData.bytes, looping: true);
+                                player.Load(loopClip!.PitchRanges[0].permutations[0].SampleAsVorbisBytes, looping: true);
                                 player.Play();
                             }
 
@@ -154,7 +156,7 @@ namespace Huragok.Commands.Preview {
                         case PlaybackPhase.Out:
                             if (outClip != null) {
                                 if (player.State == PlaybackState.Stopped && !startedOut) {
-                                    player.Load(outClip.PitchRanges[0].permutations[0].rawSampleData.bytes);
+                                    player.Load(outClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
                                     player.Play();
                                     startedOut = true;
                                 } else if (startedOut && player.State == PlaybackState.Stopped) {
@@ -170,7 +172,7 @@ namespace Huragok.Commands.Preview {
                 }
 
                 player.Dispose();
-                WriteFullLine(!exitedByUser ? "\r> looping sound preview: reached end of audio sample." : "\r> looping sound preview: exited.");
+                Logger.Message(!exitedByUser ? "\r> looping sound preview: reached end of audio sample." : "\r> looping sound preview: exited.", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
 
                 void HandleInput() {
                     if (!Console.KeyAvailable) return;

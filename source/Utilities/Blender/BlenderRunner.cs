@@ -2,8 +2,8 @@
 using System.Diagnostics;
 
 namespace Huragok.Utilities.Blender {
-    public class Runner {
-        public static void GLB2FBX(string glbFile, string outFbxLocation) {
+    internal class Runner {
+        internal static void GLB2FBX(string glbFile, string outFbxLocation) {
 
             if (!Path.Exists(Path.GetFullPath(glbFile))) throw new FileNotFoundException($"Failed to convert to FBX; glb file expected at `{glbFile}` not found!");
 
@@ -35,9 +35,6 @@ namespace Huragok.Utilities.Blender {
 
             blender.WaitForExit();
             if (blender.ExitCode != 0) {
-                Console.WriteLine(stdOut);
-                Console.Error.WriteLine(stdErr);
-
                 if (File.Exists(outFbxLocation)) File.Delete(outFbxLocation);
                 throw new Exception($"Blender failed to convert to FBX!");
             }

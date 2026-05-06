@@ -16,12 +16,12 @@ namespace Huragok.Commands.RenderModel {
     }
 
     internal class RenderModelExportOptions {
-        public Option<string> ModelFormat { get; }
-        public Option<string> CoordinateSystem { get; }
+        internal Option<string> ModelFormat { get; }
+        internal Option<string> CoordinateSystem { get; }
         private readonly List<Option> allOptions = new();
-        public IReadOnlyList<Option> All => this.allOptions;
+        internal IReadOnlyList<Option> All => this.allOptions;
 
-        public RenderModelExportOptions() {
+        internal RenderModelExportOptions() {
             this.ModelFormat = ArgsAndOpts.ModelFormatOption();
             this.CoordinateSystem = CommonArgsAndOpts.CoordinateSystem;
 
@@ -31,7 +31,7 @@ namespace Huragok.Commands.RenderModel {
     }
 
     internal static class CommandExtensions {
-        public static Command AddRenderModelExport(this Command cmd, RenderModelExportOptions opts) {
+        internal static Command AddRenderModelExport(this Command cmd, RenderModelExportOptions opts) {
             foreach (var opt in opts.All)
                 cmd.AddOption(opt);
 
@@ -40,12 +40,12 @@ namespace Huragok.Commands.RenderModel {
     }
 
     internal class RenderModelExportSettings {
-        public RenderModelFormat ModelFormat { get; init; } = RenderModelFormat.FBX;
-        public CoordinateUnit CoordinateSystem { get; init; } = CoordinateUnit.Metric;
+        internal RenderModelFormat ModelFormat { get; init; } = RenderModelFormat.FBX;
+        internal CoordinateUnit CoordinateSystem { get; init; } = CoordinateUnit.Metric;
     }
 
     internal static class RenderModelExportResolver {
-        public static RenderModelExportSettings Resolve(this ParseResult result, RenderModelExportOptions opts) {
+        internal static RenderModelExportSettings Resolve(this ParseResult result, RenderModelExportOptions opts) {
             var coordSystem = CoordStringToUnit(result.GetValueForOption(opts.CoordinateSystem) ?? "metric");
             var modelFmt = RenderModelTag.StringToExtension(result.GetValueForOption(opts.ModelFormat) ?? "fbx") ?? RenderModelFormat.FBX;
 

@@ -1,7 +1,7 @@
 
 namespace Huragok.Utilities {
-    public class FileTools {
-        public static bool IsSubPathOf(string basePath, string fullPath) {
+    internal class FileTools {
+        internal static bool IsSubPathOf(string basePath, string fullPath) {
             basePath = Path.GetFullPath(basePath);
             fullPath = Path.GetFullPath(fullPath);
 
@@ -10,7 +10,7 @@ namespace Huragok.Utilities {
             return !relative.StartsWith("..") && !Path.IsPathRooted(relative);
         }
 
-        public static string MakeValidFileName(string name) {
+        internal static string MakeValidFileName(string name) {
             char[] invalidChars = Path.GetInvalidFileNameChars();
             char[] result = new char[name.Length];
 

@@ -6,7 +6,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
     /// <summary>
     /// An <see cref="Enum"/> representing the possible coordinate unit sizes we are working with.
     /// </summary>
-    public enum CoordinateUnit {
+    internal enum CoordinateUnit {
         /// <summary>
         /// The Blam native unit; exactly 3.048 meters (10 feet).
         /// </summary>
@@ -25,23 +25,23 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
     /// <para>An intermediate <see cref="Vector3"/>-like format, used to store a 3D coordinate.</para>
     /// <para>Allows conversions to one of the available <see cref="CoordinateUnit"/>s.</para>
     /// </summary>
-    public sealed class Position3d {
+    internal sealed class Position3d {
         /// <summary>
         /// Read this world coordinate in the original Blam world units.
         /// </summary>
-        public Vector3 AsBlam => this.backingXYZ;
+        internal Vector3 AsBlam => this.backingXYZ;
         /// <summary>
         /// Read this world coordinate in JMS units.
         /// </summary>
-        public Vector3 AsJMS => this.backingXYZ * GlobalConstants.WU_TO_JMS;
+        internal Vector3 AsJMS => this.backingXYZ * GlobalConstants.WU_TO_JMS;
         /// <summary>
         /// Read this world coordinate in metric units.
         /// </summary>
-        public Vector3 AsMetric => this.backingXYZ * GlobalConstants.WU_TO_METERS;
+        internal Vector3 AsMetric => this.backingXYZ * GlobalConstants.WU_TO_METERS;
         /// <summary>
         /// Read this world coordinate in a -Y forward coordinate system, instead of -X forward.
         /// </summary>
-        public Position3d FlipAxes => new(this.backingXYZ.Y, this.backingXYZ.Z, this.backingXYZ.X, CoordinateUnit.Blam);
+        internal Position3d FlipAxes => new(this.backingXYZ.Y, this.backingXYZ.Z, this.backingXYZ.X, CoordinateUnit.Blam);
 
         private readonly Vector3 backingXYZ;
 
@@ -55,7 +55,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         ///     <para>The original <see cref="CoordinateUnit"/> the point was in. Most commonly <see cref="CoordinateUnit.Blam"/>.</para>
         ///     <para>Required to properly convert the point into other coordinate spaces.</para>
         /// </param>
-        public Position3d(float x, float y, float z, CoordinateUnit originalSpace) {
+        internal Position3d(float x, float y, float z, CoordinateUnit originalSpace) {
             var tempV3 = new Vector3(x, y, z);
 
             switch (originalSpace) {
@@ -81,7 +81,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         ///     <para>The original <see cref="CoordinateUnit"/> the point was in. Most commonly <see cref="CoordinateUnit.Blam"/>.</para>
         ///     <para>Required to properly convert the point into other coordinate spaces.</para>
         /// </param>
-        public Position3d(Vector3 xyz, CoordinateUnit originalSpace) {
+        internal Position3d(Vector3 xyz, CoordinateUnit originalSpace) {
             switch (originalSpace) {
                 case CoordinateUnit.Blam:
                     this.backingXYZ = xyz;
@@ -104,7 +104,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// <param name="tagIntArray">A <see cref="TagFieldElementArrayInteger"/> of length 3.</param>
         /// <returns>A <see cref="Position3d"/></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public static Position3d FromTagIntArray(TagFieldElementArrayInteger tagIntArray) {
+        internal static Position3d FromTagIntArray(TagFieldElementArrayInteger tagIntArray) {
             long[] v3Data = tagIntArray.Data;
             if (v3Data.Length != 3) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArray)} to {nameof(Vector3)}; incorrect number of elements (got {v3Data.Length}, expected 3)");
             return new Position3d(v3Data[0], v3Data[1], v3Data[2], CoordinateUnit.Blam); ;
@@ -117,7 +117,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// <param name="tagFloatArray">A <see cref="TagFieldElementArraySingle"/> of length 3.</param>
         /// <returns>A <see cref="Position3d"/></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public static Position3d FromTagFloatArray(TagFieldElementArraySingle tagFloatArray) {
+        internal static Position3d FromTagFloatArray(TagFieldElementArraySingle tagFloatArray) {
             float[] v3Data = tagFloatArray.Data;
             if (v3Data.Length != 3) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArray)} to {nameof(Vector3)}; incorrect number of elements (got {v3Data.Length}, expected 3)");
             return new Position3d(v3Data[0], v3Data[1], v3Data[2], CoordinateUnit.Blam);
@@ -126,7 +126,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// <param name="coordinateSpace"></param>
         /// <returns>A <see cref="Vector3"/> containing the coordinate in the supplied coordinate space.</returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public Vector3 ConvertToUnits(CoordinateUnit coordinateSpace) {
+        internal Vector3 ConvertToUnits(CoordinateUnit coordinateSpace) {
             return coordinateSpace switch {
                 CoordinateUnit.Blam => this.AsBlam,
                 CoordinateUnit.JMS => this.AsJMS,

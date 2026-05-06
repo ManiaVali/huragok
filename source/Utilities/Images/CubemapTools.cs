@@ -1,7 +1,7 @@
 using System.Drawing;
 
 namespace Huragok.Utilities.Imaging {
-    public enum CubemapFace {
+    internal enum CubemapFace {
         PositiveX,
         NegativeX,
         PositiveY,
@@ -10,17 +10,17 @@ namespace Huragok.Utilities.Imaging {
         NegativeZ
     }
 
-    public struct CubemapFaces {
-        public Bitmap PX, NX, PY, NY, PZ, NZ;
+    internal struct CubemapFaces {
+        internal Bitmap PX, NX, PY, NY, PZ, NZ;
     }
 
-    public enum CubemapFormat {
+    internal enum CubemapFormat {
         Raw,
         Equirectangular
     }
 
-    public static class CubemapTools {
-        public static Bitmap ToEquirectangular(Bitmap bitmapReference) {
+    internal static class CubemapTools {
+        internal static Bitmap ToEquirectangular(Bitmap bitmapReference) {
             var faces = ExtractFaces(bitmapReference);
             int faceSize = faces.PX.Width;
 
