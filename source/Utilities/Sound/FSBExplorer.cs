@@ -38,8 +38,6 @@ namespace Huragok.Utilities.Sound {
                 int index = kv.Key;
                 var sample = kv.Value.sample;
                 string originalPath = kv.Value.infoFilePath;
-                string originalFileName = Path.GetFileName(originalPath);
-                string originalFileNameNoExt = Regex.Replace(originalFileName, @"(\.(aif|aiff|wav|mp3|ogg|flac))(?!\r?\n|sound\\).+", "$1", RegexOptions.IgnoreCase);
 
                 if (!originalPath.Contains(parentOfTag) || !originalPath.Contains(parentOfParent)) continue;
                 Logger.Debug($"Considering sample #{index} because sample path {originalPath} contains sound tag parent {Path.GetFileName(parentOfTag)} and its parent {Path.GetFileName(parentOfParent)}.");
@@ -75,7 +73,7 @@ namespace Huragok.Utilities.Sound {
             string[] infoPaths = TryReadInfoFile(bankInfoPath);
 
             if (bank.Samples.Count != infoPaths.Length)
-                throw new InvalidDataException($"Bank sample count does not match info file!");
+                throw new InvalidDataException($"Bank sample count does not match info file! ({bank.Samples.Count} vs {infoPaths.Length})");
 
             for (int i = 0; i < bank.Samples.Count; i++) {
                 outDict.Add(i, (bank.Samples[i], infoPaths[i]));
@@ -87,7 +85,7 @@ namespace Huragok.Utilities.Sound {
 
         #region Info File Processing
         internal static string[] TryReadInfoFile(string infoFilePath) {
-            string raw = File.ReadAllText(infoFilePath);                                // Read the raw text
+            string raw = File.ReadAllText(infoFilePath);                            // Read the raw text
             string cleaned = new(raw.Where(c => !char.IsControl(c)).ToArray());     // Strip out most unreadable characters
             string newlined = cleaned.Replace("data\\", "\n");                      // Remove the leading `data\` and add a newline.
             string cleanedMatchingExtension = Regex.Replace(                        // Remove everything between each file extension and next line.
@@ -97,8 +95,7 @@ namespace Huragok.Utilities.Sound {
                 RegexOptions.IgnoreCase
             );
 
-            // Change all file extensions to a fake one, in this case, .sound, so that we can more easily search through them.
-            string[] final = cleanedMatchingExtension
+            string[] final = cleanedMatchingExtension                               // Change all file extensions to a fake one, in this case, .sound, so that we can more easily search through them.
                 .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) // Turn into a string array to loop through.
                 .Where(line => line.StartsWith("sound"))                            // Last minute filter; remove ANY lines that do not begin with "sound".
                 .Select(n => Path.ChangeExtension(n, null)).ToArray();              // And finally remove all extensions to weed out differences which may confuse the exporter.

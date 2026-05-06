@@ -26,6 +26,7 @@ namespace Huragok.Commands.Debug {
         private static void CompareFSBandInfo(string bankPath) {
             var bankMap = FSBExplorer.BuildBankMap(bankPath);
 
+            bool anyDisagree = false;
             foreach (int key in bankMap.Keys) {
                 var (sample, infoFilePath) = bankMap[key];
 
@@ -34,8 +35,12 @@ namespace Huragok.Commands.Debug {
 
                 if (sampleName != filePathName) {
                     Logger.Warning($"Index disagreement at #{key}: sample name `{sampleName}` disagrees with info file `{filePathName}`");
+                    anyDisagree = true;
                 }
             }
+
+            if (!anyDisagree)
+                Logger.Message($"{Path.GetFileName(bankPath)}: no index disagreements.");
         }
     }
 }

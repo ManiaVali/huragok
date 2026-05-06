@@ -74,8 +74,8 @@ namespace Huragok.Commands.Preview {
                 var permutation = range.permutations[permutationIndex];
 
                 var player = new VorbisSoundPlayer();
-
-                player.Load(permutation.rawSampleData.sample.SampleBytes, loop);
+                
+                player.Load(permutation.SampleAsVorbisBytes, loop);
                 player.Play();
 
                 bool paused = false;

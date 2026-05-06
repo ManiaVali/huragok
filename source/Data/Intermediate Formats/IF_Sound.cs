@@ -28,7 +28,16 @@ namespace Huragok.Data.IntermediateFormats.Sound {
         internal float lengthSeconds;
         internal IF_PitchRange belongsToRange;
 
-        internal readonly (Fmod5Sharp.FmodTypes.FmodSample sample, string samplePath) rawSampleData;
+        private readonly (Fmod5Sharp.FmodTypes.FmodSample sample, string samplePath) rawSampleData;
+
+        internal byte[] SampleAsVorbisBytes {
+            get {
+                this.rawSampleData.sample.RebuildAsStandardFileFormat(out byte[]? bytes, out _);
+                return bytes ?? throw new Exception($"Failed to rebuild sample for {this.name}.");
+            }
+        }
+
+        internal string OriginalSamplePath => this.rawSampleData.samplePath;
 
         internal IF_SoundPermutation(TagFieldBlockElement permutationElement, IF_PitchRange range) {
             this.index = permutationElement.ElementIndex;

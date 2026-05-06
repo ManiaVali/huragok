@@ -33,15 +33,11 @@ namespace Huragok.Data.Tags {
 
             foreach (var range in this.PitchRanges) {
                 foreach (var perm in range.permutations) {
-                    if (perm.rawSampleData.sample == null || perm.rawSampleData.sample.SampleBytes == null) continue;
-                    if (perm.rawSampleData.sample.SampleBytes.Length == 0) continue;
+                    if (perm.SampleAsVorbisBytes.Length == 0) continue;
 
-                    if (!perm.rawSampleData.sample.RebuildAsStandardFileFormat(out byte[]? rawSampleBytes, out _))
-                        throw new Exception($"Failed to rebuild sample for {perm.name}.");
+                    byte[] data = VorbisConverter.ConvertOGGTo(perm.SampleAsVorbisBytes, fileType).Result;
 
-                    byte[] data = VorbisConverter.ConvertOGGTo(rawSampleBytes, fileType).Result;
-
-                    string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.rawSampleData.samplePath), extension);
+                    string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.OriginalSamplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? outputDirectory);
                     
