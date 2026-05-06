@@ -1,6 +1,6 @@
 namespace Huragok.Utilities.Blender {
-    public static class Locator {
-        public static string FindBlender() => FindBlenderFromPath() ?? FindBlenderFromInstallDirs() ?? throw new FileNotFoundException($"Cannot find a valid blender executable! Is blender installed?");
+    internal static class Locator {
+        internal static string FindBlender() => FindBlenderFromPath() ?? FindBlenderFromInstallDirs() ?? throw new FileNotFoundException($"Cannot find a valid blender executable! Is blender installed?");
 
         private static string? FindBlenderFromPath() {
             string[] paths = (Environment.GetEnvironmentVariable("PATH") ?? "")

@@ -3,13 +3,13 @@ using Huragok.Data.Tags;
 using Huragok.Utilities.Sound;
 
 namespace Huragok.Data.IntermediateFormats.Sound {
-    public sealed class IF_PitchRange {
-        public int index;
-        public string name = string.Empty;
-        public List<IF_SoundPermutation> permutations = new();
-        public SoundTag belongsToTag;
+    internal sealed class IF_PitchRange {
+        internal int index;
+        internal string name = string.Empty;
+        internal List<IF_SoundPermutation> permutations = new();
+        internal SoundTag belongsToTag;
 
-        public IF_PitchRange(TagFieldBlockElement pitchRangeElement, SoundTag soundTag) {
+        internal IF_PitchRange(TagFieldBlockElement pitchRangeElement, SoundTag soundTag) {
             this.index = pitchRangeElement.ElementIndex;
             this.name = pitchRangeElement.SelectFieldType<TagFieldElementStringID>("StringId:name").GetStringData();
 
@@ -22,15 +22,24 @@ namespace Huragok.Data.IntermediateFormats.Sound {
         }
     }
 
-    public sealed class IF_SoundPermutation {
-        public int index;
-        public string name = string.Empty;
-        public float lengthSeconds;
-        public IF_PitchRange belongsToRange;
+    internal sealed class IF_SoundPermutation {
+        internal int index;
+        internal string name = string.Empty;
+        internal float lengthSeconds;
+        internal IF_PitchRange belongsToRange;
 
-        internal readonly (byte[] bytes, string samplePath) rawSampleData;
+        private readonly (Fmod5Sharp.FmodTypes.FmodSample sample, string samplePath) rawSampleData;
 
-        public IF_SoundPermutation(TagFieldBlockElement permutationElement, IF_PitchRange range) {
+        internal byte[] SampleAsVorbisBytes {
+            get {
+                this.rawSampleData.sample.RebuildAsStandardFileFormat(out byte[]? bytes, out _);
+                return bytes ?? throw new Exception($"Failed to rebuild sample for {this.name}.");
+            }
+        }
+
+        internal string OriginalSamplePath => this.rawSampleData.samplePath;
+
+        internal IF_SoundPermutation(TagFieldBlockElement permutationElement, IF_PitchRange range) {
             this.index = permutationElement.ElementIndex;
             this.name = permutationElement.SelectFieldType<TagFieldElementStringID>("StringId:name").GetStringData();
 
@@ -41,29 +50,26 @@ namespace Huragok.Data.IntermediateFormats.Sound {
 
             this.lengthSeconds = sampleInfo.SampleDuration;
 
-            (byte[] data, string name, string originalSamplePath) sampleData = (Array.Empty<byte>(), string.Empty, string.Empty);
             try {
-                sampleData = FSBExplorer.FindSample(this);
+                this.rawSampleData = FSBExplorer.FindInBanks(this);
             } catch (Exception e) {
-                Console.Error.WriteLine($"Error: {e.Message}");
+                Logger.Error($"Error in {nameof(IF_SoundPermutation)} constructor for {this.belongsToRange.belongsToTag.sourceTag.Path.RelativePath}::{this.name}: {e.Message}");
             }
-
-            this.rawSampleData = (sampleData.data, sampleData.originalSamplePath);
         }
     }
 
-    public sealed class IF_Track : IDisposable {
-        public int index;
+    internal sealed class IF_Track : IDisposable {
+        internal int index;
 
-        public SoundTag? soundIn;
-        public SoundTag? soundLoop;
-        public SoundTag? soundOut;
-        public SoundTag? soundAltTransIn;
-        public SoundTag? soundAltLoop;
-        public SoundTag? soundAltTransOut;
-        public SoundTag? soundAltOut;
+        internal SoundTag? soundIn;
+        internal SoundTag? soundLoop;
+        internal SoundTag? soundOut;
+        internal SoundTag? soundAltTransIn;
+        internal SoundTag? soundAltLoop;
+        internal SoundTag? soundAltTransOut;
+        internal SoundTag? soundAltOut;
 
-        public IF_Track(TagFieldBlockElement trackBlockElement) {
+        internal IF_Track(TagFieldBlockElement trackBlockElement) {
             this.index = trackBlockElement.ElementIndex;
 
             var soundInRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:in").Path;

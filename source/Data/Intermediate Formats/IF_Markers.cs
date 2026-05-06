@@ -4,7 +4,7 @@ using Huragok.Data.IntermediateFormats.Coordinates;
 using Huragok.Utilities;
 
 namespace Huragok.Data.IntermediateFormats.Markers {
-    public enum IF_Marker_GroupType {
+    internal enum IF_Marker_GroupType {
         Model,
         Effects,
         Target,
@@ -12,14 +12,14 @@ namespace Huragok.Data.IntermediateFormats.Markers {
         Hint
     }
 
-    public sealed class IF_MarkerGroup {
-        public readonly long? index;
-        public readonly string? name;
+    internal sealed class IF_MarkerGroup {
+        internal readonly long? index;
+        internal readonly string? name;
 
-        public readonly List<IF_MarkerGroup> markers = new();
-        public readonly IF_Marker_GroupType groupType;
+        internal readonly List<IF_MarkerGroup> markers = new();
+        internal readonly IF_Marker_GroupType groupType;
 
-        public IF_MarkerGroup(TagFieldBlockElement markerGroupElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions, string markerGroupNameField = "name", string markersFieldBlock = "markers") {
+        internal IF_MarkerGroup(TagFieldBlockElement markerGroupElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions, string markerGroupNameField = "name", string markersFieldBlock = "markers") {
             this.index = markerGroupElement.ElementIndex;
             this.name = markerGroupElement.SelectFieldType<TagFieldElement>(markerGroupNameField).GetStringData();
 
@@ -37,20 +37,20 @@ namespace Huragok.Data.IntermediateFormats.Markers {
         }
     }
 
-    public sealed class IF_Marker {
-        public readonly long? index;
-        public readonly long? regionIndex;
-        public readonly long? permutationIndex;
-        public readonly long? nodeIndex;
+    internal sealed class IF_Marker {
+        internal readonly long? index;
+        internal readonly long? regionIndex;
+        internal readonly long? permutationIndex;
+        internal readonly long? nodeIndex;
 
-        public readonly Position3d translation;
-        public readonly Quaternion rotation;
-        public readonly float? scale;
-        public readonly Vector3? direction;
+        internal readonly Position3d translation;
+        internal readonly Quaternion rotation;
+        internal readonly float? scale;
+        internal readonly Vector3? direction;
 
-        public readonly bool nodeRelativePosition;
+        internal readonly bool nodeRelativePosition;
 
-        public IF_Marker(TagFieldBlockElement markerElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions) {
+        internal IF_Marker(TagFieldBlockElement markerElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions) {
             this.index = markerElement.ElementIndex;
             this.regionIndex = markerElement.SelectFieldType<TagFieldElementInteger>("region index")?.Data;
             this.permutationIndex = markerElement.SelectFieldType<TagFieldElementInteger>("permutation index")?.Data;

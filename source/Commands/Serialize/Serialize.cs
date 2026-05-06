@@ -2,7 +2,7 @@
 using System.CommandLine;
 using Huragok.Commands.Base;
 using Huragok.ManagedBlam;
-using Huragok.Serializer;
+using Huragok.Utilities.Serializer;
 
 namespace Huragok.Commands.Serialize {
     internal static class Base {

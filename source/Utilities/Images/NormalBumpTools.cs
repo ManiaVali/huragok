@@ -3,9 +3,9 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace Huragok.Utilities.Imaging {
-    public static class NormalBumpTools {
+    internal static class NormalBumpTools {
 
-        public static Bitmap ProcessNormalMap(Bitmap source, bool reconstructZ = true, bool swizzleGreen = false) {
+        internal static Bitmap ProcessNormalMap(Bitmap source, bool reconstructZ = true, bool swizzleGreen = false) {
             if (!reconstructZ && !swizzleGreen) return source;
             
             var bmp = source.Clone(new Rectangle(0, 0, source.Width, source.Height), PixelFormat.Format32bppArgb);

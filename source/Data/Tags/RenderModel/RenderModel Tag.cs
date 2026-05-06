@@ -13,7 +13,7 @@ using Huragok.Data.IntermediateFormats.Mesh;
 using Huragok.Commands.RenderModel;
 
 namespace Huragok.Data.Tags {
-    public enum RenderModelFormat {
+    internal enum RenderModelFormat {
         /// <summary>
         /// Simple model format; supports materials, but does not support rigging or animations.
         /// <para>Built-in export format.</para>
@@ -34,10 +34,10 @@ namespace Huragok.Data.Tags {
         FBX
     }
 
-    public sealed class RenderModelTag : BaseTag<RenderModelFormat> {
+    internal sealed class RenderModelTag : BaseTag<RenderModelFormat> {
         #region Properties/Fields
 
-        public ModelRoot ModelData { get; private set; }
+        internal ModelRoot ModelData { get; private set; }
         private TagFieldBlock BlockRegions => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:regions");
         private TagFieldBlock BlockNodes => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:nodes");
         private TagFieldBlock BlockMaterials => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:materials");
@@ -99,13 +99,13 @@ namespace Huragok.Data.Tags {
                     var bounds = new IF_CompressionBounds((TagFieldBlockElement)compBoundsBlock);
 
                     if (perm.meshIndex >= 0 && !this.meshesByIndex.ContainsKey((int)perm.meshIndex)) {
-                        Console.Error.WriteLine($"Error: {this.sourceTag.Path.ShortNameWithExtension}: Missing mesh index on region `{region.name}`, permutation `{perm.name}`!");
+                        Logger.Warning($"{this.sourceTag.Path.ShortNameWithExtension}: Missing mesh index on region `{region.name}`, permutation `{perm.name}`!");
                         continue;
                     }
 
                     if (!this.meshesByIndex.TryGetValue((int)perm.meshIndex, out var mesh)) {
                         if (perm.meshIndex != -1) { // Silently ignore -1, this is used intentionally as a no-op value by Bungie.
-                            Console.Error.WriteLine($"Warning: {this.sourceTag.Path.ShortNameWithExtension}: Invalid mesh index `{perm.meshIndex}` on region `{region.name}` permutation `{perm.name}`!");
+                            Logger.Warning($"{this.sourceTag.Path.ShortNameWithExtension}: Invalid mesh index `{perm.meshIndex}` on region `{region.name}` permutation `{perm.name}`!");
                         }
                         continue;
                     }
@@ -135,7 +135,7 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region Export Funcs
-        public override bool TryExportToDisk(string outputDirectory, RenderModelFormat fileExtension, out List<string> finalFileLocations) {
+        internal override bool TryExportToDisk(string outputDirectory, RenderModelFormat fileExtension, out List<string> finalFileLocations) {
             string extension = fileExtension.ToString().ToLower();
             string finalFileLocation = this.BuildOutputPath(outputDirectory, extension);
 
@@ -146,7 +146,7 @@ namespace Huragok.Data.Tags {
 
             switch (fileExtension) {
                 case RenderModelFormat.OBJ:
-                    Console.Error.WriteLine("WARNING: Writing output file as OBJ. You will lose armature rigging with this format.");
+                    Logger.Warning("Writing output file as OBJ. You will lose armature rigging with this format.");
                     this.ModelData.SaveAsWavefront(finalFileLocation);
                     break;
                 case RenderModelFormat.GLB:
@@ -156,7 +156,7 @@ namespace Huragok.Data.Tags {
                     this.ModelData.SaveFBX(finalFileLocation);
                     break;
                 default:
-                    Console.Error.WriteLine($"nonfatal: unexpected export format `{fileExtension}`; defaulting to GLB.");
+                    Logger.Warning($"Unexpected export format `{fileExtension}`; defaulting to GLB.");
                     this.ModelData.SaveGLB(finalFileLocation);
                     break;
             }
