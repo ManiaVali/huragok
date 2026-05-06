@@ -77,6 +77,8 @@ release:
     - job: publish
       artifacts: true
 
+  before_script: []
+
   script:
     - |
       release-cli create \
