@@ -1,0 +1,83 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+variables:
+  OBJECTS_DIRECTORY: 'obj'
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  SOURCE_CODE_PATH: 'source'
+  PROJECT_NAME: 'Huragok'
+  BLAM_VARIANTS: "HR H3 ODST H2AMP H4"
+
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+  paths:
+    - .nuget/packages
+    - '**/obj/project.assets.json'
+    - '**/obj/*.csproj.nuget.*'
+
+before_script:
+  - 'dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY'
+
+stages:
+  - test
+  - publish
+  - release
+
+publish:
+  stage: publish
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+
+  parallel:
+    matrix:
+      - BLAM_VARIANT: ["HR"]
+
+  script:
+    - VERSION=$(dotnet msbuild Huragok.csproj -getProperty:VersionPrefix)
+    - echo "VERSION=$VERSION" > version.env
+    - FILE="Huragok-$VERSION-$BLAM_VARIANT.zip"
+    - PACKAGE_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/Huragok/$VERSION/$FILE"
+    - echo "PACKAGE_URL=$PACKAGE_URL" >> version.env
+    
+    - dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY
+    - dotnet publish -c Release -r win-x64 -o publish-$BLAM_VARIANT -p:BlamVariant=$BLAM_VARIANT --no-restore --no-self-contained Huragok.csproj
+
+    - apt-get update && apt-get install -y zip curl
+    - cd publish-$BLAM_VARIANT
+    - zip -r ../Huragok-$VERSION-$BLAM_VARIANT.zip .
+    - cd ..
+
+    - echo "VERSION=$VERSION"
+    - echo "BLAM_VARIANT=$BLAM_VARIANT"
+    - echo "FILE=Huragok-$VERSION-$BLAM_VARIANT.zip"
+    - ls -lah
+
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        --upload-file "Huragok-$VERSION-$BLAM_VARIANT.zip" \
+        "$PACKAGE_URL"
+
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages?package_name=Huragok"
+
+  artifacts:
+    reports:
+      dotenv: version.env
+    paths:
+      - Huragok-*.zip
+
+release:
+  stage: publish
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: publish
+      artifacts: true
+
+  before_script: []
+
+  script:
+    - |
+      release-cli create \
+        --tag-name "v$VERSION" \
+        --name "Huragok v$VERSION" \
+        --description "Automated release for v$VERSION" \
+        --assets-link "{\"name\":\"Halo: Reach Build\",\"url\":\"$PACKAGE_URL\"}"
