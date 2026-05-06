@@ -18,7 +18,6 @@ before_script:
   - 'dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY'
 
 stages:
-  - test
   - publish
   - release
 
@@ -51,19 +50,25 @@ publish:
     - ls -lah
 
     - |
-      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" \
-        --upload-file "Huragok-$VERSION-$BLAM_VARIANT.zip" \
-        "$PACKAGE_URL"
+      echo "Checking if package already exists..."
 
-    - |
-      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages?package_name=Huragok"
+      HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --header "JOB-TOKEN: $CI_JOB_TOKEN" "$PACKAGE_URL")
+
+      if [ "$HTTP_STATUS" = "200" ]; then
+        echo "Package already exists. Skipping upload."
+      else
+        echo "Package does not exist. Uploading..."
+        curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "Huragok-$VERSION-$BLAM_VARIANT.zip" "$PACKAGE_URL"
+      fi
 
   artifacts:
     reports:
       dotenv: version.env
     paths:
       - Huragok-*.zip
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 release:
   stage: publish
@@ -80,4 +85,7 @@ release:
         --tag-name "v$VERSION" \
         --name "Huragok v$VERSION" \
         --description "Automated release for v$VERSION" \
-        --assets-link "{\"name\":\"Halo: Reach Build\",\"url\":\"$PACKAGE_URL\"}"
+        --assets-link "{\"name\":\"Huragok version $VERSION, for Halo Reach\",\"url\":\"$PACKAGE_URL\"}" || echo "Release already exists or submission failed."
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
