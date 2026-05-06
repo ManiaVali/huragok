@@ -4,7 +4,7 @@ using Huragok.Data.Tags;
 using Huragok.ManagedBlam;
 using Huragok.Utilities.Sound;
 using NAudio.Wave;
-using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
+using CommonConstants = Huragok.Commands.Base.Constants;
 
 namespace Huragok.Commands.Preview {
     internal enum PlaybackPhase {
@@ -52,7 +52,7 @@ namespace Huragok.Commands.Preview {
 
         private static void PreviewLoopingSoundFile(string soundTagFilepath, int trackIndex, bool altTracks) {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                Panic(CommonArgsAndOpts.NO_VALID_TAGS, CommonArgsAndOpts.NO_TAGS_CODE);
+                Panic(CommonConstants.NO_VALID_TAGS, CommonConstants.NO_TAGS_CODE);
 
             BlamFunctions.InitializeBlam();
 

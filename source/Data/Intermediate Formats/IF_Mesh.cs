@@ -9,25 +9,25 @@ using Huragok.Data.IntermediateFormats.Coordinates;
 // - Add marker and markergroup support.
 // - Water face support?
 namespace Huragok.Data.IntermediateFormats.Mesh {
-    public readonly struct Face {
-        public readonly int T1;
-        public readonly int T2;
-        public readonly int T3;
+    internal readonly struct Face {
+        internal readonly int T1;
+        internal readonly int T2;
+        internal readonly int T3;
 
-        public Face(int T1, int T2, int T3) {
+        internal Face(int T1, int T2, int T3) {
             this.T1 = T1;
             this.T2 = T2;
             this.T3 = T3;
         }
     }
 
-    public sealed class IF_MeshVariant {
-        public readonly int index;
-        public readonly string? name;
-        public readonly List<IF_MeshRegion> regions = new();
+    internal sealed class IF_MeshVariant {
+        internal readonly int index;
+        internal readonly string? name;
+        internal readonly List<IF_MeshRegion> regions = new();
         internal readonly TagFieldBlock? regionsBlock;
 
-        public IF_MeshVariant(TagFieldBlockElement variantBlock) {
+        internal IF_MeshVariant(TagFieldBlockElement variantBlock) {
             this.index = variantBlock.ElementIndex;
             this.name = variantBlock.SelectFieldType<TagFieldElement>("name").GetStringData();
 
@@ -39,14 +39,14 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_MeshRegion {
-        public readonly int index;
-        public readonly int? parentIndex;
-        public readonly string? name;
-        public readonly List<IF_MeshPermutation> permutations = new();
+    internal sealed class IF_MeshRegion {
+        internal readonly int index;
+        internal readonly int? parentIndex;
+        internal readonly string? name;
+        internal readonly List<IF_MeshPermutation> permutations = new();
         internal readonly TagFieldBlock? permutationsBlock;
 
-        public IF_MeshRegion(TagFieldBlockElement regionsBlock, IF_MeshVariant? variant = null) {
+        internal IF_MeshRegion(TagFieldBlockElement regionsBlock, IF_MeshVariant? variant = null) {
             this.index = regionsBlock.ElementIndex;
             this.parentIndex = variant?.index;
 
@@ -62,16 +62,16 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_MeshPermutation {
-        public readonly int index;
-        public readonly int? parentIndex;
-        public readonly string? name;
+    internal sealed class IF_MeshPermutation {
+        internal readonly int index;
+        internal readonly int? parentIndex;
+        internal readonly string? name;
 
-        public readonly long meshIndex;
-        public readonly long meshCount;
+        internal readonly long meshIndex;
+        internal readonly long meshCount;
         internal readonly IF_MeshRegion? belongsToRegion;
 
-        public IF_MeshPermutation(TagFieldBlockElement permutationsBlock, IF_MeshRegion region) {
+        internal IF_MeshPermutation(TagFieldBlockElement permutationsBlock, IF_MeshRegion region) {
             this.index = permutationsBlock.ElementIndex;
             this.parentIndex = region.index;
 
@@ -85,15 +85,15 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_MeshPart {
-        public readonly long index;
-        public readonly long materialIndex;
-        public readonly long indexStart;
-        public readonly long indexCount;
+    internal sealed class IF_MeshPart {
+        internal readonly long index;
+        internal readonly long materialIndex;
+        internal readonly long indexStart;
+        internal readonly long indexCount;
         internal readonly TagFieldFlags? flags;
-        public readonly bool isWaterSurface;
+        internal readonly bool isWaterSurface;
 
-        public IF_MeshPart(TagFieldBlockElement partElement) {
+        internal IF_MeshPart(TagFieldBlockElement partElement) {
             this.index = partElement.ElementIndex;
 
             this.materialIndex = partElement.SelectFieldType<TagFieldBlockIndex>("render method index").Value;
@@ -105,16 +105,16 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_MeshSubPart {
-        public readonly long index;
-        public readonly long indexStart = -1;
-        public readonly long indexCount = -1;
-        public readonly long partIndex = -1;
-        public readonly bool isWaterSubpart;
-        public readonly bool isWaterSurface;
-        public readonly IF_MeshPart? part;
+    internal sealed class IF_MeshSubPart {
+        internal readonly long index;
+        internal readonly long indexStart = -1;
+        internal readonly long indexCount = -1;
+        internal readonly long partIndex = -1;
+        internal readonly bool isWaterSubpart;
+        internal readonly bool isWaterSurface;
+        internal readonly IF_MeshPart? part;
 
-        public IF_MeshSubPart(TagFieldBlockElement subPartElement, List<IF_MeshPart> parts, List<long>? waterIndices = null) {
+        internal IF_MeshSubPart(TagFieldBlockElement subPartElement, List<IF_MeshPart> parts, List<long>? waterIndices = null) {
             this.index = subPartElement.ElementIndex;
             this.indexStart = subPartElement.SelectFieldType<TagFieldElementInteger>("index start").Data;
             this.indexCount = subPartElement.SelectFieldType<TagFieldElementInteger>("index count").Data;
@@ -126,15 +126,15 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_CompressionBounds {
+    internal sealed class IF_CompressionBounds {
 
-        public readonly Vector3 posBounds0;
-        public readonly Vector3 posBounds1;
+        internal readonly Vector3 posBounds0;
+        internal readonly Vector3 posBounds1;
 
-        public readonly Vector2 uvCoords0;
-        public readonly Vector2 uvCoords1;
+        internal readonly Vector2 uvCoords0;
+        internal readonly Vector2 uvCoords1;
 
-        public IF_CompressionBounds(TagFieldBlockElement compressionBlock) {
+        internal IF_CompressionBounds(TagFieldBlockElement compressionBlock) {
             // The original fields here are mislabled in the engine due to "legacy reasons" and have to be remapped.
 
             float[] firstPosition = compressionBlock.SelectFieldType<TagFieldElementArraySingle>("position bounds 0").Data;
@@ -158,25 +158,25 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             this.uvCoords1 = new(firstUV[1], secondUV[1]);
         }
 
-        public Position3d Decompress(Vector3 compressedPosition) {
+        internal Position3d Decompress(Vector3 compressedPosition) {
             var tmpV3 = this.posBounds0 + compressedPosition * (this.posBounds1 - this.posBounds0);
             return new Position3d(tmpV3, CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
         }
 
-        public Vector2 Decompress(Vector2 compressedTexCoord) => this.uvCoords0 + compressedTexCoord * (this.uvCoords1 - this.uvCoords0);
+        internal Vector2 Decompress(Vector2 compressedTexCoord) => this.uvCoords0 + compressedTexCoord * (this.uvCoords1 - this.uvCoords0);
 
     }
 
-    public sealed class IF_Mesh {
-        public readonly long index;
-        public readonly List<IF_MeshPart> parts = new();
-        public readonly List<IF_MeshSubPart> subParts = new();
-        public readonly List<long>? waterIndices = new();
+    internal sealed class IF_Mesh {
+        internal readonly long index;
+        internal readonly List<IF_MeshPart> parts = new();
+        internal readonly List<IF_MeshSubPart> subParts = new();
+        internal readonly List<long>? waterIndices = new();
 
-        public readonly bool isPCA = false;
-        public readonly bool compressed = true;
+        internal readonly bool isPCA = false;
+        internal readonly bool compressed = true;
 
-        public IF_Mesh(TagFieldBlockElement meshElement, TagPath? tagPath = null) {
+        internal IF_Mesh(TagFieldBlockElement meshElement, TagPath? tagPath = null) {
             this.index = meshElement.ElementIndex;
 
             foreach (var e in meshElement.SelectFieldType<TagFieldBlock>("water indices start").Elements.Cast<TagFieldBlockElement>()) {
@@ -203,22 +203,22 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
-    public sealed class IF_MeshExportGeometry {
-        public readonly long meshIndex;
-        public readonly IF_MeshPermutation permutation;
-        public readonly List<Vector3> positions = new();
-        public readonly List<Face> faces = new();
-        public readonly List<long> faceMaterialIndices = new();
-        public readonly List<Vector3> vtxNormals = new();
-        public readonly List<Vector2> texCoords = new();
-        public readonly IF_Mesh ourMesh;
-        public readonly IF_CompressionBounds bounds;
+    internal sealed class IF_MeshExportGeometry {
+        internal readonly long meshIndex;
+        internal readonly IF_MeshPermutation permutation;
+        internal readonly List<Vector3> positions = new();
+        internal readonly List<Face> faces = new();
+        internal readonly List<long> faceMaterialIndices = new();
+        internal readonly List<Vector3> vtxNormals = new();
+        internal readonly List<Vector2> texCoords = new();
+        internal readonly IF_Mesh ourMesh;
+        internal readonly IF_CompressionBounds bounds;
         internal readonly TagPath tagPath;
 
-        public readonly List<Vector4> nodeIndices = new();
-        public readonly List<Vector4> nodeWeights = new();
+        internal readonly List<Vector4> nodeIndices = new();
+        internal readonly List<Vector4> nodeWeights = new();
 
-        public IF_MeshExportGeometry(TagFieldBlock perMeshTempDataBlock, IF_MeshPermutation forPermutation, IF_Mesh ourMesh, IF_CompressionBounds bounds, TagPath tagPath, CoordinateUnit coordinateSpace) {
+        internal IF_MeshExportGeometry(TagFieldBlock perMeshTempDataBlock, IF_MeshPermutation forPermutation, IF_Mesh ourMesh, IF_CompressionBounds bounds, TagPath tagPath, CoordinateUnit coordinateSpace) {
             this.meshIndex = (long)forPermutation.meshIndex;
             this.permutation = forPermutation;
             this.ourMesh = ourMesh;
@@ -315,17 +315,17 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
     }
 
     // Will be used later.
-    // public sealed class InstancePlacement {
-    //     public readonly string name = string.Empty;
-    //     public readonly long index = -1;
-    //     public readonly float scale = 1;
-    //     public readonly long nodeIndex = -1;
-    //     public readonly Vector3 forwardVector = new();
-    //     public readonly Vector3 leftVector = new();
-    //     public readonly Vector3 upVector = new();
-    //     public readonly Vector3 position = new();
+    // internal sealed class InstancePlacement {
+    //     internal readonly string name = string.Empty;
+    //     internal readonly long index = -1;
+    //     internal readonly float scale = 1;
+    //     internal readonly long nodeIndex = -1;
+    //     internal readonly Vector3 forwardVector = new();
+    //     internal readonly Vector3 leftVector = new();
+    //     internal readonly Vector3 upVector = new();
+    //     internal readonly Vector3 position = new();
 
-    //     public InstancePlacement(TagFieldBlockElement instancesBlock, List<Node> nodes) {
+    //     internal InstancePlacement(TagFieldBlockElement instancesBlock, List<Node> nodes) {
     //         this.name = instancesBlock.SelectFieldType<TagFieldElement>("name").GetStringData();
     //         if (string.IsNullOrEmpty(this.name)) this.name = "__";
 

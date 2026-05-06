@@ -4,16 +4,16 @@ using NVorbis;
 
 namespace Huragok.Utilities.Sound {
 
-    public class VorbisSampleProvider : ISampleProvider {
+    internal class VorbisSampleProvider : ISampleProvider {
         private readonly VorbisReader vorbis;
         private readonly bool looping;
 
         public WaveFormat WaveFormat { get; }
 
-        public double Progress => this.vorbis.TotalSamples > 0
+        internal double Progress => this.vorbis.TotalSamples > 0
             ? (double)this.vorbis.SamplePosition / this.vorbis.TotalSamples : 0f;
 
-        public VorbisSampleProvider(Stream stream, bool loop = false) {
+        internal VorbisSampleProvider(Stream stream, bool loop = false) {
             this.vorbis = new VorbisReader(stream, false);
             this.looping = loop;
 
@@ -44,7 +44,7 @@ namespace Huragok.Utilities.Sound {
         }
     }
 
-    public class VorbisSoundPlayer : IDisposable {
+    internal class VorbisSoundPlayer : IDisposable {
 #pragma warning disable CS8618 // Shut up about nulls
         private WaveOutEvent output;
         private VorbisSampleProvider provider;
@@ -52,11 +52,11 @@ namespace Huragok.Utilities.Sound {
 
         private byte[] originalData;
 
-        public double Progress => this.provider.Progress * 100;
-        public int ProgressInteger => (int)Math.Round(this.Progress);
+        internal double Progress => this.provider.Progress * 100;
+        internal int ProgressInteger => (int)Math.Round(this.Progress);
 #pragma warning restore CS8618
 
-        public void Load(byte[] vorbisBytes, bool looping = false) {
+        internal void Load(byte[] vorbisBytes, bool looping = false) {
             this.originalData = vorbisBytes;
 
             this.stream = new MemoryStream(vorbisBytes);
@@ -66,10 +66,10 @@ namespace Huragok.Utilities.Sound {
             this.output.Init(this.provider);
         }
 
-        public void Play() => this.output?.Play();
-        public void Pause() => this.output?.Pause();
+        internal void Play() => this.output?.Play();
+        internal void Pause() => this.output?.Pause();
 
-        public void Reset(bool looping = false) {
+        internal void Reset(bool looping = false) {
             this.output?.Stop();
 
             // Reload
@@ -78,7 +78,7 @@ namespace Huragok.Utilities.Sound {
             this.Play();
         }
 
-        public PlaybackState State => this.output?.PlaybackState ?? PlaybackState.Stopped;
+        internal PlaybackState State => this.output?.PlaybackState ?? PlaybackState.Stopped;
 
         public void Dispose() {
             GC.SuppressFinalize(this);

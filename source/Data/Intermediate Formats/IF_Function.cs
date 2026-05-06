@@ -5,53 +5,53 @@ namespace Huragok.Data.IntermediateFormats {
     /// <summary>
     /// Intermediate format representing a function curve as used by the Blam engine.
     /// </summary>
-    public sealed class IF_Function {
+    internal sealed class IF_Function {
         /// <summary>
         /// Amount of graphs used in this function. Almost always 1.
         /// </summary>
-        public readonly int graphCount;
+        internal readonly int graphCount;
         /// <summary>
         /// Amount of colors used in this function.
         /// </summary>
-        public readonly int? colorCount;
+        internal readonly int? colorCount;
 
         /// <summary>
         /// Master type of the function, such as Basic, Exponent, or Curve, etc.
         /// </summary>
-        public FunctionEditorMasterType masterType;
+        internal FunctionEditorMasterType masterType;
         /// <summary>
         /// The exponent of each graph in the function which is of master type exponent.
         /// </summary>
-        public List<float>? exponents;
+        internal List<float>? exponents;
         /// <summary>
         /// The minimum of each graph in the function which is of master type exponent.
         /// </summary>
-        public List<float>? mins;
+        internal List<float>? mins;
         /// <summary>
         /// The maximum of each graph in the function which is of master type exponent.
         /// </summary>
-        public List<float>? maxes;
+        internal List<float>? maxes;
         /// <summary>
         /// The periodic function subtypes of every graph in the function which is of master type periodic.
         /// </summary>
-        public List<string>? periodicFuncTypes;
+        internal List<string>? periodicFuncTypes;
         /// <summary>
         /// The frequency of every graph in the function not of type basic.
         /// </summary>
-        public List<float>? frequencies;
+        internal List<float>? frequencies;
         /// <summary>
         /// The phase of every graph in the function not of type basic.
         /// </summary>
-        public List<float>? phases;
+        internal List<float>? phases;
         /// <summary>
         /// The colors used by the function.
         /// </summary>
-        public List<IF_Color>? colors;
+        internal List<IF_Color>? colors;
 
         /// <summary>
         /// Constructs a new <see cref="IF_Function"/> from a function block.
         /// </summary>
-        public IF_Function(TagFieldCustomFunctionEditor func) {
+        internal IF_Function(TagFieldCustomFunctionEditor func) {
             var editor = func.Value;
 
             this.graphCount = editor.GraphCount;

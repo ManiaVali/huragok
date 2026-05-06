@@ -7,34 +7,34 @@ namespace Huragok.Data.IntermediateFormats.Armature {
     /// <summary>
     /// Intermediate representation of an armature node, or bone.
     /// </summary>
-    public sealed class IF_ArmatureNode {
-        public readonly long index;
-        public readonly string? name;
+    internal sealed class IF_ArmatureNode {
+        internal readonly long index;
+        internal readonly string? name;
         /// <summary>
         /// Parent of this node; references another node. If null, this node is the root, or is orphaned.
         /// </summary>
-        public IF_ArmatureNode? parent;
+        internal IF_ArmatureNode? parent;
         /// <summary>
         /// List of all nodes whose parent is this node.
         /// </summary>
-        public List<IF_ArmatureNode>? children;
+        internal List<IF_ArmatureNode>? children;
 
         /// <summary>
         /// A <see cref="Position3d"/> representing this nodes translation from its parent.
         /// </summary>
-        public readonly Position3d defaultTranslation;
+        internal readonly Position3d defaultTranslation;
         /// <summary>
         /// A <see cref="Quaternion"/> representing the default relative rotation from the node's parent.
         /// </summary>
-        public readonly Quaternion defaultRotation;
-        public readonly Vector3 inverseForward;
-        public readonly Vector3 inverseLeft;
-        public readonly Vector3 inverseUp;
-        public readonly Vector3 inversePosition;
+        internal readonly Quaternion defaultRotation;
+        internal readonly Vector3 inverseForward;
+        internal readonly Vector3 inverseLeft;
+        internal readonly Vector3 inverseUp;
+        internal readonly Vector3 inversePosition;
 
-        public readonly float inverseScale = 1;
+        internal readonly float inverseScale = 1;
 
-        public IF_ArmatureNode(TagFieldBlockElement nodeElement, string nodeNameField = "name") {
+        internal IF_ArmatureNode(TagFieldBlockElement nodeElement, string nodeNameField = "name") {
             this.name = nodeElement.SelectFieldType<TagFieldElement>(nodeNameField).GetStringData();
             this.index = nodeElement.ElementIndex;
 
@@ -57,7 +57,7 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         /// </param>
         /// <param name="parentNodeField">An optional <see cref="string"/> representing the name of the field where the node's parent is found.</param>
         /// <returns>A list of all nodes in the constructed armature -- a fully constructed armature.</returns>
-        public static List<IF_ArmatureNode> BuildNodeGraph(TagFieldBlock nodesBlock, string nodeNameField = "name", string parentNodeField = "parent node") {
+        internal static List<IF_ArmatureNode> BuildNodeGraph(TagFieldBlock nodesBlock, string nodeNameField = "name", string parentNodeField = "parent node") {
             var nodes = new List<IF_ArmatureNode>();
 
             foreach (var element in nodesBlock.Elements.Cast<TagFieldBlockElement>()) {

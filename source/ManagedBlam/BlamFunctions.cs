@@ -10,7 +10,7 @@ using Huragok.Configuration;
 
 namespace Huragok.ManagedBlam {
 
-    public static class BlamFunctions {
+    internal static class BlamFunctions {
         private static string TagsFolderPath => Path.Combine(ConfigurationReader.Configuration.ProjectPath, "tags");
         private static bool projectInitialized = false;
 

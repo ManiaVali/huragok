@@ -13,7 +13,7 @@ using Huragok.Data.IntermediateFormats.Mesh;
 using Huragok.Commands.RenderModel;
 
 namespace Huragok.Data.Tags {
-    public enum RenderModelFormat {
+    internal enum RenderModelFormat {
         /// <summary>
         /// Simple model format; supports materials, but does not support rigging or animations.
         /// <para>Built-in export format.</para>
@@ -34,10 +34,10 @@ namespace Huragok.Data.Tags {
         FBX
     }
 
-    public sealed class RenderModelTag : BaseTag<RenderModelFormat> {
+    internal sealed class RenderModelTag : BaseTag<RenderModelFormat> {
         #region Properties/Fields
 
-        public ModelRoot ModelData { get; private set; }
+        internal ModelRoot ModelData { get; private set; }
         private TagFieldBlock BlockRegions => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:regions");
         private TagFieldBlock BlockNodes => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:nodes");
         private TagFieldBlock BlockMaterials => this.sourceTag.SelectFieldType<TagFieldBlock>("Block:materials");
@@ -135,7 +135,7 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region Export Funcs
-        public override bool TryExportToDisk(string outputDirectory, RenderModelFormat fileExtension, out List<string> finalFileLocations) {
+        internal override bool TryExportToDisk(string outputDirectory, RenderModelFormat fileExtension, out List<string> finalFileLocations) {
             string extension = fileExtension.ToString().ToLower();
             string finalFileLocation = this.BuildOutputPath(outputDirectory, extension);
 

@@ -5,11 +5,11 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Huragok.Serializer {
-    public enum DataSerializationFormat {
+    internal enum DataSerializationFormat {
         JSON,
         YAML
     }
-    public static class DataSerializer {
+    internal static class DataSerializer {
 
         private static readonly JsonSerializerOptions jsonSerializerOptions = new() {
             WriteIndented = true,
@@ -24,7 +24,7 @@ namespace Huragok.Serializer {
             )
             .Build();
 
-        public static void Serialize(Stream stream, object serializingObject, DataSerializationFormat serializationFormat) {
+        internal static void Serialize(Stream stream, object serializingObject, DataSerializationFormat serializationFormat) {
             switch (serializationFormat) {
                 case DataSerializationFormat.JSON:
                     JsonSerializer.Serialize(stream, serializingObject, jsonSerializerOptions);

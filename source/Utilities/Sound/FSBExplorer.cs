@@ -8,7 +8,7 @@ using Huragok.Configuration;
 namespace Huragok.Utilities.Sound {
     // And the award for the most unreadable code goes to.. FSBExplorer!
     // TODO: Maybe add support for alternate language extraction?
-    public static class FSBExplorer {
+    internal static class FSBExplorer {
         private static readonly string _hrFSBDir = Path.Combine(ConfigurationReader.Configuration.MCCInstallPath, "haloreach", "fmod", "pc");
         private static readonly string[] _hrFSBNames = ["english.fsb", "sfx.fsb"];
 
@@ -26,11 +26,11 @@ namespace Huragok.Utilities.Sound {
         private static List<FmodSample>? _allSamples;
         private static List<(string[] fileList, string fsbPath)>? _allFiles;
 #pragma warning disable CS0618
-        public static List<FmodSample> AllSamples => _allSamples ?? EnumerateSoundBanks();
-        public static List<(string[] fileList, string fsbPath)> AllFiles => _allFiles ?? GetFSBFileList();
+        internal static List<FmodSample> AllSamples => _allSamples ?? EnumerateSoundBanks();
+        internal static List<(string[] fileList, string fsbPath)> AllFiles => _allFiles ?? GetFSBFileList();
 #pragma warning restore CS0618
 
-        public static (byte[] RawData, string Format, string samplePath) FindSample(string soundTagPath, string permSampleName) {
+        internal static (byte[] RawData, string Format, string samplePath) FindSample(string soundTagPath, string permSampleName) {
             var indexInBank = GetIndexInBank(soundTagPath, permSampleName)
                 ?? throw new Exception($"Failed to get sound `{soundTagPath}::{permSampleName}` in sound banks.");
 
@@ -50,7 +50,7 @@ namespace Huragok.Utilities.Sound {
             return (finalBytes, fileExtension, indexInBank.soundPathFromInfo);
         }
 
-        public static (byte[] RawData, string Format, string samplePath) FindSample(IF_SoundPermutation soundPermutation) {
+        internal static (byte[] RawData, string Format, string samplePath) FindSample(IF_SoundPermutation soundPermutation) {
             string sourceTagPath = Path.GetFullPath(Path.Combine("tags", soundPermutation.belongsToRange.belongsToTag.sourceTag.Path.RelativePath));
             return FindSample(sourceTagPath, soundPermutation.name);
         }

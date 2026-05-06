@@ -4,7 +4,7 @@ using Huragok.Data.Tags;
 using Huragok.ManagedBlam;
 using Huragok.Utilities.Sound;
 using NAudio.Wave;
-using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
+using CommonConstants = Huragok.Commands.Base.Constants;
 
 namespace Huragok.Commands.Preview {
     internal static class Sound {
@@ -48,7 +48,7 @@ namespace Huragok.Commands.Preview {
 
         private static void PreviewSoundFile(string soundTagFilepath, int rangeIndex, int permutationIndex, bool loop) {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                Panic(CommonArgsAndOpts.NO_VALID_TAGS, CommonArgsAndOpts.NO_TAGS_CODE);
+                Panic(CommonConstants.NO_VALID_TAGS, CommonConstants.NO_TAGS_CODE);
 
             BlamFunctions.InitializeBlam();
 

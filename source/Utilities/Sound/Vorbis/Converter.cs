@@ -7,8 +7,8 @@ using NAudio.Wave;
 using NVorbis;
 
 namespace Huragok.Utilities.Sound {
-    public class VorbisConverter {
-        public static async Task<byte[]> ConvertOGGTo(byte[] oggData, SoundOutExtension fileType) {
+    internal class VorbisConverter {
+        internal static async Task<byte[]> ConvertOGGTo(byte[] oggData, SoundOutExtension fileType) {
             if (fileType == SoundOutExtension.OGG) return oggData;
 
             await ValidateFFMpegInstalled();
@@ -43,7 +43,7 @@ namespace Huragok.Utilities.Sound {
             return outStream.ToArray();
         }
 
-        public static async Task<int> ValidateFFMpegInstalled() {
+        private static async Task<int> ValidateFFMpegInstalled() {
             string ffmpegPath = GlobalFFOptions.Current.BinaryFolder;
             Directory.CreateDirectory(ffmpegPath);
 
