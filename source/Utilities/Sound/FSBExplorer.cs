@@ -4,7 +4,6 @@ using Fmod5Sharp;
 using Fmod5Sharp.FmodTypes;
 using Huragok.Configuration;
 using Huragok.Data.IntermediateFormats.Sound;
-using Huragok.Data.Tags;
 
 namespace Huragok.Utilities.Sound {
     // And the award for the most unreadable code goes to.. FSBExplorer!
@@ -13,9 +12,21 @@ namespace Huragok.Utilities.Sound {
         private static readonly string _hrFSBDir = Path.Combine(ConfigurationReader.Configuration.MCCInstallPath, "haloreach", "fmod", "pc");
         private static readonly string[] _hrFSBNames = ["english.fsb", "sfx.fsb"];
 
+        private static readonly Dictionary<string, FmodSoundBank> bankCache = new();
+
         #region Search
-        internal static (FmodSample sample, string samplePath) FindInBank(IF_SoundPermutation lookingForPermutation) {
-            string bankPath = Path.Combine(_hrFSBDir, _hrFSBNames[1]);
+        internal static (FmodSample sample, string samplePath) FindInBanks(IF_SoundPermutation lookingForPermutation) {
+            foreach (string FSB in _hrFSBNames) {
+                string fsbPath = Path.Combine(_hrFSBDir, FSB);
+                var candidate = FindInBank(fsbPath, lookingForPermutation);
+
+                if (candidate != null) 
+                    return ((FmodSample sample, string samplePath))candidate;
+            }
+            throw new FileNotFoundException($"Could not find {lookingForPermutation.name} in any sound bank; it may not exist.");
+        }
+
+        private static (FmodSample sample, string samplePath)? FindInBank(string bankPath, IF_SoundPermutation lookingForPermutation) {
             var bankMap = BuildBankMap(bankPath);
             string soundTagPath = lookingForPermutation.belongsToRange.belongsToTag.sourceTag.Path.RelativePath;
             
@@ -33,21 +44,27 @@ namespace Huragok.Utilities.Sound {
                 if (!originalPath.Contains(parentOfTag) || !originalPath.Contains(parentOfParent)) continue;
                 Logger.Debug($"Considering sample #{index} because sample path {originalPath} contains sound tag parent {Path.GetFileName(parentOfTag)} and its parent {Path.GetFileName(parentOfParent)}.");
 
-                if (!sample.Name!.Contains(lookingForPermutation.name)) continue;
+                if (!sample.Name!.Contains(lookingForPermutation.name, StringComparison.OrdinalIgnoreCase)) continue;
                 Logger.Debug($"Still considering sample #{index} because sample name {sample.Name} contains permutation name {lookingForPermutation.name}.");
 
                 return (sample, Path.ChangeExtension(originalPath, null));
             }
 
-            throw new FileNotFoundException($"Permutation sample {lookingForPermutation.name} does not exist in bank.");
+            return null;
         }
         #endregion
 
         #region Bank Handling
         private static FmodSoundBank GetBank(string path) {
+            if (bankCache.TryGetValue(path, out var bank))
+                return bank;
+            
             byte[] bytes = File.ReadAllBytes(path);
-            var bank = FsbLoader.LoadFsbFromByteArray(bytes);
-            return bank;
+            var newBank = FsbLoader.LoadFsbFromByteArray(bytes);
+
+            bankCache.Add(path, newBank);
+
+            return newBank;
         }
 
         internal static Dictionary<int, (FmodSample sample, string infoFilePath)> BuildBankMap(string bankPath) {

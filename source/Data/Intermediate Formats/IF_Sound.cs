@@ -42,9 +42,9 @@ namespace Huragok.Data.IntermediateFormats.Sound {
             this.lengthSeconds = sampleInfo.SampleDuration;
 
             try {
-                this.rawSampleData = FSBExplorer.FindInBank(this);
+                this.rawSampleData = FSBExplorer.FindInBanks(this);
             } catch (Exception e) {
-                Logger.Error($"Error in {nameof(IF_SoundPermutation)} constructor for {this.name}: {e.Message}");
+                Logger.Error($"Error in {nameof(IF_SoundPermutation)} constructor for {this.belongsToRange.belongsToTag.sourceTag.Path.RelativePath}::{this.name}: {e.Message}");
             }
         }
     }

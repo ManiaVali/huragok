@@ -1,4 +1,5 @@
 
+using Fmod5Sharp.FmodTypes;
 using Huragok.Data.IntermediateFormats.Sound;
 using Huragok.Utilities.Sound;
 
@@ -34,7 +35,11 @@ namespace Huragok.Data.Tags {
                 foreach (var perm in range.permutations) {
                     if (perm.rawSampleData.sample == null || perm.rawSampleData.sample.SampleBytes == null) continue;
                     if (perm.rawSampleData.sample.SampleBytes.Length == 0) continue;
-                    byte[] data = VorbisConverter.ConvertOGGTo(perm.rawSampleData.sample.SampleBytes, fileType).Result;
+
+                    if (!perm.rawSampleData.sample.RebuildAsStandardFileFormat(out byte[]? rawSampleBytes, out _))
+                        throw new Exception($"Failed to rebuild sample for {perm.name}.");
+
+                    byte[] data = VorbisConverter.ConvertOGGTo(rawSampleBytes, fileType).Result;
 
                     string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.rawSampleData.samplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null
