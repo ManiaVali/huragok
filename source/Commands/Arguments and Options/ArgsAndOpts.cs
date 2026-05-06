@@ -63,6 +63,12 @@ namespace Huragok.Commands.Base {
         /// </summary>
         internal static readonly Option<string> CoordinateSystem =
             new(["--coordinate-system", "--coords"], "Used to specify the coordinate system 3D data will be represented in. One of `blam`, `jms` or `metric` (default).");
+
+        /// <summary>
+        /// Passing this flag causes messages below the severity specified to not be displayed.
+        /// </summary>
+        internal static readonly Option<string> LogLevel =
+            new(["--log-level"], "Passing this flag causes messages below the severity specified to not be displayed. One of `debug`, `info` (default), `warning`, or `error`.");
     }
 
     /// <summary>

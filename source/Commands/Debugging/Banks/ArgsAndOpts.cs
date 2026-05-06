@@ -1,4 +1,4 @@
-
+#if DEBUG
 using System.CommandLine;
 
 namespace Huragok.Commands.Debug {
@@ -7,3 +7,4 @@ namespace Huragok.Commands.Debug {
             new("path-to-a-fmod-bank", "Sound bank to enumerate.");
     }
 }
+#endif

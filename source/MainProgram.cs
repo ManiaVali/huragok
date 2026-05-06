@@ -4,22 +4,23 @@
 global using static Huragok.MainProgram;
 using System.CommandLine;
 using Huragok.Configuration;
-using Huragok.Utilities;
 using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
 using Huragok.Utilities.Serializer;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using Huragok.Utilities;
 
 namespace Huragok {
     internal static class MainProgram {
         internal static string originalWorkingDirectory = string.Empty;
         internal static DataSerializationFormat defaultSerializationFormat;
+        internal static LoggingLevel globalLogLevel;
 
         /// <summary>
         /// CLI entry point
         /// </summary>
         private static async Task<int> Main(string[] args) {
-                RootCommand rootCmd = new($"Helper program for extracting and converting data from the Halo engine into formats other programs can understand.\n{GlobalConstants.ENGINE_PRETTY_NAME} build.");
+                RootCommand rootCmd = new($"Helper program for extracting and converting data from the Halo engine into formats other programs can understand.\n {GlobalConstants.ENGINE_PRETTY_NAME} build.");
                 originalWorkingDirectory = Environment.CurrentDirectory;
 
 #if !USING_BLAM_HR
@@ -29,7 +30,9 @@ namespace Huragok {
                 rootCmd.AddCommand(Commands.Serialize.Base.Register());
                 rootCmd.AddCommand(Commands.Export.Base.Register());
                 rootCmd.AddCommand(Commands.Preview.Base.Register());
+                #if DEBUG
                 rootCmd.AddCommand(Commands.Debug.Base.Register());
+                #endif
 
                 var configOption = CommonArgsAndOpts.ConfigFile;
                 rootCmd.AddOption(configOption);
@@ -37,8 +40,20 @@ namespace Huragok {
                 var serializerFmtOption = CommonArgsAndOpts.SerializerFormat;
                 rootCmd.AddOption(serializerFmtOption);
 
+                var logLevelOption = CommonArgsAndOpts.LogLevel;
+                rootCmd.AddOption(logLevelOption);
+
                 var parseResult = rootCmd.Parse(args);
                 string configArgPath = parseResult.GetValueForOption(configOption) ?? "";
+
+                string logLevelString = parseResult.GetValueForOption(logLevelOption) ?? "info";
+                globalLogLevel = logLevelString.ToLower() switch {
+                    "debug" => LoggingLevel.Debug,
+                    "info" => LoggingLevel.Info,
+                    "warning" => LoggingLevel.Warning,
+                    "error" => LoggingLevel.Error,
+                    _ => throw new ArgumentException($"Invalid log level: {logLevelString}")
+                };
 
                 string fmt = parseResult.GetValueForOption(serializerFmtOption) ?? "json";
                 defaultSerializationFormat = fmt?.ToLower() switch {

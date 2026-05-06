@@ -1,3 +1,4 @@
+#if DEBUG
 using System.CommandLine;
 using Huragok.Utilities.Sound;
 
@@ -38,3 +39,4 @@ namespace Huragok.Commands.Debug {
         }
     }
 }
+#endif

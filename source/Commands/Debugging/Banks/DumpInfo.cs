@@ -1,3 +1,4 @@
+#if DEBUG
 using System.CommandLine;
 using System.Reflection;
 using Huragok.Utilities.Sound;
@@ -23,7 +24,9 @@ namespace Huragok.Commands.Debug {
             return cmd;
         }
 
-        private static void DumpFSBInfoContent(string infoFile) {
+        private static void DumpFSBInfoContent(string bankPath) {
+            string infoFile = Path.ChangeExtension(bankPath, "fsb.info");
+            
             var method = typeof(FSBExplorer).GetMethod("TryReadInfoFile", BindingFlags.NonPublic | BindingFlags.Static);
             string[] result = (string[]?)method!.Invoke(null, new object[] { infoFile }) ?? Array.Empty<string>();
 
@@ -33,3 +36,4 @@ namespace Huragok.Commands.Debug {
         }
     }
 }
+#endif

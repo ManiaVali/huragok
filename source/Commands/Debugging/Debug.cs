@@ -1,6 +1,5 @@
-
+#if DEBUG
 using System.CommandLine;
-using Huragok.Commands.Base;
 using Huragok.Utilities;
 
 namespace Huragok.Commands.Debug {
@@ -21,3 +20,4 @@ namespace Huragok.Commands.Debug {
         }
     }
 }
+#endif
