@@ -41,7 +41,7 @@ namespace Huragok.Commands.Base {
         /// <para>WARNING: Tags are not directly exported here; the original tags-relative path is recreated under this directory.</para>
         /// </summary>
         public static readonly Option<string> OutDir =
-            new(["--out-directory", "--out-dir", "-o"], "Path to the directory to output to, not including file name or extension.");
+            new(["--out-directory", "--out-dir", "-o"], "Path to the directory to output to, not including file name or extension.") { IsRequired = true };
 
         /// <summary>
         /// <para>Optional path to a valid configuration file.</para>
