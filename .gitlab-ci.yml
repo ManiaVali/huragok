@@ -41,7 +41,9 @@ publish:
     - dotnet publish -c Release -r win-x64 -o publish-$BLAM_VARIANT -p:BlamVariant=$BLAM_VARIANT --no-restore --no-self-contained Huragok.csproj
 
     - apt-get update && apt-get install -y zip curl
-    - zip -r Huragok-$VERSION-$BLAM_VARIANT.zip publish-$BLAM_VARIANT/
+    - cd publish-$BLAM_VARIANT
+    - zip -r ../Huragok-$VERSION-$BLAM_VARIANT.zip .
+    - cd ..
 
     - echo "VERSION=$VERSION"
     - echo "BLAM_VARIANT=$BLAM_VARIANT"
