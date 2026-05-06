@@ -32,8 +32,9 @@ namespace Huragok.Data.Tags {
 
             foreach (var range in this.PitchRanges) {
                 foreach (var perm in range.permutations) {
-                    if (perm.rawSampleData.bytes.Length == 0) continue;
-                    byte[] data = VorbisConverter.ConvertOGGTo(perm.rawSampleData.bytes, fileType).Result;
+                    if (perm.rawSampleData.sample == null || perm.rawSampleData.sample.SampleBytes == null) continue;
+                    if (perm.rawSampleData.sample.SampleBytes.Length == 0) continue;
+                    byte[] data = VorbisConverter.ConvertOGGTo(perm.rawSampleData.sample.SampleBytes, fileType).Result;
 
                     string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.rawSampleData.samplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null

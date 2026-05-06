@@ -28,7 +28,7 @@ namespace Huragok.Data.IntermediateFormats.Sound {
         internal float lengthSeconds;
         internal IF_PitchRange belongsToRange;
 
-        internal readonly (byte[] bytes, string samplePath) rawSampleData;
+        internal readonly (Fmod5Sharp.FmodTypes.FmodSample sample, string samplePath) rawSampleData;
 
         internal IF_SoundPermutation(TagFieldBlockElement permutationElement, IF_PitchRange range) {
             this.index = permutationElement.ElementIndex;
@@ -41,14 +41,11 @@ namespace Huragok.Data.IntermediateFormats.Sound {
 
             this.lengthSeconds = sampleInfo.SampleDuration;
 
-            (byte[] data, string name, string originalSamplePath) sampleData = (Array.Empty<byte>(), string.Empty, string.Empty);
             try {
-                sampleData = FSBExplorer.FindSample(this);
+                this.rawSampleData = FSBExplorer.FindInBank(this);
             } catch (Exception e) {
                 Logger.Error($"Error in {nameof(IF_SoundPermutation)} constructor for {this.name}: {e.Message}");
             }
-
-            this.rawSampleData = (sampleData.data, sampleData.originalSamplePath);
         }
     }
 

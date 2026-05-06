@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.Reflection;
 using Huragok.Commands.Base;
 using Huragok.Data.Tags;
 using Huragok.ManagedBlam;
@@ -74,8 +75,8 @@ namespace Huragok.Commands.Preview {
                 var permutation = range.permutations[permutationIndex];
 
                 var player = new VorbisSoundPlayer();
-                player.Load(permutation.rawSampleData.bytes, loop);
 
+                player.Load(permutation.rawSampleData.sample.SampleBytes, loop);
                 player.Play();
 
                 bool paused = false;

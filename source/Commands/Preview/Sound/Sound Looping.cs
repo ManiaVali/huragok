@@ -124,7 +124,7 @@ namespace Huragok.Commands.Preview {
                         case PlaybackPhase.In:
                             if (inClip != null) {
                                 if (player.State == PlaybackState.Stopped && !startedIn) {
-                                    player.Load(inClip.PitchRanges[0].permutations[0].rawSampleData.bytes);
+                                    player.Load(inClip.PitchRanges[0].permutations[0].rawSampleData.sample.SampleBytes);
                                     player.Play();
                                     startedIn = true;
                                 } else if (startedIn && player.State == PlaybackState.Stopped) {
@@ -137,7 +137,7 @@ namespace Huragok.Commands.Preview {
 
                         case PlaybackPhase.Loop:
                             if (player.State == PlaybackState.Stopped && !exitTransitionRequested) {
-                                player.Load(loopClip!.PitchRanges[0].permutations[0].rawSampleData.bytes, looping: true);
+                                player.Load(loopClip!.PitchRanges[0].permutations[0].rawSampleData.sample.SampleBytes, looping: true);
                                 player.Play();
                             }
 
@@ -156,7 +156,7 @@ namespace Huragok.Commands.Preview {
                         case PlaybackPhase.Out:
                             if (outClip != null) {
                                 if (player.State == PlaybackState.Stopped && !startedOut) {
-                                    player.Load(outClip.PitchRanges[0].permutations[0].rawSampleData.bytes);
+                                    player.Load(outClip.PitchRanges[0].permutations[0].rawSampleData.sample.SampleBytes);
                                     player.Play();
                                     startedOut = true;
                                 } else if (startedOut && player.State == PlaybackState.Stopped) {
