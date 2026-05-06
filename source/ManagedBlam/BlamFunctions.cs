@@ -23,7 +23,7 @@ namespace Huragok.ManagedBlam {
             if (!Directory.Exists(TagsFolderPath)) throw new InvalidBlamProjectException($"Tags folder in {editingKitPath} does not appear to exist.\nDid you forget to extract them?");
             if (!Directory.EnumerateFileSystemEntries(TagsFolderPath).Any()) throw new InvalidBlamProjectException($"Tags folder in {editingKitPath} is empty!");
             if (projectInitialized) {
-                Console.Error.WriteLine("nonfatal: ignoring request to initialize Blam; already running.");
+                Logger.Warning("Ignoring request to initialize Blam; already running.");
                 return;
             }
 
@@ -37,7 +37,7 @@ namespace Huragok.ManagedBlam {
 
         internal static void Teardown() {
             if (!projectInitialized) {
-                Console.Error.WriteLine("nonfatal: ignoring request to terminate Blam; not running.");
+                Logger.Error("Cannot shut down ManagedBlam when it's not running!");
                 return;
             }
 

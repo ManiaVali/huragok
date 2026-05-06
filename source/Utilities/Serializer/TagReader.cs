@@ -1,7 +1,7 @@
 using System.Numerics;
 using Huragok.Data.IntermediateFormats;
 
-namespace Huragok.Serializer {
+namespace Huragok.Utilities.Serializer {
     /// <summary>
     /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="DataSerializer"/>.</para>
     /// <para>Should not be used when constructing tags for export, as it processes the entire tag when we rarely need that.</para>

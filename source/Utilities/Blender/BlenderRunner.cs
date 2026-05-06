@@ -35,9 +35,6 @@ namespace Huragok.Utilities.Blender {
 
             blender.WaitForExit();
             if (blender.ExitCode != 0) {
-                Console.WriteLine(stdOut);
-                Console.Error.WriteLine(stdErr);
-
                 if (File.Exists(outFbxLocation)) File.Delete(outFbxLocation);
                 throw new Exception($"Blender failed to convert to FBX!");
             }

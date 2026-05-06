@@ -48,15 +48,17 @@ namespace Huragok.Commands.Preview {
 
         private static void PreviewSoundFile(string soundTagFilepath, int rangeIndex, int permutationIndex, bool loop) {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                Panic(CommonConstants.NO_VALID_TAGS, CommonConstants.NO_TAGS_CODE);
+                throw new Exception(CommonConstants.NO_VALID_TAGS);
 
             BlamFunctions.InitializeBlam();
 
             try {
-                if (string.IsNullOrWhiteSpace(soundTagFilepath)) Panic($"Sound preview failed; tag path is null!");
+                if (string.IsNullOrWhiteSpace(soundTagFilepath)) 
+                    throw new ArgumentNullException(nameof(soundTagFilepath));
 
                 var tagPath = TagPath.FromPathAndExtension(BlamFunctions.GetValidTagPath(soundTagFilepath), "sound");
-                if (!BlamFunctions.ValidateTag(tagPath, "sound")) Panic($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
+                if (!BlamFunctions.ValidateTag(tagPath, "sound")) 
+                    throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
 
                 string tagRelPath = BlamFunctions.GetValidTagPath(soundTagFilepath);
 
@@ -64,11 +66,11 @@ namespace Huragok.Commands.Preview {
                 using var soundTag = new SoundTag(soundTagPath);
 
                 if (rangeIndex > soundTag.PitchRanges.Count - 1)
-                    Panic($"Pitch range index too large! Sound tag only has {soundTag.PitchRanges.Count} range(s)!", 1);
+                    throw new IndexOutOfRangeException($"Pitch range index too large! Sound tag only has {soundTag.PitchRanges.Count} range(s)!");
                 var range = soundTag.PitchRanges[rangeIndex];
 
                 if (permutationIndex > range.permutations.Count - 1)
-                    Panic($"Permutation index too large! Pitch range {range.index} only has {range.permutations.Count} range(s)!", 1);
+                    throw new IndexOutOfRangeException($"Permutation index too large! Pitch range {range.index} only has {range.permutations.Count} range(s)!");
                 var permutation = range.permutations[permutationIndex];
 
                 var player = new VorbisSoundPlayer();
@@ -79,7 +81,7 @@ namespace Huragok.Commands.Preview {
                 bool paused = false;
                 while (true) {
                     Console.CursorVisible = false;
-                    WriteFullLine($"\r> sound preview: [space] {(paused ? "resume" : "pause")}, [left arrow] reset, [esc] exit -- ({player.ProgressInteger}%{(paused ? ", paused" : "")})");
+                    Logger.Message($"\r> sound preview: [space] {(paused ? "resume" : "pause")}, [left arrow] reset, [esc] exit -- ({player.ProgressInteger}%{(paused ? ", paused" : "")})", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
 
                     if (Console.KeyAvailable) {
                         var key = Console.ReadKey(true);
@@ -101,14 +103,14 @@ namespace Huragok.Commands.Preview {
 
                             case ConsoleKey.Escape:
                                 player.Dispose();
-                                WriteFullLine("\r> sound preview: exited.");
+                                Logger.Message("\r> sound preview: exited.", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
                                 return;
                         }
                     }
 
                     if (player.State == PlaybackState.Stopped) {
                         player.Dispose();
-                        WriteFullLine("\r> sound preview: reached end of audio sample.");
+                        Logger.Message("\r> sound preview: reached end of audio sample.", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
                         return;
                     }
 

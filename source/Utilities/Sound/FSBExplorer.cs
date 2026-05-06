@@ -31,15 +31,15 @@ namespace Huragok.Utilities.Sound {
 #pragma warning restore CS0618
 
         internal static (byte[] RawData, string Format, string samplePath) FindSample(string soundTagPath, string permSampleName) {
-            var indexInBank = GetIndexInBank(soundTagPath, permSampleName)
-                ?? throw new Exception($"Failed to get sound `{soundTagPath}::{permSampleName}` in sound banks.");
+            var (index, bankPath, soundPathFromInfo) = GetIndexInBank(soundTagPath, permSampleName)
+                ?? throw new Exception($"Failed to get sound `{soundTagPath}::{permSampleName}` in sound banks. The sample was not extracted.");
 
-            var soundBank = GetBank(indexInBank.bankPath);
+            var soundBank = GetBank(bankPath);
             var samples = soundBank.Samples;
-            var finalSample = samples[indexInBank.index];
+            var finalSample = samples[index];
 
             if (finalSample is null || string.IsNullOrWhiteSpace(finalSample.Name))
-                throw new Exception($"Found sample for `{soundTagPath}::{permSampleName}` in banks, but failed to extract it.");
+                throw new Exception($"Found sample for `{soundTagPath}::{permSampleName}` in banks, but failed to extract it for some reason.");
 
             finalSample.RebuildAsStandardFileFormat(out byte[]? finalBytes, out string? fileExtension);
 
@@ -47,7 +47,7 @@ namespace Huragok.Utilities.Sound {
                 throw new Exception($"Failed to get sample for `{soundTagPath}::{permSampleName}` from FMOD bank; final bytes or extension was null!");
             }
 
-            return (finalBytes, fileExtension, indexInBank.soundPathFromInfo);
+            return (finalBytes, fileExtension, soundPathFromInfo);
         }
 
         internal static (byte[] RawData, string Format, string samplePath) FindSample(IF_SoundPermutation soundPermutation) {
@@ -87,7 +87,7 @@ namespace Huragok.Utilities.Sound {
             return outList;
         }
 
-        private static (int index, string bankPath, string soundPathFromInfo)? GetIndexInBank(string soundTagPath, string permSampleName) {
+        private static (int index, string bankPath, string soundPathFromInfo)? GetIndexInBank(string soundTagPath, string permSampleName, bool allowFuzzyFinding = true) {
             var fullList = AllFiles;
             
             bool badIndexWarn = false;
@@ -105,6 +105,9 @@ namespace Huragok.Utilities.Sound {
                     //      GetFSBList's decoding of the FSB info file.
                     int bestMatchIndex = i;
                     if (entryName != permSampleName && !entryName.Contains(permSampleName)) {
+                        if (!allowFuzzyFinding)
+                            throw new Exception($"Wrong sample selected for permutation `{permSampleName}` on sound `{Path.GetFileName(soundTagPath)}` and automatic correction is disabled. The sample was not extracted.");
+
                         const int CHECK_SURROUNDING_LENGTH = 5;
                         var surroundingRange = Enumerable.Range(
                             Math.Max(0, i - CHECK_SURROUNDING_LENGTH),
@@ -119,9 +122,7 @@ namespace Huragok.Utilities.Sound {
                                 continue;
 
                             if (!badIndexWarn) {
-                                // Console.Error.WriteLine($"WARNING: While extracting audio permutation `{permSampleName}` on `{Path.GetFileName(soundTagPath)}`, it appeared that the wrong sample was initially selected for extraction. " +
-                                //     $"{GlobalConstants.PROGRAM_NAME} attempted to correct this, and found a sample nearby which better matched. Verify that the sample extracted " +
-                                //     $"contains the expected audio.");
+                                Logger.Debug($"Wrong sample selected for permutation `{permSampleName}` on sound `{Path.GetFileName(soundTagPath)}`; correction seemed to work.");
                                 badIndexWarn = true;
                             }
                             bestMatchIndex = idx;
@@ -133,8 +134,7 @@ namespace Huragok.Utilities.Sound {
 
                     // After attempting to correct, if the sample is still wrong, give up.
                     if (fileList[bestMatchIndex] != permSampleName && !fileList[bestMatchIndex].Contains(permSampleName)) {
-                        throw new Exception($"While extracting audio permutation `{permSampleName}` on `{Path.GetFileName(soundTagPath)}`, it appeared that the wrong sample was initially selected for extraction. " +
-                            $"{GlobalConstants.PROGRAM_NAME} attempted to correct this, but could not find any samples nearby which better matched. The sound tag was not extracted.");
+                        Logger.Error($"Uncorrectable sample confusion occurred while extracting `{permSampleName}` on `{Path.GetFileName(soundTagPath)}`. The sample was not extracted.");
                     }
 
                     if (entry.Contains(parent) && entry.Contains(parentOfParent)) {

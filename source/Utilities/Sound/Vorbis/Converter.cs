@@ -48,7 +48,7 @@ namespace Huragok.Utilities.Sound {
             Directory.CreateDirectory(ffmpegPath);
 
             if (!File.Exists(Path.Combine(ffmpegPath, "ffmpeg.exe"))) {
-                WriteFullLine("Downloading ffmpeg portable.. please wait.");
+                Logger.Message("Downloading ffmpeg portable.. please wait.", LoggerNewlineFormat.ReplaceLast);
                 await FFMpegDownloader.DownloadBinaries(
                     FFMpegCore.Extensions.Downloader.Enums.FFMpegVersions.LatestAvailable,
                     FFMpegCore.Extensions.Downloader.Enums.FFMpegBinaries.FFMpeg,

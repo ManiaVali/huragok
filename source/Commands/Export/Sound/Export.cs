@@ -48,7 +48,7 @@ namespace Huragok.Commands.Export {
 
         private static void DumpSoundTagData(IEnumerable<string> tagFilePaths, string outDirectory, SoundOutExtension extension) {
             if (!tagFilePaths.Any()) {
-                Console.Error.WriteLine("Error: No files provided -- there is nothing to do.\n   If using `--directory` or `--folder`, pass `--recurse` to look in subdirectories.");
+                Logger.Message("No files provided -- there is nothing to do.\n   If using `--directory` or `--folder`, pass `--recurse` to look in subdirectories.");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace Huragok.Commands.Export {
 
                 soundTag.TryExportToDisk(outDirectory, extension, out var finalOutPaths);
                 foreach (string finalOutPath in finalOutPaths) {
-                    Console.WriteLine(Path.GetFullPath(finalOutPath));
+                    Logger.Message($"Saved file to `{Path.GetFullPath(finalOutPath)}`");
                 }
             }
 

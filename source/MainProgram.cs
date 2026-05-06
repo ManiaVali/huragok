@@ -3,10 +3,12 @@
 
 global using static Huragok.MainProgram;
 using System.CommandLine;
-using Huragok.Serializer;
 using Huragok.Configuration;
 using Huragok.Utilities;
 using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
+using Huragok.Utilities.Serializer;
+using System.CommandLine.Builder;
+using System.CommandLine.Parsing;
 
 namespace Huragok {
     internal static class MainProgram {
@@ -16,13 +18,12 @@ namespace Huragok {
         /// <summary>
         /// CLI entry point
         /// </summary>
-        private static int Main(string[] args) {
-            try {
+        private static async Task<int> Main(string[] args) {
                 RootCommand rootCmd = new($"Helper program for extracting and converting data from the Halo engine into formats other programs can understand.\n{GlobalConstants.ENGINE_PRETTY_NAME} build.");
                 originalWorkingDirectory = Environment.CurrentDirectory;
 
 #if !USING_BLAM_HR
-                throw new NotImplementException($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
+                Panic($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
 #endif
 
                 rootCmd.AddCommand(Commands.Serialize.Base.Register());
@@ -47,28 +48,27 @@ namespace Huragok {
 
                 if (!string.IsNullOrEmpty(configArgPath)) ConfigurationReader.configFileLocation = configArgPath;
 
-                return rootCmd.Invoke(args);
-            } catch (Exception ex) {
-                Console.Error.WriteLine($"{GlobalConstants.PROGRAM_NAME} has encountered a fatal error: {ex.Message}");
-                return 1;
-            }
+                var builder = new CommandLineBuilder(rootCmd)
+                    .UseDefaults()
+                    .UseExceptionHandler((ex, context) => {
+                        Logger.Error("Fatal error: " + ex.Message, fatal: true);
+                        #if DEBUG
+                        Logger.Debug("BEGIN STACK TRACE");
+                        Console.WriteLine(ex.StackTrace);
+                        Logger.Debug("END OF STACK TRACE");
+                        #endif
+                        context.ExitCode = 1;
+                });
+
+                return await builder.Build().InvokeAsync(args);
         }
 
 
-        internal static void Panic(string panicMessage, sbyte exitCode = 1) {
-            if (!string.IsNullOrWhiteSpace(panicMessage))
-                Console.Error.WriteLine(panicMessage);
+        // internal static void Panic(string panicMessage, sbyte exitCode = 1) {
+        //     if (!string.IsNullOrWhiteSpace(panicMessage))
+        //         Logger.Error("Fatal error: " + panicMessage, fatal: true);
 
-            Environment.Exit(exitCode);
-        }
-
-        internal static void WriteFullLine(string content) {
-            int width = Console.WindowWidth;
-
-            if (content.Length > width)
-                content = content[..width];
-
-            Console.Write(content.PadRight(width));
-        }
+        //     Environment.Exit(exitCode);
+        // }
     }
 }

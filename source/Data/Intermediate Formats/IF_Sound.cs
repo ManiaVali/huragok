@@ -45,7 +45,7 @@ namespace Huragok.Data.IntermediateFormats.Sound {
             try {
                 sampleData = FSBExplorer.FindSample(this);
             } catch (Exception e) {
-                Console.Error.WriteLine($"Error: {e.Message}");
+                Logger.Error($"Error in {nameof(IF_SoundPermutation)} constructor for {this.name}: {e.Message}");
             }
 
             this.rawSampleData = (sampleData.data, sampleData.originalSamplePath);

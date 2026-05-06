@@ -99,13 +99,13 @@ namespace Huragok.Data.Tags {
                     var bounds = new IF_CompressionBounds((TagFieldBlockElement)compBoundsBlock);
 
                     if (perm.meshIndex >= 0 && !this.meshesByIndex.ContainsKey((int)perm.meshIndex)) {
-                        Console.Error.WriteLine($"Error: {this.sourceTag.Path.ShortNameWithExtension}: Missing mesh index on region `{region.name}`, permutation `{perm.name}`!");
+                        Logger.Warning($"{this.sourceTag.Path.ShortNameWithExtension}: Missing mesh index on region `{region.name}`, permutation `{perm.name}`!");
                         continue;
                     }
 
                     if (!this.meshesByIndex.TryGetValue((int)perm.meshIndex, out var mesh)) {
                         if (perm.meshIndex != -1) { // Silently ignore -1, this is used intentionally as a no-op value by Bungie.
-                            Console.Error.WriteLine($"Warning: {this.sourceTag.Path.ShortNameWithExtension}: Invalid mesh index `{perm.meshIndex}` on region `{region.name}` permutation `{perm.name}`!");
+                            Logger.Warning($"{this.sourceTag.Path.ShortNameWithExtension}: Invalid mesh index `{perm.meshIndex}` on region `{region.name}` permutation `{perm.name}`!");
                         }
                         continue;
                     }
@@ -146,7 +146,7 @@ namespace Huragok.Data.Tags {
 
             switch (fileExtension) {
                 case RenderModelFormat.OBJ:
-                    Console.Error.WriteLine("WARNING: Writing output file as OBJ. You will lose armature rigging with this format.");
+                    Logger.Warning("Writing output file as OBJ. You will lose armature rigging with this format.");
                     this.ModelData.SaveAsWavefront(finalFileLocation);
                     break;
                 case RenderModelFormat.GLB:
@@ -156,7 +156,7 @@ namespace Huragok.Data.Tags {
                     this.ModelData.SaveFBX(finalFileLocation);
                     break;
                 default:
-                    Console.Error.WriteLine($"nonfatal: unexpected export format `{fileExtension}`; defaulting to GLB.");
+                    Logger.Warning($"Unexpected export format `{fileExtension}`; defaulting to GLB.");
                     this.ModelData.SaveGLB(finalFileLocation);
                     break;
             }

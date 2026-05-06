@@ -17,7 +17,7 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         /// <summary>
         /// List of all nodes whose parent is this node.
         /// </summary>
-        internal List<IF_ArmatureNode>? children;
+        internal List<IF_ArmatureNode>? children = new();
 
         /// <summary>
         /// A <see cref="Position3d"/> representing this nodes translation from its parent.

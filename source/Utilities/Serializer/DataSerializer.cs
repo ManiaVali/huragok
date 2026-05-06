@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Huragok.Serializer {
+namespace Huragok.Utilities.Serializer {
     internal enum DataSerializationFormat {
         JSON,
         YAML
