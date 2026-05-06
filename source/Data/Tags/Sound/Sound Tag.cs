@@ -1,9 +1,12 @@
 
 using Huragok.Data.IntermediateFormats.Sound;
+using Huragok.Utilities.Sound;
 
 namespace Huragok.Data.Tags {
     public enum SoundOutExtension {
-        OGG
+        OGG,
+        WAV,
+        MP3
     }
 
     public sealed class SoundTag : BaseTag<SoundOutExtension> {
@@ -23,18 +26,20 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region Export Funcs
-        public override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileExtension, out List<string> finalFileLocations) {
-            string extension = fileExtension.ToString().ToLower() ?? "ogg";
+        public override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileType, out List<string> finalFileLocations) {
+            string extension = fileType.ToString().ToLower() ?? "ogg";
             List<string> outPaths = new();
 
             foreach (var range in this.PitchRanges) {
                 foreach (var perm in range.permutations) {
                     if (perm.rawSampleData.bytes.Length == 0) continue;
+                    byte[] data = VorbisConverter.ConvertOGGTo(perm.rawSampleData.bytes, fileType).Result;
+
                     string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.rawSampleData.samplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? outputDirectory);
                     
-                    File.WriteAllBytes(outPath, perm.rawSampleData.bytes);
+                    File.WriteAllBytes(outPath, data);
                     outPaths.Add(outPath);
                 }
             }

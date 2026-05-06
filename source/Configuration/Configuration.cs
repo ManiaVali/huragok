@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FFMpegCore;
 using Huragok.ManagedBlam;
 using Huragok.Utilities;
 
@@ -54,13 +55,15 @@ namespace Huragok.Configuration {
                 throw new ArgumentNullException($"{CONF_PARSE_ERR}: Key for `{GlobalConstants.ENGINE_PRETTY_NAME}` is missing or empty in configuration file.");
 
             if (!Directory.Exists(configurationObject.ProjectPath))
-                    throw new DirectoryNotFoundException($"{CONF_PARSE_ERR}: The editing kit location specified in key for `{GlobalConstants.ENGINE_PRETTY_NAME}` does not appear to exist.");
+                throw new DirectoryNotFoundException($"{CONF_PARSE_ERR}: The editing kit location specified in key for `{GlobalConstants.ENGINE_PRETTY_NAME}` does not appear to exist.");
 
             if (string.IsNullOrWhiteSpace(configurationObject.MCCInstallPath))
                 throw new ArgumentNullException($"{CONF_PARSE_ERR}: Key for MCC Install Path is missing or empty in configuration file.");
 
             if (!Directory.Exists(configurationObject.MCCInstallPath))
-                    throw new DirectoryNotFoundException($"{CONF_PARSE_ERR}: The MCC install location specified in configuration file does not appear to exist.");            
+                throw new DirectoryNotFoundException($"{CONF_PARSE_ERR}: The MCC install location specified in configuration file does not appear to exist.");
+
+            GlobalFFOptions.Configure(new FFOptions { BinaryFolder = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "utils", "ffmpeg")) });
 
             _configuration = configurationObject;
             return configurationObject;

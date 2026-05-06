@@ -1,5 +1,4 @@
 
-using Fmod5Sharp.FmodTypes;
 using Huragok.Data.Tags;
 using Huragok.Utilities.Sound;
 
@@ -50,6 +49,53 @@ namespace Huragok.Data.IntermediateFormats.Sound {
             }
 
             this.rawSampleData = (sampleData.data, sampleData.originalSamplePath);
+        }
+    }
+
+    public sealed class IF_Track : IDisposable {
+        public int index;
+
+        public SoundTag? soundIn;
+        public SoundTag? soundLoop;
+        public SoundTag? soundOut;
+        public SoundTag? soundAltTransIn;
+        public SoundTag? soundAltLoop;
+        public SoundTag? soundAltTransOut;
+        public SoundTag? soundAltOut;
+
+        public IF_Track(TagFieldBlockElement trackBlockElement) {
+            this.index = trackBlockElement.ElementIndex;
+
+            var soundInRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:in").Path;
+            if (soundInRef is not null) this.soundIn = new SoundTag(soundInRef);
+
+            var soundLoopRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:loop").Path;
+            if (soundLoopRef is not null) this.soundLoop = new SoundTag(soundLoopRef);
+
+            var soundOutRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:out").Path;
+            if (soundOutRef is not null) this.soundOut = new SoundTag(soundOutRef);
+
+            var soundAltTransInRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:alt trans in").Path;
+            if (soundAltTransInRef is not null) this.soundAltTransIn = new SoundTag(soundAltTransInRef);
+
+            var soundAltLoop = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:alt loop").Path;
+            if (soundAltLoop is not null) this.soundAltLoop = new SoundTag(soundAltLoop);
+
+            var soundAltTransOutRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:alt trans out").Path;
+            if (soundAltTransOutRef is not null) this.soundAltTransOut = new SoundTag(soundAltTransOutRef);
+
+            var soundAltOutRef = trackBlockElement.SelectFieldType<TagFieldReference>("Reference:alt out").Path;
+            if (soundAltOutRef is not null) this.soundAltOut = new SoundTag(soundAltOutRef);
+        }
+
+        public void Dispose() {
+            this.soundIn?.Dispose();
+            this.soundLoop?.Dispose();
+            this.soundOut?.Dispose();
+            this.soundAltTransIn?.Dispose();
+            this.soundAltLoop?.Dispose();
+            this.soundAltTransOut?.Dispose();
+            this.soundAltOut?.Dispose();
         }
     }
 }

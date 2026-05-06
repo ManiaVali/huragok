@@ -5,7 +5,6 @@ using Huragok.ManagedBlam;
 using CommonArgsAndOpts = Huragok.Commands.Base.ArgsAndOpts;
 
 namespace Huragok.Commands.Export {
-
     internal static class Sound {
         internal static Command Register() {
             // Command Setup
@@ -22,22 +21,32 @@ namespace Huragok.Commands.Export {
                 allowListFile: true
             );
             cmd.AddTagInput(tagHandler);
-            var outDirArg = CommonArgsAndOpts.OutDir;
-            cmd.AddOption(outDirArg);
+            var outDirOpt = CommonArgsAndOpts.OutDir;
+            cmd.AddOption(outDirOpt);
+            var outFormatOption = ArgsAndOpts.AudioFormatOption;
+            cmd.AddOption(outFormatOption);
 
             // Command Handler
             cmd.SetHandler(ctx => {
                 var tagInputContext = ctx.ParseResult.Resolve(tagHandler);
                 var tagList = tagInputContext.Paths.Where(f => Path.GetExtension(f).Equals(".sound", StringComparison.OrdinalIgnoreCase));
-                string outDirectory = ctx.ParseResult.GetValueForOption(outDirArg) ?? throw new ArgumentException($"Output path cannot be null.");
+                string outDirectory = ctx.ParseResult.GetValueForOption(outDirOpt) ?? throw new ArgumentException($"Output path cannot be null.");
+                string outFmt = ctx.ParseResult.GetValueForOption(outFormatOption)?.ToLower() ?? "ogg";
 
-                DumpSoundTagData(tagList, outDirectory);
+                var extension = outFmt switch {
+                    "ogg" => SoundOutExtension.OGG,
+                    "wav" => SoundOutExtension.WAV,
+                    "mp3" => SoundOutExtension.MP3,
+                    _ => throw new ArgumentException($"Unsupported file format `{outFmt}`.")
+                };
+
+                DumpSoundTagData(tagList, outDirectory, extension);
             });
 
             return cmd;
         }
 
-        private static void DumpSoundTagData(IEnumerable<string> tagFilePaths, string outDirectory) {
+        private static void DumpSoundTagData(IEnumerable<string> tagFilePaths, string outDirectory, SoundOutExtension extension) {
             if (!tagFilePaths.Any()) {
                 Console.Error.WriteLine("Error: No files provided -- there is nothing to do.\n   If using `--directory` or `--folder`, pass `--recurse` to look in subdirectories.");
                 return;
@@ -58,7 +67,7 @@ namespace Huragok.Commands.Export {
                 var soundTagPath = TagPath.FromPathAndExtension(tagRelPath, "sound");
                 using var soundTag = new SoundTag(soundTagPath);
 
-                soundTag.TryExportToDisk(outDirectory, SoundOutExtension.OGG, out var finalOutPaths);
+                soundTag.TryExportToDisk(outDirectory, extension, out var finalOutPaths);
                 foreach (string finalOutPath in finalOutPaths) {
                     Console.WriteLine(Path.GetFullPath(finalOutPath));
                 }
