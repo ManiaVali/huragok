@@ -15,7 +15,9 @@ namespace Huragok.Data.Tags {
     internal abstract class BaseTag<TFileExt> : IDisposable where TFileExt : struct, Enum {
         internal readonly TagFile sourceTag;
         protected abstract string TagExtension { get; }
-        protected readonly string tagRelPath;
+        protected string TagRelPath => this.sourceTag.Path.RelativePath;
+        protected string TagName => Path.GetFileName(this.sourceTag.Path.RelativePathWithExtension);
+        protected string TagNameNoExtension => Path.ChangeExtension(this.TagName, null);
 
         private bool _disposed;
 
@@ -30,8 +32,6 @@ namespace Huragok.Data.Tags {
 
             var tagFile = new TagFile(tagPath); // No `using` -- manually disposed when we are
             this.sourceTag = tagFile;
-
-            this.tagRelPath = this.sourceTag.Path.RelativePath;
         }
 
         // TODO: Find a way to validate the tag data other than just its ext
@@ -40,7 +40,7 @@ namespace Huragok.Data.Tags {
         internal virtual bool TryExportToDisk(string outputDirectory, TFileExt fileExtension, out List<string> finalFileLocations) => throw new NotSupportedException($"Export of {this.GetType().Name} not supported!");
 
         internal virtual string BuildOutputPath(string outputDirectory, string extension) =>
-            Path.GetFullPath(Path.Combine(outputDirectory, Path.GetDirectoryName(this.tagRelPath) ?? "", $"{this.sourceTag.Path.ShortName}.{extension}"), MainProgram.originalWorkingDirectory);
+            Path.GetFullPath(Path.Combine(outputDirectory, Path.GetDirectoryName(this.TagRelPath) ?? "", $"{this.sourceTag.Path.ShortName}.{extension}"), MainProgram.originalWorkingDirectory);
 
         internal static TFileExt? StringToExtension(string extensionAsString) {
             if (Enum.TryParse<TFileExt>(extensionAsString, ignoreCase: true, out var result)) {

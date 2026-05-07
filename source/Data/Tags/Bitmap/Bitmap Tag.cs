@@ -33,14 +33,18 @@ namespace Huragok.Data.Tags {
             this.bitmapFlags = exportOptions;
 
             try {
+                Logger.Debug($"{this.TagName}: Building {nameof(GameBitmap)} ...");
                 using var gBitmap = new GameBitmap(this.sourceTag, sequenceIndex: 0, spriteFrameIndex: 0);
                 this.BitmapData = gBitmap.GetBitmap();
+                Logger.Debug($"{this.TagName}: Reading raw image data from tag ...");
             } catch (Exception e) {
                 throw new Exception($"Failed to build GameBitmap for `{this.sourceTag.Path.RelativePathWithExtension}`; {e.Message}");
             }
         }
 
         internal override bool TryExportToDisk(string outputDirectory, BitmapFormat fileExtension, out List<string> finalFileLocations) {
+            Logger.Debug($"{this.TagName}: Disk export requested.");
+            
             finalFileLocations = new();
 
             string extension = fileExtension.ToString().ToLowerInvariant();
@@ -58,10 +62,19 @@ namespace Huragok.Data.Tags {
             };
 
             if (this.IsCubeMap && this.bitmapFlags.HasFlag(BitmapExportFlags.CubemapsToSphere)) {
+                Logger.Debug($"{this.TagName}: Transforming cubemap to equirectangular format ...");
                 this.BitmapData = CubemapTools.ToEquirectangular(this.BitmapData);
             }
 
             if (this.IsNormalMap) {
+                bool willReconstructZ = this.bitmapFlags.HasFlag(BitmapExportFlags.ReconstructZ);
+                bool willFlipGreen = this.bitmapFlags.HasFlag(BitmapExportFlags.FlipGreen);
+
+                Logger.Debug(
+                    $"{this.TagName}: Processing normal map; {(willReconstructZ ? "will" : "will not")} reconstruct Z, " +
+                    $"{(willFlipGreen ? "will" : "will not")} flip green channel."
+                );
+
                 this.BitmapData = NormalBumpTools.ProcessNormalMap(
                     this.BitmapData,
                     this.bitmapFlags.HasFlag(BitmapExportFlags.ReconstructZ),

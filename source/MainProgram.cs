@@ -70,7 +70,8 @@ namespace Huragok {
                         Logger.Error("Fatal error: " + ex.Message, fatal: true);
                         #if DEBUG
                         Logger.Debug("BEGIN STACK TRACE");
-                        Console.WriteLine(ex.StackTrace);
+                        if (globalLogLevel <= LoggingLevel.Debug) 
+                            Console.WriteLine(ex.StackTrace);
                         Logger.Debug("END OF STACK TRACE");
                         #endif
                         context.ExitCode = 1;

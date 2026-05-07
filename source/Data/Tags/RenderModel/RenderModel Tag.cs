@@ -73,6 +73,7 @@ namespace Huragok.Data.Tags {
         }
 
         private void LoadModelData() {
+            Logger.Debug($"{this.TagName}: Reading model data ...");
             try {
                 this.ReadRegions();
                 this.ReadMeshes();
@@ -90,9 +91,13 @@ namespace Huragok.Data.Tags {
                 regions.Add(new IF_MeshRegion((TagFieldBlockElement)e));
             }
             this.regionsByIndex = regions.ToDictionary(r => r.index);
+
+            Logger.Debug($"{this.TagName}: Decoded {regions.Count} region(s).");
         }
 
         private void DecodeGeometry() {
+            Logger.Debug($"{this.TagName}: Beginning geometry decode ...");
+
             foreach (var region in this.regionsByIndex.Values) {
                 foreach (var perm in region.permutations) {
                     var compBoundsBlock = this.BlockCompressionInfo.Elements[0];
@@ -113,6 +118,8 @@ namespace Huragok.Data.Tags {
                     this.exportGeometries[perm.meshIndex] = new IF_MeshExportGeometry(this.BlockPerMeshTemp, perm, mesh, bounds, this.sourceTag.Path, this.distanceUnits);
                 }
             }
+
+            Logger.Debug($"{this.TagName}: Geometry decode complete.");
         }
 
         private void ReadMeshes() {
@@ -123,23 +130,30 @@ namespace Huragok.Data.Tags {
                 meshes.Add(new IF_Mesh((TagFieldBlockElement)e));
             }
             this.meshesByIndex = meshes.ToDictionary(m => (int)m.index);
+
+            Logger.Debug($"{this.TagName}: Decoded {meshes.Count} meshes.");
         }
 
         private void ReadMaterials() {
+            this.allMaterials.Clear();
+            this.shaderReferences.Clear();
+
             foreach (var mat in this.BlockMaterials.Cast<TagFieldBlockElement>()) {
                 var material = new IF_Material(mat);
                 this.allMaterials.Add(material);
                 this.shaderReferences.Add(material.renderMethodPath);
             }
+
+            Logger.Debug($"{this.TagName}: Render Model has {this.allMaterials.Count} materials and {this.shaderReferences.Count} shader references.");
         }
         #endregion
 
         #region Export Funcs
         internal override bool TryExportToDisk(string outputDirectory, RenderModelFormat fileExtension, out List<string> finalFileLocations) {
+            Logger.Debug($"{this.TagName}: Disk export requested.");
+
             string extension = fileExtension.ToString().ToLower();
             string finalFileLocation = this.BuildOutputPath(outputDirectory, extension);
-
-            this.LoadModelData();
 
             string? outDir = Path.GetDirectoryName(finalFileLocation);
             if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
@@ -168,6 +182,7 @@ namespace Huragok.Data.Tags {
 
         #region GLTF Construction
         private ModelRoot DumpGLTF() {
+            Logger.Debug($"{this.TagName}: Beginning GLTF model construction ...");
             var materialMap = new Dictionary<int, MaterialBuilder>();
             var scene = new SceneBuilder();
 
@@ -176,6 +191,7 @@ namespace Huragok.Data.Tags {
             scene.AddNode(skeletonRootNode);
 
             // Create all materials
+            Logger.Debug($"{this.TagName}: Assigning materials ...");
             for (int i = 0; i < this.allMaterials.Count; i++) {
                 var mat = this.allMaterials[i];
 
@@ -188,6 +204,7 @@ namespace Huragok.Data.Tags {
             }
 
             // Build the skeleton
+            Logger.Debug($"{this.TagName}: Constructing armature ...");
             var gltfNodes = new Dictionary<int, NodeBuilder>();
             foreach (var node in this.nodes) {
                 var gltfNode = new NodeBuilder($"bone:{node.name}");
@@ -212,6 +229,7 @@ namespace Huragok.Data.Tags {
             }
 
             // Set up skin weights
+            Logger.Debug($"{this.TagName}: Assigning bone weights ...");
             var jointNodes = new List<NodeBuilder>();
             var inverseBindMatrices = new List<Matrix4x4>();
 
@@ -314,6 +332,7 @@ namespace Huragok.Data.Tags {
                     scene.AddSkinnedMesh(mesh, joints);
                 }
             }
+            Logger.Debug($"{this.TagName}: GLTF model construction finished.");
             return scene.ToGltf2();
         }
         #endregion

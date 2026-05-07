@@ -28,6 +28,8 @@ namespace Huragok.Data.Tags {
 
         #region Export Funcs
         internal override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileType, out List<string> finalFileLocations) {
+            Logger.Debug($"{this.TagName}: Disk export requested.");
+            
             string extension = fileType.ToString().ToLower() ?? "ogg";
             List<string> outPaths = new();
 
