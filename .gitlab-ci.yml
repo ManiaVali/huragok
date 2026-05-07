@@ -81,10 +81,30 @@ release:
 
   script:
     - |
+      CHANGELOG=$(
+        awk '
+          /^## / {
+              gsub(/\r/, "")
+          }
+
+          $0 == "## $VERSION" {
+              capture=1
+              next
+          }
+
+          /^## / && capture {
+              exit
+          }
+
+          capture
+        ' CHANGELOG.md
+      )
+
+    - |
       release-cli create \
         --tag-name "v$VERSION" \
         --name "Huragok v$VERSION" \
-        --description "Automated release for v$VERSION" \
+        --description "$CHANGELOG" \
         --assets-link "{\"name\":\"Huragok version $VERSION, for Halo Reach\",\"url\":\"$PACKAGE_URL\"}" || echo "Release already exists or submission failed."
 
   rules:
