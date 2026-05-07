@@ -80,14 +80,18 @@ release:
   before_script: []
 
   script:
+    - apk add --no-cache jq
+    - apk add --no-cache curl
+    - jq --version
+
     - |
       CHANGELOG=$(
-        awk '
+        awk -v version=$VERSION '
           /^## / {
               gsub(/\r/, "")
           }
 
-          $0 == "## $VERSION" {
+          $0 == "## " version {
               capture=1
               next
           }
@@ -100,12 +104,80 @@ release:
         ' CHANGELOG.md
       )
 
-    - |
+      echo ${CHANGELOG:=No changelog provided.}
+
+      # Create the release on GitLab
       release-cli create \
         --tag-name "v$VERSION" \
         --name "Huragok v$VERSION" \
-        --description "$CHANGELOG" \
+        --description "${CHANGELOG}" \
         --assets-link "{\"name\":\"Huragok version $VERSION, for Halo Reach\",\"url\":\"$PACKAGE_URL\"}" || echo "Release already exists or submission failed."
+
+      # Create on GitHub
+    - |
+      GH_RELEASE_API_RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -H "Authorization: Bearer $GITHUB_RELEASE_KEY" \
+        -H "Accept: application/vnd.github+json" \
+        "https://api.github.com/repos/ManiaVali/huragok/releases/tags/v$VERSION"
+      )
+
+      if [ "$GH_RELEASE_API_RESPONSE_CODE" -eq 200 ]; then
+        RELEASE_EXISTS=true
+      else
+        RELEASE_EXISTS=false
+      fi
+
+      if [ "$RELEASE_EXISTS" == "true" ]; then
+        echo "Not pushing release to GitHub; seems to already exist for tag v$VERSION"
+        exit 0
+      fi
+
+      HEADER="### Changelog"
+      FOOTER="##### Created automatically by GitLab in pipeline #$CI_PIPELINE_ID"
+      payload=$(jq -n \
+      --arg tag "v$VERSION" \
+      --arg name "Huragok v$VERSION" \
+      --arg header "$HEADER" \
+      --arg footer "$FOOTER" \
+      --arg changelog "$CHANGELOG" \
+      --arg target "$CI_COMMIT_BRANCH" \
+      '{
+        tag_name: $tag,
+        name: $name,
+        body: ($header + "\n\n" + $changelog + "\n\n" + $footer),
+        target_commitish: $target,
+        draft: true,
+        prerelease: true
+      }')
+
+      RELEASE_RESPONSE=$(curl -s -X POST \
+        -H "Authorization: Bearer $GITHUB_RELEASE_KEY" \
+        -H "Accept: application/vnd.github+json" \
+        -H "Content-Type: application/json" \
+        https://api.github.com/repos/ManiaVali/huragok/releases \
+        -d "$payload"
+      )
+
+      UPLOAD_URL=$(echo "$RELEASE_RESPONSE" | jq -r '.upload_url' | sed 's/{?name,label}//')
+
+      if [ "$UPLOAD_URL" = "null" ] || [ -z "$UPLOAD_URL" ]; then
+        echo "Failed to get upload URL from GitHub release response"
+        echo "$RELEASE_RESPONSE"
+        exit 1
+      fi
+
+      ZIP_FILES=Huragok-$VERSION-*.zip
+
+      for ZIP_FILE in $ZIP_FILES; do
+        echo "Uploading $ZIP_FILE to GitHub ..."
+        curl -L -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer $GITHUB_RELEASE_KEY" \
+          -H "X-GitHub-Api-Version: 2026-03-10" \
+          -H "Content-Type: application/octet-stream" \
+          "$UPLOAD_URL?name=$ZIP_FILE" \
+          --data-binary "@$ZIP_FILE"
+      done
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
