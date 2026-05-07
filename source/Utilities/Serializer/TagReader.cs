@@ -63,6 +63,7 @@ namespace Huragok.Utilities.Serializer {
         private static Vector2 ReadPoint2d(TagFieldElementArrayInteger integerArray) => new(integerArray.Data[0], integerArray.Data[1]);
         private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
         private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
+        private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         // END
 
@@ -103,7 +104,7 @@ namespace Huragok.Utilities.Serializer {
                 TagFieldType.ShortInteger                   => ((TagFieldElementInteger)field).Data,
                 TagFieldType.LongInteger                    => ((TagFieldElementInteger)field).Data,
                 TagFieldType.Int64Integer                   => ((TagFieldElementInteger)field).Data,
-                TagFieldType.Angle                          => UnsupportedType(field), // Not supported
+                TagFieldType.Angle                          => ReadAngle((TagFieldElementSingle)field),
                 TagFieldType.Tag                            => ((TagFieldElementTag)field).File.Path.RelativePathWithExtension, // Not sure what this is for
                 TagFieldType.CharEnum                       => ((TagFieldEnum)field).Value,
                 TagFieldType.ShortEnum                      => ((TagFieldEnum)field).Value,
