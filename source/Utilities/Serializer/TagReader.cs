@@ -1,5 +1,8 @@
+using System.Linq.Expressions;
 using System.Numerics;
 using Huragok.Data.IntermediateFormats;
+using Huragok.Data.IntermediateFormats.Color;
+using Huragok.Data.IntermediateFormats.Coordinates;
 
 namespace Huragok.Utilities.Serializer {
     /// <summary>
@@ -59,12 +62,37 @@ namespace Huragok.Utilities.Serializer {
         private static Dictionary<string, bool> ReadFlags(TagFieldFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => flags.TestBit(v.FlagName));
         private static Dictionary<string, bool> ReadBlockFlags(TagFieldBlockFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => v.IsSet);
 
-        // TODO: Convert these to truly use RealPoints so we can autoconvert
+        // TODO: Convert these to truly use RealPoints so we can autoconvert their coordinate spaces later.
         private static Vector2 ReadPoint2d(TagFieldElementArrayInteger integerArray) => new(integerArray.Data[0], integerArray.Data[1]);
         private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
         private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
+        private static RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
+        private static RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
+        private static IF_Color ReadColorRGBA(TagFieldElementArraySingle floatArray) {
+            int? alpha = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[0]) : null;
+            var red = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[1]) : FloatToColorInt(floatArray.Data[0]);
+            var green = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[2]) : FloatToColorInt(floatArray.Data[1]);
+            var blue = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[3]) : FloatToColorInt(floatArray.Data[2]);
+
+            return new(red, green, blue, alpha, IF_ColorMode.Xbox);
+
+            int FloatToColorInt(float floatValue) {
+                return Convert.ToInt32(floatValue * 255);
+            }
+        }
+        private static object ReadArray(TagFieldArray array) {
+            var list = new List<object>();
+
+            foreach (var element in array.Elements.Cast<TagFieldArrayElement>()) {
+                if (element.Fields != null && element.Fields.Length > 0) {
+                    list.Add(ReadFields(element.Fields));
+                }
+            }
+
+            return list;
+        }
         // END
 
         private static object ReadCustom(TagFieldCustom customElement) {
@@ -88,7 +116,7 @@ namespace Huragok.Utilities.Serializer {
 
         private static object UnsupportedType(TagField field) {
 #if DEBUG
-            return $"unsupported field type: {field.FieldType} ({field.GetType().Name})";
+            return $"field not readable, unsupported field type: {field.FieldType} ({field.GetType().Name})";
 #else
             return null;
 #endif
@@ -126,10 +154,10 @@ namespace Huragok.Utilities.Serializer {
                 TagFieldType.RealQuaternion                 => ReadQuaternion((TagFieldElementArraySingle)field),
                 TagFieldType.RealEulerAngles2d              => ReadPoint2d((TagFieldElementArraySingle)field),
                 TagFieldType.RealEulerAngles3d              => ReadPoint3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealPlane2d                    => ReadPoint2d((TagFieldElementArraySingle)field),
-                TagFieldType.RealPlane3d                    => ReadPoint3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealRgbColor                   => UnsupportedType(field), // Not supported
-                TagFieldType.RealArgbColor                  => UnsupportedType(field), // Not supported
+                TagFieldType.RealPlane2d                    => ReadPlane2d((TagFieldElementArraySingle)field),
+                TagFieldType.RealPlane3d                    => ReadPlane3d((TagFieldElementArraySingle)field),
+                TagFieldType.RealRgbColor                   => ReadColorRGBA((TagFieldElementArraySingle)field),
+                TagFieldType.RealArgbColor                  => ReadColorRGBA((TagFieldElementArraySingle)field),
                 TagFieldType.RealHsvColor                   => UnsupportedType(field), // Not supported
                 TagFieldType.RealAhsvColor                  => UnsupportedType(field), // Not supported
                 TagFieldType.ShortIntegerBounds             => UnsupportedType(field), // Not supported
@@ -143,11 +171,11 @@ namespace Huragok.Utilities.Serializer {
                 TagFieldType.ByteBlockFlags                 => ReadBlockFlags((TagFieldBlockFlags)field),
                 TagFieldType.CharBlockIndex                 => UnsupportedType(field), // Not supported
                 TagFieldType.CharBlockIndexCustomSearch     => UnsupportedType(field), // Not supported
-                TagFieldType.ShortBlockIndex                => UnsupportedType(field), // Not supported
+                TagFieldType.ShortBlockIndex                => ((TagFieldBlockIndex)field).Value,
                 TagFieldType.ShortBlockIndexCustomSearch    => UnsupportedType(field), // Not supported
                 TagFieldType.LongBlockIndex                 => UnsupportedType(field), // Not supported
                 TagFieldType.LongBlockIndexCustomSearch     => UnsupportedType(field), // Not supported
-                TagFieldType.Data                           => UnsupportedType(field), // Not supported
+                TagFieldType.Data                           => "binary data",
                 TagFieldType.VertexBuffer                   => UnsupportedType(field), // Not supported
                 TagFieldType.Pad                            => UnsupportedType(field), // Not supported
                 TagFieldType.UselessPad                     => UnsupportedType(field), // Not supported
@@ -155,7 +183,7 @@ namespace Huragok.Utilities.Serializer {
                 TagFieldType.Explanation                    => UnsupportedType(field), // Not supported
                 TagFieldType.Custom                         => ReadCustom((TagFieldCustom)field),
                 TagFieldType.Struct                         => ReadStruct((TagFieldStruct)field),
-                TagFieldType.Array                          => UnsupportedType(field), // Not supported
+                TagFieldType.Array                          => ReadArray((TagFieldArray)field),
                 TagFieldType.Resource                       => UnsupportedType(field), // Not supported
                 TagFieldType.Interop                        => UnsupportedType(field), // Not supported
                 TagFieldType.Terminator                     => UnsupportedType(field), // Not supported

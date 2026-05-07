@@ -1,3 +1,11 @@
+## 0.5.3
+- Tag serializer can now serialize:
+    - RealRgbColor
+    - RealArgbColor
+    - ShortBlockIndex
+    - Data (just reports "binary data")
+    - Arrays
+
 ## 0.5.2
 - Added ability to change the logging level.
 - Overhauled the sound tag extractor; hopefully it is more accurate now.

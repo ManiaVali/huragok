@@ -20,9 +20,9 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         internal List<IF_ArmatureNode>? children = new();
 
         /// <summary>
-        /// A <see cref="Position3d"/> representing this nodes translation from its parent.
+        /// A <see cref="RealPoint3d"/> representing this nodes translation from its parent.
         /// </summary>
-        internal readonly Position3d defaultTranslation;
+        internal readonly RealPoint3d defaultTranslation;
         /// <summary>
         /// A <see cref="Quaternion"/> representing the default relative rotation from the node's parent.
         /// </summary>
@@ -38,13 +38,13 @@ namespace Huragok.Data.IntermediateFormats.Armature {
             this.name = nodeElement.SelectFieldType<TagFieldElement>(nodeNameField).GetStringData();
             this.index = nodeElement.ElementIndex;
 
-            this.defaultTranslation = Position3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
+            this.defaultTranslation = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
 
             this.defaultRotation = BlamMathematics.TagFloatArrayToQuaternion(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation"));
-            this.inverseForward = Position3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse forward")).AsBlam;
-            this.inverseLeft = Position3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse left")).AsBlam;
-            this.inverseUp = Position3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse up")).AsBlam;
-            this.inversePosition = Position3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse position")).AsBlam;
+            this.inverseForward = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse forward")).AsBlam;
+            this.inverseLeft = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse left")).AsBlam;
+            this.inverseUp = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse up")).AsBlam;
+            this.inversePosition = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse position")).AsBlam;
             this.inverseScale = nodeElement.SelectFieldType<TagFieldElementSingle>("inverse scale");
         }
 

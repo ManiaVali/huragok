@@ -158,9 +158,9 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             this.uvCoords1 = new(firstUV[1], secondUV[1]);
         }
 
-        internal Position3d Decompress(Vector3 compressedPosition) {
+        internal RealPoint3d Decompress(Vector3 compressedPosition) {
             var tmpV3 = this.posBounds0 + compressedPosition * (this.posBounds1 - this.posBounds0);
-            return new Position3d(tmpV3, CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
+            return new RealPoint3d(tmpV3, CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
         }
 
         internal Vector2 Decompress(Vector2 compressedTexCoord) => this.uvCoords0 + compressedTexCoord * (this.uvCoords1 - this.uvCoords0);
@@ -236,7 +236,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             float[] rawNorms = GameRenderModel.GetNormalsFromMesh(perMeshTempDataBlock, (int)this.meshIndex);
             if (rawNorms.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex normals list not divisible by 3.");
             for (int i = 0; i < rawNorms.Length; i += 3) {
-                var originalNorms = new Position3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], CoordinateUnit.Blam);
+                var originalNorms = new RealPoint3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], CoordinateUnit.Blam);
                 var convertedSpaceNorms = originalNorms.FlipAxes.ConvertToUnits(coordinateSpace);
 
                 this.vtxNormals.Add(convertedSpaceNorms);

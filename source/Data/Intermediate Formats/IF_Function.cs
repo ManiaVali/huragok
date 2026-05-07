@@ -68,7 +68,7 @@ namespace Huragok.Data.IntermediateFormats {
                         (int)Math.Round(Math.Clamp(c.Red, 0f, 1f) * 255),
                         (int)Math.Round(Math.Clamp(c.Green, 0f, 1f) * 255),
                         (int)Math.Round(Math.Clamp(c.Blue, 0f, 1f) * 255),
-                        IF_ColorMode.PC))
+                        colormode: IF_ColorMode.PC))
                     .ToList();
             }
 

@@ -43,7 +43,7 @@ namespace Huragok.Data.IntermediateFormats.Markers {
         internal readonly long? permutationIndex;
         internal readonly long? nodeIndex;
 
-        internal readonly Position3d translation;
+        internal readonly RealPoint3d translation;
         internal readonly Quaternion rotation;
         internal readonly float? scale;
         internal readonly Vector3? direction;
@@ -56,9 +56,9 @@ namespace Huragok.Data.IntermediateFormats.Markers {
             this.permutationIndex = markerElement.SelectFieldType<TagFieldElementInteger>("permutation index")?.Data;
             this.nodeIndex = markerElement.SelectFieldType<TagFieldElementInteger>("node index")?.Data;
 
-            this.translation = Position3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("translation"));
+            this.translation = RealPoint3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("translation"));
             this.rotation = BlamMathematics.TagIntArrayToQuaternion(markerElement.SelectFieldType<TagFieldElementArrayInteger>("rotation"));
-            this.direction = Position3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("direction")).AsBlam;
+            this.direction = RealPoint3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("direction")).AsBlam;
             this.scale = markerElement.SelectFieldType<TagFieldElementInteger>("scale");
 
             var flags = markerElement.SelectFieldType<TagFieldFlags>("flags");
