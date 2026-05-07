@@ -146,7 +146,7 @@ release:
         name: $name,
         body: ($header + "\n\n" + $changelog + "\n\n" + $footer),
         target_commitish: $target,
-        draft: true,
+        draft: false,
         prerelease: true
       }')
 
