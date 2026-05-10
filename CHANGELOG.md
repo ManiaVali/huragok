@@ -5,6 +5,7 @@
     - ShortBlockIndex
     - Data (just reports "binary data")
     - Arrays
+- Render model exporter can now preserve markers and vertex colors.
 
 ## 0.5.2
 - Added ability to change the logging level.

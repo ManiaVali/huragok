@@ -137,7 +137,7 @@ namespace Huragok.Commands.Preview {
 
                         case PlaybackPhase.Loop:
                             if (player.State == PlaybackState.Stopped && !exitTransitionRequested) {
-                                player.Load(loopClip!.PitchRanges[0].permutations[0].SampleAsVorbisBytes, looping: true);
+                                player.Load(loopClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes, looping: true);
                                 player.Play();
                             }
 

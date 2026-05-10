@@ -1,7 +1,6 @@
 ﻿// Huragok (C) ManiaVali, 2026
 // Is it bad that I feel like every project I do is the worst code I've ever written?
 
-global using static Huragok.MainProgram;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
@@ -79,13 +78,5 @@ namespace Huragok {
 
             return await builder.Build().InvokeAsync(args);
         }
-
-
-        // internal static void Panic(string panicMessage, sbyte exitCode = 1) {
-        //     if (!string.IsNullOrWhiteSpace(panicMessage))
-        //         Logger.Error("Fatal error: " + panicMessage, fatal: true);
-
-        //     Environment.Exit(exitCode);
-        // }
     }
 }

@@ -28,6 +28,12 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         /// </summary>
         internal readonly int Vertex3Index;
 
+        /// <summary>
+        /// Constructs a new <see cref="IF_MeshTriangle"/> from the indices of its three vertices.
+        /// </summary>
+        /// <param name="Vertex1">The index of the first vertex.</param>
+        /// <param name="Vertex2">The index of the second vertex.</param>
+        /// <param name="Vertex3">The index of the third vertex.</param>
         internal IF_MeshTriangle(int Vertex1, int Vertex2, int Vertex3) {
             this.Vertex1Index = Vertex1;
             this.Vertex2Index = Vertex2;
@@ -35,6 +41,9 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         }
     }
 
+    /// <summary>
+    /// <para>An intermediate representation of a mesh variant; a collection of regions.</para>
+    /// </summary>
     internal sealed class IF_MeshVariant {
         internal readonly int index;
         internal readonly string? name;
@@ -174,9 +183,9 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             this.uvCoords1 = new(firstUV[1], secondUV[1]);
         }
 
-        internal RealPoint3d Decompress(Vector3 compressedPosition) {
+        internal IF_RealPoint3d Decompress(Vector3 compressedPosition) {
             var tmpV3 = this.posBounds0 + compressedPosition * (this.posBounds1 - this.posBounds0);
-            return new RealPoint3d(tmpV3, CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
+            return new IF_RealPoint3d(tmpV3, IF_CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
         }
 
         internal Vector2 Decompress(Vector2 compressedTexCoord) => this.uvCoords0 + compressedTexCoord * (this.uvCoords1 - this.uvCoords0);
@@ -235,7 +244,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         internal readonly List<Vector4> nodeIndices = new();
         internal readonly List<Vector4> nodeWeights = new();
 
-        internal IF_MeshExportGeometry(TagFieldBlock perMeshTempDataBlock, IF_MeshPermutation forPermutation, IF_Mesh ourMesh, IF_CompressionBounds bounds, TagPath tagPath, CoordinateUnit coordinateSpace) {
+        internal IF_MeshExportGeometry(TagFieldBlock perMeshTempDataBlock, IF_MeshPermutation forPermutation, IF_Mesh ourMesh, IF_CompressionBounds bounds, TagPath tagPath, IF_CoordinateUnit coordinateSpace) {
             this.meshIndex = forPermutation.meshIndex;
             this.permutation = forPermutation;
             this.ourMesh = ourMesh;
@@ -255,7 +264,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             float[] rawNorms = GameRenderModel.GetNormalsFromMesh(perMeshTempDataBlock, (int)this.meshIndex);
             if (rawNorms.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex normals list not divisible by 3.");
             for (int i = 0; i < rawNorms.Length; i += 3) {
-                var originalNorms = new RealPoint3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], CoordinateUnit.Blam);
+                var originalNorms = new IF_RealPoint3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], IF_CoordinateUnit.Blam);
                 var convertedSpaceNorms = originalNorms.FlipAxes.ConvertToUnits(coordinateSpace);
 
                 this.vtxNormals.Add(convertedSpaceNorms);
@@ -284,7 +293,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
 
             var rawVertsBlock = thisPerMeshTemp.SelectFieldType<TagFieldBlock>("Block:raw vertices");
             foreach (var element in rawVertsBlock.Elements.Cast<TagFieldBlockElement>()) {
-                var vertexColor = RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
+                var vertexColor = IF_RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
                 this.vtxColors.Add(vertexColor);
             }
 

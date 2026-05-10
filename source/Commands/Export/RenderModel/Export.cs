@@ -50,7 +50,7 @@ namespace Huragok.Commands.Export {
             return cmd;
         }
 
-        private static void DumpRenderModelTagData(IEnumerable<string> tagFilePaths, string outDirectory, RenderModelFormat modelFormat, CoordinateUnit coordinateSystem) {
+        private static void DumpRenderModelTagData(IEnumerable<string> tagFilePaths, string outDirectory, RenderModelFormat modelFormat, IF_CoordinateUnit coordinateSystem) {
             if (!tagFilePaths.Any()) {
                 Logger.Message("No files provided -- there is nothing to do.\n   If using `--directory` or `--folder`, pass `--recurse` to look in subdirectories.");
                 return;

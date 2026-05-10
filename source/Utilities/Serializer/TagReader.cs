@@ -65,8 +65,8 @@ namespace Huragok.Utilities.Serializer {
         private static Vector2 ReadPoint2d(TagFieldElementArrayInteger integerArray) => new(integerArray.Data[0], integerArray.Data[1]);
         private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
         private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
-        private static RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
-        private static RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
+        private static IF_RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
+        private static IF_RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static IF_Color ReadColorRGBA(TagFieldElementArraySingle floatArray) {

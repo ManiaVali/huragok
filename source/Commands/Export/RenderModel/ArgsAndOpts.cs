@@ -41,7 +41,7 @@ namespace Huragok.Commands.RenderModel {
 
     internal class RenderModelExportSettings {
         internal RenderModelFormat ModelFormat { get; init; } = RenderModelFormat.FBX;
-        internal CoordinateUnit CoordinateSystem { get; init; } = CoordinateUnit.Metric;
+        internal IF_CoordinateUnit CoordinateSystem { get; init; } = IF_CoordinateUnit.Metric;
     }
 
     internal static class RenderModelExportResolver {
@@ -55,11 +55,11 @@ namespace Huragok.Commands.RenderModel {
             };
         }
 
-        private static CoordinateUnit CoordStringToUnit(string unit) {
+        private static IF_CoordinateUnit CoordStringToUnit(string unit) {
             return unit.ToLowerInvariant() switch {
-                "blam" => CoordinateUnit.Blam,
-                "jms" => CoordinateUnit.JMS,
-                "metric" => CoordinateUnit.Metric,
+                "blam" => IF_CoordinateUnit.Blam,
+                "jms" => IF_CoordinateUnit.JMS,
+                "metric" => IF_CoordinateUnit.Metric,
                 _ => throw new ArgumentException($"Invalid model format type `{unit.ToLowerInvariant()}`.")
             };
         }

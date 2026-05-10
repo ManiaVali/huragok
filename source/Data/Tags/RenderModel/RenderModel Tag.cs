@@ -63,11 +63,11 @@ namespace Huragok.Data.Tags {
 
         private readonly Dictionary<long, IF_MeshExportGeometry> exportGeometries = new();
 
-        internal CoordinateUnit distanceUnits;
+        internal IF_CoordinateUnit distanceUnits;
         #endregion
 
         #region Model Decoding
-        internal RenderModelTag(TagPath renderModelTagPath, CoordinateUnit usingUnits = CoordinateUnit.Metric) : base(renderModelTagPath) {
+        internal RenderModelTag(TagPath renderModelTagPath, IF_CoordinateUnit usingUnits = IF_CoordinateUnit.Metric) : base(renderModelTagPath) {
             this.ValidateTag();
 
             this.distanceUnits = usingUnits;
@@ -352,7 +352,7 @@ namespace Huragok.Data.Tags {
                     var gltfNode = gltfNodes[(int)marker.nodeIndex];
                     var markerNode = new NodeBuilder($"marker:{markerGroup.name}:{marker.index}");
 
-                    var markerScale = new RealPoint3d(marker.scale, marker.scale, marker.scale, CoordinateUnit.Blam);
+                    var markerScale = new IF_RealPoint3d(marker.scale, marker.scale, marker.scale, IF_CoordinateUnit.Blam);
 
                     markerNode.SetLocalTransform(
                         new AffineTransform(

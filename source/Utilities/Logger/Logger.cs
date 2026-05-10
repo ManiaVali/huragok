@@ -16,7 +16,7 @@ namespace Huragok.Utilities.Logging {
 
     internal static class Logger {
         internal static void Message(string message, LoggerNewlineFormat newlineFormat = LoggerNewlineFormat.CreateNewline, bool writeHeader = true) {
-            if (globalLogLevel > LoggingLevel.Info) return;
+            if (MainProgram.globalLogLevel > LoggingLevel.Info) return;
 
             const string header = "inf";
             const ConsoleColor color = ConsoleColor.Green;
@@ -46,7 +46,7 @@ namespace Huragok.Utilities.Logging {
         }
 
         internal static void Warning(string message, LoggerNewlineFormat newlineFormat = LoggerNewlineFormat.CreateNewline, bool writeHeader = true) {
-            if (globalLogLevel > LoggingLevel.Warning) return;
+            if (MainProgram.globalLogLevel > LoggingLevel.Warning) return;
 
             const string header = "wrn";
             const ConsoleColor color = ConsoleColor.Yellow;
@@ -77,7 +77,7 @@ namespace Huragok.Utilities.Logging {
 
 
         internal static void Error(string message, LoggerNewlineFormat newlineFormat = LoggerNewlineFormat.CreateNewline, bool fatal = false, bool writeHeader = true) {
-            if (globalLogLevel > LoggingLevel.Error) return;
+            if (MainProgram.globalLogLevel > LoggingLevel.Error) return;
 
             string header = fatal ? "!!!" : "err";
             var color = fatal ? ConsoleColor.DarkRed : ConsoleColor.Red;
@@ -107,7 +107,7 @@ namespace Huragok.Utilities.Logging {
         }
 
         internal static void Debug(string message, LoggerNewlineFormat newlineFormat = LoggerNewlineFormat.CreateNewline, bool writeHeader = true) {
-            if (globalLogLevel > LoggingLevel.Debug) return;
+            if (MainProgram.globalLogLevel > LoggingLevel.Debug) return;
 
             const string header = "dbg";
             const ConsoleColor color = ConsoleColor.Gray;

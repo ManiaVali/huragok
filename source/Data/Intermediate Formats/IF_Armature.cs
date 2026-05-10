@@ -1,7 +1,6 @@
 
 using System.Numerics;
 using Huragok.Data.IntermediateFormats.Coordinates;
-using Huragok.Utilities;
 
 namespace Huragok.Data.IntermediateFormats.Armature {
     /// <summary>
@@ -20,32 +19,26 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         internal List<IF_ArmatureNode>? children = new();
 
         /// <summary>
-        /// A <see cref="RealPoint3d"/> representing this nodes translation from its parent.
+        /// A <see cref="IF_RealPoint3d"/> representing this nodes translation from its parent.
         /// </summary>
-        internal readonly RealPoint3d defaultTranslation;
+        internal readonly IF_RealPoint3d defaultTranslation;
         /// <summary>
         /// A <see cref="Quaternion"/> representing the default relative rotation from the node's parent.
         /// </summary>
         internal readonly Quaternion defaultRotation;
-        internal readonly Vector3 inverseForward;
-        internal readonly Vector3 inverseLeft;
-        internal readonly Vector3 inverseUp;
-        internal readonly Vector3 inversePosition;
 
-        internal readonly float inverseScale = 1;
-
+        /// <summary>
+        /// Constructs an <see cref="IF_ArmatureNode"/> from a given <see cref="TagFieldBlockElement"/>.
+        /// </summary>
+        /// <param name="nodeElement">The <see cref="TagFieldBlockElement"/> representing the node.</param>
+        /// <param name="nodeNameField">The name of the field containing the node's name.</param>
         internal IF_ArmatureNode(TagFieldBlockElement nodeElement, string nodeNameField = "name") {
             this.name = nodeElement.SelectFieldType<TagFieldElement>(nodeNameField).GetStringData();
             this.index = nodeElement.ElementIndex;
 
-            this.defaultTranslation = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
+            this.defaultTranslation = IF_RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
 
-            this.defaultRotation = BlamMathematics.TagFloatArrayToQuaternion(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation"));
-            this.inverseForward = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse forward")).AsBlam;
-            this.inverseLeft = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse left")).AsBlam;
-            this.inverseUp = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse up")).AsBlam;
-            this.inversePosition = RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("inverse position")).AsBlam;
-            this.inverseScale = nodeElement.SelectFieldType<TagFieldElementSingle>("inverse scale");
+            this.defaultRotation = IF_RealQuaterion.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation")).FlipAxes.Value;
         }
 
         /// <summary>
@@ -53,7 +46,7 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         /// </summary>
         /// <param name="nodesBlock">A <see cref="TagFieldBlock"/> containing a list of nodes.</param>
         /// <param name="nodeNameField">An optional <see cref="string"/> representing the name of the field where the node's name is found.
-        ///     <para>Not the name of the node itself.</para>
+        /// <para>Not the name of the node itself.</para>
         /// </param>
         /// <param name="parentNodeField">An optional <see cref="string"/> representing the name of the field where the node's parent is found.</param>
         /// <returns>A list of all nodes in the constructed armature -- a fully constructed armature.</returns>

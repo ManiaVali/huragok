@@ -26,7 +26,7 @@ namespace Huragok.Commands.Serialize {
             cmd.SetHandler(ctx => {
                 var tagInputContext = ctx.ParseResult.Resolve(tagHandler);
 
-                DumpImportData(
+                SerializeTagData(
                     tagInputContext.Paths.ToArray()[0]
                 );
             });
@@ -34,7 +34,7 @@ namespace Huragok.Commands.Serialize {
             return cmd;
         }
 
-        private static void DumpImportData(string tagFilePath) {
+        private static void SerializeTagData(string tagFilePath) {
             if (string.IsNullOrEmpty(tagFilePath)) throw new ArgumentException($"{nameof(tagFilePath)} must not be empty!");
             tagFilePath = Path.GetFullPath(tagFilePath);
 
