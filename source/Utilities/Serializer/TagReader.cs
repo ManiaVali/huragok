@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Numerics;
 using Huragok.Data.IntermediateFormats;
 using Huragok.Data.IntermediateFormats.Color;
@@ -99,11 +98,11 @@ namespace Huragok.Utilities.Serializer {
             if (customElement.GetType() == typeof(TagFieldCustomFunctionEditor)) {
                 var func = (TagFieldCustomFunctionEditor)customElement;
                 var editor = func.Value;
-                
+
                 if (editor.MasterType != FunctionEditorMasterType.Exponent || editor.MasterType != FunctionEditorMasterType.Periodic) {
                     return $"unsupported function type: {editor.MasterType} ({customElement.GetType().Name})";
                 }
-                
+
                 return new IF_Function((TagFieldCustomFunctionEditor)customElement);
             } else {
 #if DEBUG
@@ -124,69 +123,69 @@ namespace Huragok.Utilities.Serializer {
 
         private static object? ReadField(TagField field) {
             return field.FieldType switch {
-                TagFieldType.String                         => ((TagFieldElementString)field).Data,
-                TagFieldType.LongString                     => ((TagFieldElementLongString)field).Data,
-                TagFieldType.StringId                       => ((TagFieldElementStringID)field).Data,
-                TagFieldType.OldStringId                    => ((TagFieldElementOldStringID)field).Data,
-                TagFieldType.CharInteger                    => ((TagFieldElementInteger)field).Data,
-                TagFieldType.ShortInteger                   => ((TagFieldElementInteger)field).Data,
-                TagFieldType.LongInteger                    => ((TagFieldElementInteger)field).Data,
-                TagFieldType.Int64Integer                   => ((TagFieldElementInteger)field).Data,
-                TagFieldType.Angle                          => ReadAngle((TagFieldElementSingle)field),
-                TagFieldType.Tag                            => ((TagFieldElementTag)field).File.Path.RelativePathWithExtension, // Not sure what this is for
-                TagFieldType.CharEnum                       => ((TagFieldEnum)field).Value,
-                TagFieldType.ShortEnum                      => ((TagFieldEnum)field).Value,
-                TagFieldType.LongEnum                       => ((TagFieldEnum)field).Value,
-                TagFieldType.Flags                          => ReadFlags((TagFieldFlags)field),
-                TagFieldType.WordFlags                      => ReadFlags((TagFieldFlags)field),
-                TagFieldType.ByteFlags                      => ReadFlags((TagFieldFlags)field),
-                TagFieldType.Point2d                        => ReadPoint2d((TagFieldElementArrayInteger)field),
-                TagFieldType.Rectangle2d                    => UnsupportedType(field), // Not supported
-                TagFieldType.RgbPixel32                     => UnsupportedType(field), // Not supported
-                TagFieldType.ArgbPixel32                    => UnsupportedType(field), // Not supported
-                TagFieldType.Real                           => ((TagFieldElementSingle)field).Data,
-                TagFieldType.RealSlider                     => ((TagFieldElementSingle)field).Data,
-                TagFieldType.RealFraction                   => ((TagFieldElementSingle)field).Data,
-                TagFieldType.RealPoint2d                    => ReadPoint2d((TagFieldElementArraySingle)field),
-                TagFieldType.RealPoint3d                    => ReadPoint3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealVector2d                   => ReadPoint2d((TagFieldElementArraySingle)field),
-                TagFieldType.RealVector3d                   => ReadPoint3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealQuaternion                 => ReadQuaternion((TagFieldElementArraySingle)field),
-                TagFieldType.RealEulerAngles2d              => ReadPoint2d((TagFieldElementArraySingle)field),
-                TagFieldType.RealEulerAngles3d              => ReadPoint3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealPlane2d                    => ReadPlane2d((TagFieldElementArraySingle)field),
-                TagFieldType.RealPlane3d                    => ReadPlane3d((TagFieldElementArraySingle)field),
-                TagFieldType.RealRgbColor                   => ReadColorRGBA((TagFieldElementArraySingle)field),
-                TagFieldType.RealArgbColor                  => ReadColorRGBA((TagFieldElementArraySingle)field),
-                TagFieldType.RealHsvColor                   => UnsupportedType(field), // Not supported
-                TagFieldType.RealAhsvColor                  => UnsupportedType(field), // Not supported
-                TagFieldType.ShortIntegerBounds             => UnsupportedType(field), // Not supported
-                TagFieldType.AngleBounds                    => UnsupportedType(field), // Not supported
-                TagFieldType.RealBounds                     => UnsupportedType(field), // Not supported
-                TagFieldType.RealFractionBounds             => UnsupportedType(field), // Not supported
-                TagFieldType.Reference                      => ((TagFieldReference)field).Reference?.Path?.RelativePathWithExtension,
-                TagFieldType.Block                          => ReadBlock((TagFieldBlock)field),
-                TagFieldType.BlockFlags                     => ReadBlockFlags((TagFieldBlockFlags)field),
-                TagFieldType.WordBlockFlags                 => ReadBlockFlags((TagFieldBlockFlags)field),
-                TagFieldType.ByteBlockFlags                 => ReadBlockFlags((TagFieldBlockFlags)field),
-                TagFieldType.CharBlockIndex                 => UnsupportedType(field), // Not supported
-                TagFieldType.CharBlockIndexCustomSearch     => UnsupportedType(field), // Not supported
-                TagFieldType.ShortBlockIndex                => ((TagFieldBlockIndex)field).Value,
-                TagFieldType.ShortBlockIndexCustomSearch    => UnsupportedType(field), // Not supported
-                TagFieldType.LongBlockIndex                 => UnsupportedType(field), // Not supported
-                TagFieldType.LongBlockIndexCustomSearch     => UnsupportedType(field), // Not supported
-                TagFieldType.Data                           => "binary data",
-                TagFieldType.VertexBuffer                   => UnsupportedType(field), // Not supported
-                TagFieldType.Pad                            => UnsupportedType(field), // Not supported
-                TagFieldType.UselessPad                     => UnsupportedType(field), // Not supported
-                TagFieldType.Skip                           => UnsupportedType(field), // Not supported
-                TagFieldType.Explanation                    => UnsupportedType(field), // Not supported
-                TagFieldType.Custom                         => ReadCustom((TagFieldCustom)field),
-                TagFieldType.Struct                         => ReadStruct((TagFieldStruct)field),
-                TagFieldType.Array                          => ReadArray((TagFieldArray)field),
-                TagFieldType.Resource                       => UnsupportedType(field), // Not supported
-                TagFieldType.Interop                        => UnsupportedType(field), // Not supported
-                TagFieldType.Terminator                     => UnsupportedType(field), // Not supported
+                TagFieldType.String => ((TagFieldElementString)field).Data,
+                TagFieldType.LongString => ((TagFieldElementLongString)field).Data,
+                TagFieldType.StringId => ((TagFieldElementStringID)field).Data,
+                TagFieldType.OldStringId => ((TagFieldElementOldStringID)field).Data,
+                TagFieldType.CharInteger => ((TagFieldElementInteger)field).Data,
+                TagFieldType.ShortInteger => ((TagFieldElementInteger)field).Data,
+                TagFieldType.LongInteger => ((TagFieldElementInteger)field).Data,
+                TagFieldType.Int64Integer => ((TagFieldElementInteger)field).Data,
+                TagFieldType.Angle => ReadAngle((TagFieldElementSingle)field),
+                TagFieldType.Tag => ((TagFieldElementTag)field).File.Path.RelativePathWithExtension, // Not sure what this is for
+                TagFieldType.CharEnum => ((TagFieldEnum)field).Value,
+                TagFieldType.ShortEnum => ((TagFieldEnum)field).Value,
+                TagFieldType.LongEnum => ((TagFieldEnum)field).Value,
+                TagFieldType.Flags => ReadFlags((TagFieldFlags)field),
+                TagFieldType.WordFlags => ReadFlags((TagFieldFlags)field),
+                TagFieldType.ByteFlags => ReadFlags((TagFieldFlags)field),
+                TagFieldType.Point2d => ReadPoint2d((TagFieldElementArrayInteger)field),
+                TagFieldType.Rectangle2d => UnsupportedType(field), // Not supported
+                TagFieldType.RgbPixel32 => UnsupportedType(field), // Not supported
+                TagFieldType.ArgbPixel32 => UnsupportedType(field), // Not supported
+                TagFieldType.Real => ((TagFieldElementSingle)field).Data,
+                TagFieldType.RealSlider => ((TagFieldElementSingle)field).Data,
+                TagFieldType.RealFraction => ((TagFieldElementSingle)field).Data,
+                TagFieldType.RealPoint2d => ReadPoint2d((TagFieldElementArraySingle)field),
+                TagFieldType.RealPoint3d => ReadPoint3d((TagFieldElementArraySingle)field),
+                TagFieldType.RealVector2d => ReadPoint2d((TagFieldElementArraySingle)field),
+                TagFieldType.RealVector3d => ReadPoint3d((TagFieldElementArraySingle)field),
+                TagFieldType.RealQuaternion => ReadQuaternion((TagFieldElementArraySingle)field),
+                TagFieldType.RealEulerAngles2d => ReadPoint2d((TagFieldElementArraySingle)field),
+                TagFieldType.RealEulerAngles3d => ReadPoint3d((TagFieldElementArraySingle)field),
+                TagFieldType.RealPlane2d => ReadPlane2d((TagFieldElementArraySingle)field),
+                TagFieldType.RealPlane3d => ReadPlane3d((TagFieldElementArraySingle)field),
+                TagFieldType.RealRgbColor => ReadColorRGBA((TagFieldElementArraySingle)field),
+                TagFieldType.RealArgbColor => ReadColorRGBA((TagFieldElementArraySingle)field),
+                TagFieldType.RealHsvColor => UnsupportedType(field), // Not supported
+                TagFieldType.RealAhsvColor => UnsupportedType(field), // Not supported
+                TagFieldType.ShortIntegerBounds => UnsupportedType(field), // Not supported
+                TagFieldType.AngleBounds => UnsupportedType(field), // Not supported
+                TagFieldType.RealBounds => UnsupportedType(field), // Not supported
+                TagFieldType.RealFractionBounds => UnsupportedType(field), // Not supported
+                TagFieldType.Reference => ((TagFieldReference)field).Reference?.Path?.RelativePathWithExtension,
+                TagFieldType.Block => ReadBlock((TagFieldBlock)field),
+                TagFieldType.BlockFlags => ReadBlockFlags((TagFieldBlockFlags)field),
+                TagFieldType.WordBlockFlags => ReadBlockFlags((TagFieldBlockFlags)field),
+                TagFieldType.ByteBlockFlags => ReadBlockFlags((TagFieldBlockFlags)field),
+                TagFieldType.CharBlockIndex => UnsupportedType(field), // Not supported
+                TagFieldType.CharBlockIndexCustomSearch => UnsupportedType(field), // Not supported
+                TagFieldType.ShortBlockIndex => ((TagFieldBlockIndex)field).Value,
+                TagFieldType.ShortBlockIndexCustomSearch => UnsupportedType(field), // Not supported
+                TagFieldType.LongBlockIndex => UnsupportedType(field), // Not supported
+                TagFieldType.LongBlockIndexCustomSearch => UnsupportedType(field), // Not supported
+                TagFieldType.Data => "binary data",
+                TagFieldType.VertexBuffer => UnsupportedType(field), // Not supported
+                TagFieldType.Pad => UnsupportedType(field), // Not supported
+                TagFieldType.UselessPad => UnsupportedType(field), // Not supported
+                TagFieldType.Skip => UnsupportedType(field), // Not supported
+                TagFieldType.Explanation => UnsupportedType(field), // Not supported
+                TagFieldType.Custom => ReadCustom((TagFieldCustom)field),
+                TagFieldType.Struct => ReadStruct((TagFieldStruct)field),
+                TagFieldType.Array => ReadArray((TagFieldArray)field),
+                TagFieldType.Resource => UnsupportedType(field), // Not supported
+                TagFieldType.Interop => UnsupportedType(field), // Not supported
+                TagFieldType.Terminator => UnsupportedType(field), // Not supported
                 _ => throw new NotImplementedException(),
             };
         }

@@ -42,7 +42,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
     internal sealed class IF_MeshRegion {
         internal readonly int index;
         internal readonly int? parentIndex;
-        internal readonly string? name;
+        internal readonly string name;
         internal readonly List<IF_MeshPermutation> permutations = new();
         internal readonly TagFieldBlock? permutationsBlock;
 
@@ -50,9 +50,10 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             this.index = regionsBlock.ElementIndex;
             this.parentIndex = variant?.index;
 
-            // If bungie had named their fields consistently I wouldn't have to do this.
+            // If bungie had named their fields consistently I wouldn't have to do 
             this.name = regionsBlock.SelectFieldType<TagFieldElement>("region name")?.GetStringData();
             this.name ??= regionsBlock.SelectFieldType<TagFieldElement>("name")?.GetStringData();
+            if (this.name == null) throw new InvalidDataException($"Failed to get name for {nameof(IF_MeshRegion)} index at `{this.index}`!");
 
             this.permutationsBlock = regionsBlock.SelectFieldType<TagFieldBlock>("permutations");
 
@@ -65,7 +66,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
     internal sealed class IF_MeshPermutation {
         internal readonly int index;
         internal readonly int? parentIndex;
-        internal readonly string? name;
+        internal readonly string name;
 
         internal readonly long meshIndex;
         internal readonly long meshCount;
@@ -78,6 +79,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             // Again with the whole different freaking field names thing.
             this.name = permutationsBlock.SelectFieldType<TagFieldElement>("permutation name")?.GetStringData();
             this.name ??= permutationsBlock.SelectFieldType<TagFieldElement>("name")?.GetStringData();
+            if (this.name == null) throw new InvalidDataException($"Failed to get name for {nameof(IF_MeshPermutation)} index at `{this.index}`!");
 
             this.meshIndex = permutationsBlock.SelectFieldType<TagFieldElementInteger>("mesh index")?.Data ?? -1;
             this.meshCount = permutationsBlock.SelectFieldType<TagFieldElementInteger>("mesh count")?.Data ?? -1;
@@ -168,7 +170,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
     }
 
     internal sealed class IF_Mesh {
-        internal readonly long index;
+        internal readonly int index;
         internal readonly List<IF_MeshPart> parts = new();
         internal readonly List<IF_MeshSubPart> subParts = new();
         internal readonly List<long>? waterIndices = new();
@@ -196,8 +198,8 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
 
 #if USING_BLAM_H2AMP || USING_BLAM_H4
             var meshFlags = meshElement.SelectFieldType<TagFieldFlags>("mesh flags");
-            this.isPCA = meshFlags.TestBit("mesh is PCA");
-            this.compressed = !meshFlags.TestBit("use uncompressed vertex format");
+            isPCA = meshFlags.TestBit("mesh is PCA");
+            compressed = !meshFlags.TestBit("use uncompressed vertex format");
 #endif
 
         }
@@ -305,7 +307,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             // // convert unpacked indices into faces
             // List<int> unpacked = new();
             // for (int i = 0; i < unpacked.Count; i += 3) {
-            //     this.faces.Add(new Face(
+            //     faces.Add(new Face(
             //         unpacked[i],
             //         unpacked[i + 1],
             //         unpacked[i + 2]
@@ -326,16 +328,16 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
     //     internal readonly Vector3 position = new();
 
     //     internal InstancePlacement(TagFieldBlockElement instancesBlock, List<Node> nodes) {
-    //         this.name = instancesBlock.SelectFieldType<TagFieldElement>("name").GetStringData();
-    //         if (string.IsNullOrEmpty(this.name)) this.name = "__";
+    //         name = instancesBlock.SelectFieldType<TagFieldElement>("name").GetStringData();
+    //         if (string.IsNullOrEmpty(name)) name = "__";
 
-    //         this.index = instancesBlock.ElementIndex;
-    //         this.scale = instancesBlock.SelectFieldType<TagFieldElementInteger>("scale").Data;
-    //         this.nodeIndex = instancesBlock.SelectFieldType<TagFieldElementInteger>("node index").Data;
-    //         this.forwardVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("position"));
-    //         this.leftVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("left"));
-    //         this.upVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("up"));
-    //         this.position = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("position")) * GlobalConstants.WU_TO_METERS;
+    //         index = instancesBlock.ElementIndex;
+    //         scale = instancesBlock.SelectFieldType<TagFieldElementInteger>("scale").Data;
+    //         nodeIndex = instancesBlock.SelectFieldType<TagFieldElementInteger>("node index").Data;
+    //         forwardVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("position"));
+    //         leftVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("left"));
+    //         upVector = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("up"));
+    //         position = BlamMathematics.TagIntArrayToVector3(instancesBlock.SelectFieldType<TagFieldElementArrayInteger>("position")) * GlobalConstants.WU_TO_METERS;
     //     }
     // }
 }

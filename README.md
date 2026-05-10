@@ -50,20 +50,14 @@ Huragok is a helper program for extracting and converting data from the Halo eng
 ## To do, for now.
 - [x] Add option for batch exporting of bitmaps
 - [x] Add option for batch exporting of render models
+- [x] Add marker(group) support to render models
+- [ ] Add vertex colors support to render models
 - [ ] Add functionality for exporting scenario structure BSP
 - [ ] Add functionality to preview bitmaps
 - [x] Add functionality to preview sound tags
-- [ ] Add option to sound exporter to transcode to formats other than OGG
-- [ ] Add functionality to preview sound_looping tags
+- [x] Add option to sound exporter to transcode to formats other than OGG
+- [x] Add functionality to preview sound_looping tags
 - [x] Add functionality for exporting sound tags
-- [x] Add new intermediate formats with conversion modes
-    - [x] RealPoint2d
-    - [x] RealPoint3d
-    - [ ] RealQuaternion
-    - [ ] RealVector2d
-    - [ ] RealVector3d
-    - [ ] RealPlane2d
-    - [ ] RealPlane3d
 - [ ] Add documentation to publicly exposed classes and members.
 - [x] Replace each tags bespoke meta commands with a proper serialization system
 - [x] Expand shader command to more accurately expose functions and internal data

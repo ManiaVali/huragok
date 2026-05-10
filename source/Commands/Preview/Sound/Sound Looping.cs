@@ -57,11 +57,11 @@ namespace Huragok.Commands.Preview {
             BlamFunctions.InitializeBlam();
 
             try {
-                if (string.IsNullOrWhiteSpace(soundTagFilepath)) 
+                if (string.IsNullOrWhiteSpace(soundTagFilepath))
                     throw new ArgumentNullException(nameof(soundTagFilepath));
 
                 var tagPath = TagPath.FromPathAndExtension(BlamFunctions.GetValidTagPath(soundTagFilepath), "sound_looping");
-                if (!BlamFunctions.ValidateTag(tagPath, "sound_looping")) 
+                if (!BlamFunctions.ValidateTag(tagPath, "sound_looping"))
                     throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
 
                 string tagRelPath = BlamFunctions.GetValidTagPath(soundTagFilepath);
@@ -101,7 +101,7 @@ namespace Huragok.Commands.Preview {
                 // holy booleans, batman!
                 bool paused = false;
                 bool exitTransitionRequested = false;
-                var phase = PlaybackPhase.In;                
+                var phase = PlaybackPhase.In;
                 bool startedIn = false;
                 bool startedOut = false;
                 double lastProgress = 0;

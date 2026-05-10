@@ -50,7 +50,7 @@ namespace Huragok.ManagedBlam {
 
         internal static bool ValidateTag(TagPath tagPath, string tagGroupExtension) {
             string editingKitPath = ConfigurationReader.Configuration.ProjectPath;
-            
+
             if (!File.Exists(Path.GetFullPath(tagPath.RelativePathWithExtension, Path.Combine(editingKitPath, "tags")))) {
                 string failReason = $"Tag `{tagPath.ShortNameWithExtension}` does not seem to exist.";
                 throw new FileNotFoundException(failReason);

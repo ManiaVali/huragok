@@ -13,13 +13,13 @@ namespace Huragok.Data.IntermediateFormats.Markers {
     }
 
     internal sealed class IF_MarkerGroup {
-        internal readonly long? index;
-        internal readonly string? name;
+        internal readonly long index;
+        internal readonly string name;
 
-        internal readonly List<IF_MarkerGroup> markers = new();
+        internal readonly List<IF_Marker> markers = new();
         internal readonly IF_Marker_GroupType groupType;
 
-        internal IF_MarkerGroup(TagFieldBlockElement markerGroupElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions, string markerGroupNameField = "name", string markersFieldBlock = "markers") {
+        internal IF_MarkerGroup(TagFieldBlockElement markerGroupElement, string markerGroupNameField = "name", string markersFieldBlock = "markers") {
             this.index = markerGroupElement.ElementIndex;
             this.name = markerGroupElement.SelectFieldType<TagFieldElement>(markerGroupNameField).GetStringData();
 
@@ -32,37 +32,39 @@ namespace Huragok.Data.IntermediateFormats.Markers {
             };
 
             foreach (var e in markerGroupElement.SelectFieldType<TagFieldBlock>(markersFieldBlock).Elements.Cast<TagFieldBlockElement>()) {
-                this.markers.Add(new IF_MarkerGroup(e, nodes, regions));
+                this.markers.Add(new IF_Marker(e));
             }
         }
+
+        internal List<IF_Marker> MarkersForNode(IF_ArmatureNode armatureNode) => this.markers.Where(m => m.nodeIndex == armatureNode.index).ToList();
     }
 
     internal sealed class IF_Marker {
-        internal readonly long? index;
-        internal readonly long? regionIndex;
-        internal readonly long? permutationIndex;
-        internal readonly long? nodeIndex;
+        internal readonly long index;
+        internal readonly long regionIndex;
+        internal readonly long permutationIndex;
+        internal readonly long nodeIndex;
 
         internal readonly RealPoint3d translation;
         internal readonly Quaternion rotation;
-        internal readonly float? scale;
+        internal readonly float scale;
         internal readonly Vector3? direction;
 
         internal readonly bool nodeRelativePosition;
 
-        internal IF_Marker(TagFieldBlockElement markerElement, List<IF_ArmatureNode> nodes, List<IF_ArmatureNode> regions) {
+        internal IF_Marker(TagFieldBlockElement markerElement) {
             this.index = markerElement.ElementIndex;
-            this.regionIndex = markerElement.SelectFieldType<TagFieldElementInteger>("region index")?.Data;
-            this.permutationIndex = markerElement.SelectFieldType<TagFieldElementInteger>("permutation index")?.Data;
-            this.nodeIndex = markerElement.SelectFieldType<TagFieldElementInteger>("node index")?.Data;
+            this.regionIndex = markerElement.SelectFieldType<TagFieldElementInteger>("region index").Data;
+            this.permutationIndex = markerElement.SelectFieldType<TagFieldElementInteger>("permutation index").Data;
+            this.nodeIndex = markerElement.SelectFieldType<TagFieldElementInteger>("node index").Data;
 
-            this.translation = RealPoint3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("translation"));
-            this.rotation = BlamMathematics.TagIntArrayToQuaternion(markerElement.SelectFieldType<TagFieldElementArrayInteger>("rotation"));
-            this.direction = RealPoint3d.FromTagIntArray(markerElement.SelectFieldType<TagFieldElementArrayInteger>("direction")).AsBlam;
-            this.scale = markerElement.SelectFieldType<TagFieldElementInteger>("scale");
+            this.translation = RealPoint3d.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("translation"));
+            this.rotation = BlamMathematics.TagFloatArrayToQuaternion(markerElement.SelectFieldType<TagFieldElementArraySingle>("rotation"));
+            this.direction = RealPoint3d.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("direction")).AsBlam;
+            this.scale = markerElement.SelectFieldType<TagFieldElementSingle>("scale");
 
             var flags = markerElement.SelectFieldType<TagFieldFlags>("flags");
-            this.nodeRelativePosition = flags.TestBit("has node relative position");
+            this.nodeRelativePosition = flags.TestBit("has node relative direction");
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Huragok.Utilities.Sound {
                 string fsbPath = Path.Combine(_hrFSBDir, FSB);
                 var candidate = FindInBank(fsbPath, lookingForPermutation);
 
-                if (candidate != null) 
+                if (candidate != null)
                     return ((FmodSample sample, string samplePath))candidate;
             }
             throw new FileNotFoundException($"Could not find {lookingForPermutation.name} in any sound bank; it may not exist.");
@@ -29,7 +29,7 @@ namespace Huragok.Utilities.Sound {
         private static (FmodSample sample, string samplePath)? FindInBank(string bankPath, IF_SoundPermutation lookingForPermutation) {
             var bankMap = BuildBankMap(bankPath);
             string soundTagPath = lookingForPermutation.belongsToRange.belongsToTag.sourceTag.Path.RelativePath;
-            
+
             // Forgive null, because these paths cannot possibly be null unless Bungie put tags in the root of the drive.
             string parentOfTag = Path.GetDirectoryName(soundTagPath)!;
             string parentOfParent = Path.GetDirectoryName(parentOfTag)!;
@@ -56,7 +56,7 @@ namespace Huragok.Utilities.Sound {
         private static FmodSoundBank GetBank(string path) {
             if (bankCache.TryGetValue(path, out var bank))
                 return bank;
-            
+
             byte[] bytes = File.ReadAllBytes(path);
             var newBank = FsbLoader.LoadFsbFromByteArray(bytes);
 
@@ -67,7 +67,7 @@ namespace Huragok.Utilities.Sound {
 
         internal static Dictionary<int, (FmodSample sample, string infoFilePath)> BuildBankMap(string bankPath) {
             var outDict = new Dictionary<int, (FmodSample sample, string infoFilePath)>();
-            
+
             var bank = GetBank(bankPath);
             string bankInfoPath = Path.ChangeExtension(bankPath, "fsb.info");
             string[] infoPaths = TryReadInfoFile(bankInfoPath);

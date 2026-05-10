@@ -3,8 +3,6 @@ using FFMpegCore;
 using FFMpegCore.Extensions.Downloader;
 using FFMpegCore.Pipes;
 using Huragok.Data.Tags;
-using NAudio.Wave;
-using NVorbis;
 
 namespace Huragok.Utilities.Sound {
     internal class VorbisConverter {

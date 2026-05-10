@@ -1,6 +1,6 @@
+using Huragok.Configuration;
 using Huragok.Exceptions.ManagedBlam;
 using Huragok.ManagedBlam;
-using Huragok.Configuration;
 using Huragok.Utilities;
 
 namespace Huragok.Data.Tags {

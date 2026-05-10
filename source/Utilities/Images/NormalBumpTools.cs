@@ -7,7 +7,7 @@ namespace Huragok.Utilities.Imaging {
 
         internal static Bitmap ProcessNormalMap(Bitmap source, bool reconstructZ = true, bool swizzleGreen = false) {
             if (!reconstructZ && !swizzleGreen) return source;
-            
+
             var bmp = source.Clone(new Rectangle(0, 0, source.Width, source.Height), PixelFormat.Format32bppArgb);
 
             var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);

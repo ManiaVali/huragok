@@ -53,11 +53,11 @@ namespace Huragok.Commands.Preview {
             BlamFunctions.InitializeBlam();
 
             try {
-                if (string.IsNullOrWhiteSpace(soundTagFilepath)) 
+                if (string.IsNullOrWhiteSpace(soundTagFilepath))
                     throw new ArgumentNullException(nameof(soundTagFilepath));
 
                 var tagPath = TagPath.FromPathAndExtension(BlamFunctions.GetValidTagPath(soundTagFilepath), "sound");
-                if (!BlamFunctions.ValidateTag(tagPath, "sound")) 
+                if (!BlamFunctions.ValidateTag(tagPath, "sound"))
                     throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
 
                 string tagRelPath = BlamFunctions.GetValidTagPath(soundTagFilepath);
@@ -74,7 +74,7 @@ namespace Huragok.Commands.Preview {
                 var permutation = range.permutations[permutationIndex];
 
                 var player = new VorbisSoundPlayer();
-                
+
                 player.Load(permutation.SampleAsVorbisBytes, loop);
                 player.Play();
 

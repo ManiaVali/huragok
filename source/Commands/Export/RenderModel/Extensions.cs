@@ -1,5 +1,3 @@
-
-using Fmod5Sharp.FmodTypes;
 using SharpGLTF.Schema2;
 
 namespace Huragok.Commands.RenderModel {

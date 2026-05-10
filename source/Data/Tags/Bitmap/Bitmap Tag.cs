@@ -44,7 +44,7 @@ namespace Huragok.Data.Tags {
 
         internal override bool TryExportToDisk(string outputDirectory, BitmapFormat fileExtension, out List<string> finalFileLocations) {
             Logger.Debug($"{this.TagName}: Disk export requested.");
-            
+
             finalFileLocations = new();
 
             string extension = fileExtension.ToString().ToLowerInvariant();

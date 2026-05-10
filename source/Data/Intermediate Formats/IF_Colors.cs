@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Bungie.Game;
-
 namespace Huragok.Data.IntermediateFormats.Color {
     /// <summary>
     /// <para>Available modes which colors can be represented in.</para>

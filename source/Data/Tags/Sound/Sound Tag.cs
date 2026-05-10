@@ -1,5 +1,3 @@
-
-using Fmod5Sharp.FmodTypes;
 using Huragok.Data.IntermediateFormats.Sound;
 using Huragok.Utilities.Sound;
 
@@ -29,7 +27,7 @@ namespace Huragok.Data.Tags {
         #region Export Funcs
         internal override bool TryExportToDisk(string outputDirectory, SoundOutExtension fileType, out List<string> finalFileLocations) {
             Logger.Debug($"{this.TagName}: Disk export requested.");
-            
+
             string extension = fileType.ToString().ToLower() ?? "ogg";
             List<string> outPaths = new();
 
@@ -42,7 +40,7 @@ namespace Huragok.Data.Tags {
                     string outPath = Path.ChangeExtension(Path.Combine(outputDirectory, perm.OriginalSamplePath), extension);
                     // If someone's putting this on the root of their drive GetDirectoryName comes back null
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? outputDirectory);
-                    
+
                     File.WriteAllBytes(outPath, data);
                     outPaths.Add(outPath);
                 }

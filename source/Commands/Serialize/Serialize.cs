@@ -42,7 +42,7 @@ namespace Huragok.Commands.Serialize {
 
             var tagPath = TagPath.FromFilename(tagFilePath);
             var tagFile = new TagFile(tagPath);
-            
+
             DataSerializer.Serialize(Console.OpenStandardOutput(), TagSerializer.ReadTag(tagFile), MainProgram.defaultSerializationFormat);
 
             BlamFunctions.Teardown();
