@@ -8,16 +8,30 @@ using Huragok.Data.IntermediateFormats.Coordinates;
 // TODO
 // - Add marker and markergroup support.
 // - Water face support?
+// - Make this code less ad hoc and more generic.
 namespace Huragok.Data.IntermediateFormats.Mesh {
-    internal readonly struct Face {
-        internal readonly int T1;
-        internal readonly int T2;
-        internal readonly int T3;
 
-        internal Face(int T1, int T2, int T3) {
-            this.T1 = T1;
-            this.T2 = T2;
-            this.T3 = T3;
+    /// <summary>
+    /// Intermediate representation of a face, composed of 3 vertex indices.
+    /// </summary>
+    internal readonly struct IF_MeshTriangle {
+        /// <summary>
+        /// Index of the first vertex.
+        /// </summary>
+        internal readonly int Vertex1Index;
+        /// <summary>
+        /// Index of the second vertex.
+        /// </summary>
+        internal readonly int Vertex2Index;
+        /// <summary>
+        /// Index of the third vertex.
+        /// </summary>
+        internal readonly int Vertex3Index;
+
+        internal IF_MeshTriangle(int Vertex1, int Vertex2, int Vertex3) {
+            this.Vertex1Index = Vertex1;
+            this.Vertex2Index = Vertex2;
+            this.Vertex3Index = Vertex3;
         }
     }
 
@@ -209,9 +223,10 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         internal readonly long meshIndex;
         internal readonly IF_MeshPermutation permutation;
         internal readonly List<Vector3> positions = new();
-        internal readonly List<Face> faces = new();
+        internal readonly List<IF_MeshTriangle> faces = new();
         internal readonly List<long> faceMaterialIndices = new();
         internal readonly List<Vector3> vtxNormals = new();
+        internal readonly List<Vector3> vtxColors = new();
         internal readonly List<Vector2> texCoords = new();
         internal readonly IF_Mesh ourMesh;
         internal readonly IF_CompressionBounds bounds;
@@ -221,11 +236,13 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
         internal readonly List<Vector4> nodeWeights = new();
 
         internal IF_MeshExportGeometry(TagFieldBlock perMeshTempDataBlock, IF_MeshPermutation forPermutation, IF_Mesh ourMesh, IF_CompressionBounds bounds, TagPath tagPath, CoordinateUnit coordinateSpace) {
-            this.meshIndex = (long)forPermutation.meshIndex;
+            this.meshIndex = forPermutation.meshIndex;
             this.permutation = forPermutation;
             this.ourMesh = ourMesh;
             this.bounds = bounds;
             this.tagPath = tagPath;
+
+            var thisPerMeshTemp = (TagFieldBlockElement)perMeshTempDataBlock.Elements[(int)this.meshIndex];
 
             float[] rawPositions = GameRenderModel.GetPositionsFromMesh(perMeshTempDataBlock, (int)this.meshIndex);
             if (rawPositions.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex position list not divisible by 3.");
@@ -265,6 +282,12 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
                 this.nodeWeights.Add(weightGroup);
             }
 
+            var rawVertsBlock = thisPerMeshTemp.SelectFieldType<TagFieldBlock>("Block:raw vertices");
+            foreach (var element in rawVertsBlock.Elements.Cast<TagFieldBlockElement>()) {
+                var vertexColor = RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
+                this.vtxColors.Add(vertexColor);
+            }
+
             // This section decodes triangle strips into triangle faces.
             // Some engine variants store tris as triangle strips instead of a list of faces.
             // Every new index after the first two forms a triangle with the previous two indices.
@@ -294,8 +317,8 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
 
                     // Unwind strips, alternating orientation each face.
                     var face = (localPos % 2 == 0)
-                        ? new Face(a, b, c)
-                        : new Face(a, c, b);
+                        ? new IF_MeshTriangle(a, b, c)
+                        : new IF_MeshTriangle(a, c, b);
 
                     this.faces.Add(face);
 
@@ -303,16 +326,6 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
                     this.faceMaterialIndices.Add(part.materialIndex);
                 }
             }
-
-            // // convert unpacked indices into faces
-            // List<int> unpacked = new();
-            // for (int i = 0; i < unpacked.Count; i += 3) {
-            //     faces.Add(new Face(
-            //         unpacked[i],
-            //         unpacked[i + 1],
-            //         unpacked[i + 2]
-            //     ));
-            // }
         }
     }
 

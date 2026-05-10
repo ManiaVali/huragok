@@ -1,4 +1,3 @@
-
 namespace Huragok.Utilities {
     internal static class GlobalConstants {
         /// <summary>
@@ -18,7 +17,9 @@ namespace Huragok.Utilities {
         /// </summary>
         internal const float JMS_TO_WU = 1 / WU_TO_JMS;
 
-
+        /// <summary>
+        /// Name of the program, to be used in output strings.
+        /// </summary>
         internal const string PROGRAM_NAME = "Huragok";
 
         /// <summary>

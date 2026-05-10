@@ -241,7 +241,7 @@ namespace Huragok.Data.Tags {
                     if (perm.meshIndex < 0) continue;
                     if (!this.exportGeometries.TryGetValue(perm.meshIndex, out var exGeom)) continue;
 
-                    var mesh = new MeshBuilder<VertexPositionNormal, VertexTexture1, VertexJoints4>($"mesh:{region.name}:{perm.name}");
+                    var mesh = new MeshBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>($"mesh:{region.name}:{perm.name}");
                     var prim = mesh.UsePrimitive(MaterialBuilder.CreateDefault());
 
                     for (int i = 0; i < exGeom.faces.Count; i++) {
@@ -254,52 +254,62 @@ namespace Huragok.Data.Tags {
                         }
 
                         // Create vertices and add normals
-                        var vp1 = new VertexPositionNormal(exGeom.positions[face.T1], exGeom.vtxNormals[face.T1]);
-                        var vp2 = new VertexPositionNormal(exGeom.positions[face.T2], exGeom.vtxNormals[face.T2]);
-                        var vp3 = new VertexPositionNormal(exGeom.positions[face.T3], exGeom.vtxNormals[face.T3]);
+                        var vp1 = new VertexPositionNormal(exGeom.positions[face.Vertex1Index], exGeom.vtxNormals[face.Vertex1Index]);
+                        var vp2 = new VertexPositionNormal(exGeom.positions[face.Vertex2Index], exGeom.vtxNormals[face.Vertex2Index]);
+                        var vp3 = new VertexPositionNormal(exGeom.positions[face.Vertex3Index], exGeom.vtxNormals[face.Vertex3Index]);
 
                         // Add texture coordinates
-                        var vt1 = new VertexTexture1(exGeom.texCoords[face.T1]);
-                        var vt2 = new VertexTexture1(exGeom.texCoords[face.T2]);
-                        var vt3 = new VertexTexture1(exGeom.texCoords[face.T3]);
+                        var vt1 = exGeom.texCoords[face.Vertex1Index];
+                        var vt2 = exGeom.texCoords[face.Vertex2Index];
+                        var vt3 = exGeom.texCoords[face.Vertex3Index];
+
+                        // Create vertex colors
+                        var vc1 = new Vector4(exGeom.vtxColors[face.Vertex1Index].X, exGeom.vtxColors[face.Vertex1Index].Y, exGeom.vtxColors[face.Vertex1Index].Z, 1);
+                        var vc2 = new Vector4(exGeom.vtxColors[face.Vertex2Index].X, exGeom.vtxColors[face.Vertex2Index].Y, exGeom.vtxColors[face.Vertex2Index].Z, 1);
+                        var vc3 = new Vector4(exGeom.vtxColors[face.Vertex3Index].X, exGeom.vtxColors[face.Vertex3Index].Y, exGeom.vtxColors[face.Vertex3Index].Z, 1);
+
+                        // Combine texcoords and colors
+                        var vm1 = new VertexColor1Texture1(vc1, vt1);
+                        var vm2 = new VertexColor1Texture1(vc2, vt2);
+                        var vm3 = new VertexColor1Texture1(vc3, vt3);
 
                         // Set up joints
-                        var j1 = exGeom.nodeIndices[face.T1];
-                        var j2 = exGeom.nodeIndices[face.T2];
-                        var j3 = exGeom.nodeIndices[face.T3];
+                        var j1 = exGeom.nodeIndices[face.Vertex1Index];
+                        var j2 = exGeom.nodeIndices[face.Vertex2Index];
+                        var j3 = exGeom.nodeIndices[face.Vertex3Index];
 
                         // Set up weights
-                        var w1 = exGeom.nodeWeights[face.T1];
-                        var w2 = exGeom.nodeWeights[face.T2];
-                        var w3 = exGeom.nodeWeights[face.T3];
+                        var w1 = exGeom.nodeWeights[face.Vertex1Index];
+                        var w2 = exGeom.nodeWeights[face.Vertex2Index];
+                        var w3 = exGeom.nodeWeights[face.Vertex3Index];
 
                         // Construct the skins
                         var skin1 = new VertexJoints4(
-                            ((int)exGeom.nodeIndices[face.T1].X, exGeom.nodeWeights[face.T1].X),
-                            ((int)exGeom.nodeIndices[face.T1].Y, exGeom.nodeWeights[face.T1].Y),
-                            ((int)exGeom.nodeIndices[face.T1].Z, exGeom.nodeWeights[face.T1].Z),
-                            ((int)exGeom.nodeIndices[face.T1].W, exGeom.nodeWeights[face.T1].W)
+                            ((int)exGeom.nodeIndices[face.Vertex1Index].X, exGeom.nodeWeights[face.Vertex1Index].X),
+                            ((int)exGeom.nodeIndices[face.Vertex1Index].Y, exGeom.nodeWeights[face.Vertex1Index].Y),
+                            ((int)exGeom.nodeIndices[face.Vertex1Index].Z, exGeom.nodeWeights[face.Vertex1Index].Z),
+                            ((int)exGeom.nodeIndices[face.Vertex1Index].W, exGeom.nodeWeights[face.Vertex1Index].W)
                         );
                         var skin2 = new VertexJoints4(
-                            ((int)exGeom.nodeIndices[face.T2].X, exGeom.nodeWeights[face.T2].X),
-                            ((int)exGeom.nodeIndices[face.T2].Y, exGeom.nodeWeights[face.T2].Y),
-                            ((int)exGeom.nodeIndices[face.T2].Z, exGeom.nodeWeights[face.T2].Z),
-                            ((int)exGeom.nodeIndices[face.T2].W, exGeom.nodeWeights[face.T2].W)
+                            ((int)exGeom.nodeIndices[face.Vertex2Index].X, exGeom.nodeWeights[face.Vertex2Index].X),
+                            ((int)exGeom.nodeIndices[face.Vertex2Index].Y, exGeom.nodeWeights[face.Vertex2Index].Y),
+                            ((int)exGeom.nodeIndices[face.Vertex2Index].Z, exGeom.nodeWeights[face.Vertex2Index].Z),
+                            ((int)exGeom.nodeIndices[face.Vertex2Index].W, exGeom.nodeWeights[face.Vertex2Index].W)
                         );
                         var skin3 = new VertexJoints4(
-                            ((int)exGeom.nodeIndices[face.T3].X, exGeom.nodeWeights[face.T3].X),
-                            ((int)exGeom.nodeIndices[face.T3].Y, exGeom.nodeWeights[face.T3].Y),
-                            ((int)exGeom.nodeIndices[face.T3].Z, exGeom.nodeWeights[face.T3].Z),
-                            ((int)exGeom.nodeIndices[face.T3].W, exGeom.nodeWeights[face.T3].W)
+                            ((int)exGeom.nodeIndices[face.Vertex3Index].X, exGeom.nodeWeights[face.Vertex3Index].X),
+                            ((int)exGeom.nodeIndices[face.Vertex3Index].Y, exGeom.nodeWeights[face.Vertex3Index].Y),
+                            ((int)exGeom.nodeIndices[face.Vertex3Index].Z, exGeom.nodeWeights[face.Vertex3Index].Z),
+                            ((int)exGeom.nodeIndices[face.Vertex3Index].W, exGeom.nodeWeights[face.Vertex3Index].W)
                         );
 
                         // Construct the final vertices
-                        var v1 = new VertexBuilder<VertexPositionNormal, VertexTexture1, VertexJoints4>(vp1, vt1, skin1);
-                        var v2 = new VertexBuilder<VertexPositionNormal, VertexTexture1, VertexJoints4>(vp2, vt2, skin2);
-                        var v3 = new VertexBuilder<VertexPositionNormal, VertexTexture1, VertexJoints4>(vp3, vt3, skin3);
+                        var vOut1 = new VertexBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>(vp1, vm1, skin1);
+                        var vOut2 = new VertexBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>(vp2, vm2, skin2);
+                        var vOut3 = new VertexBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>(vp3, vm3, skin3);
 
                         // Add to primitive
-                        prim.AddTriangle(v1, v2, v3);
+                        prim.AddTriangle(vOut1, vOut2, vOut3);
                     }
 
                     // Construct the inverse bind matrix for armature support
@@ -342,9 +352,11 @@ namespace Huragok.Data.Tags {
                     var gltfNode = gltfNodes[(int)marker.nodeIndex];
                     var markerNode = new NodeBuilder($"marker:{markerGroup.name}:{marker.index}");
 
+                    var markerScale = new RealPoint3d(marker.scale, marker.scale, marker.scale, CoordinateUnit.Blam);
+
                     markerNode.SetLocalTransform(
                         new AffineTransform(
-                            new Vector3(marker.scale, marker.scale, marker.scale),
+                            markerScale.ConvertToUnits(this.distanceUnits),
                             marker.rotation,
                             marker.translation.FlipAxes.ConvertToUnits(this.distanceUnits)
                         ), true
