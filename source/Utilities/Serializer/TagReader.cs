@@ -159,7 +159,7 @@ namespace Huragok.Utilities.Serializer {
                 TagFieldType.RealAhsvColor => UnsupportedType(field), // Not supported
                 TagFieldType.ShortIntegerBounds => UnsupportedType(field), // Not supported
                 TagFieldType.AngleBounds => UnsupportedType(field), // Not supported
-                TagFieldType.RealBounds => UnsupportedType(field), // Not supported
+                TagFieldType.RealBounds => IF_RealBounds.FromTagFloatArray((TagFieldElementArraySingle)field),
                 TagFieldType.RealFractionBounds => UnsupportedType(field), // Not supported
                 TagFieldType.Reference => ((TagFieldReference)field).Reference?.Path?.RelativePathWithExtension,
                 TagFieldType.Block => ReadBlock((TagFieldBlock)field),

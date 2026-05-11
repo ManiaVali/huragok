@@ -2,6 +2,8 @@
 - Tag serializer can now serialize:
     - RealRgbColor
     - RealArgbColor
+    - RealBounds
+    - RealQuaternion
     - ShortBlockIndex
     - Data (just reports "binary data")
     - Arrays

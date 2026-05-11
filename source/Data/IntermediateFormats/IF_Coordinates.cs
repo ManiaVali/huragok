@@ -106,7 +106,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         internal static IF_RealPoint3d FromTagFloatArray(TagFieldElementArraySingle tagFloatArray) {
             float[] v3Data = tagFloatArray.Data;
-            if (v3Data.Length != 3) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArray)} to {nameof(Vector3)}; incorrect number of elements (got {v3Data.Length}, expected 3)");
+            if (v3Data.Length != 3) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArraySingle)} to {nameof(Vector3)}; incorrect number of elements (got {v3Data.Length}, expected 3)");
             return new IF_RealPoint3d(v3Data[0], v3Data[1], v3Data[2], IF_CoordinateUnit.Blam);
         }
 
@@ -150,7 +150,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         internal static IF_RealQuaterion FromTagFloatArray(TagFieldElementArraySingle tagFloatArray) {
             float[] qData = tagFloatArray.Data;
-            if (qData.Length != 4) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArray)} to {nameof(Quaternion)}; incorrect number of elements (got {qData.Length}, expected 4)");
+            if (qData.Length != 4) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArraySingle)} to {nameof(Quaternion)}; incorrect number of elements (got {qData.Length}, expected 4)");
             return new IF_RealQuaterion(qData[0], qData[1], qData[2], qData[3]);
         }
     }
@@ -182,6 +182,25 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
             this.J = j;
             this.K = k;
             this.D = d;
+        }
+    }
+
+    internal readonly struct IF_RealBounds {
+        public readonly double low;
+        public readonly double high;
+        public readonly double range;
+
+        public IF_RealBounds(double low, double high) {
+            this.low = low;
+            this.high = high;
+
+            this.range = high - low;
+        }
+
+        internal static IF_RealBounds FromTagFloatArray(TagFieldElementArraySingle tagFloatArray) {
+            float[] boundsData = tagFloatArray.Data;
+            if (boundsData.Length != 2) throw new ArgumentOutOfRangeException($"Cannot cast from type {nameof(TagFieldElementArraySingle)} to {nameof(IF_RealBounds)}; incorrect number of elements (got {boundsData.Length}, expected 2)");
+            return new IF_RealBounds(boundsData[0], boundsData[1]);
         }
     }
 }
