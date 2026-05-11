@@ -1,0 +1,17 @@
+## To do, for now.
+- [x] Add option for batch exporting of bitmaps
+- [x] Add option for batch exporting of render models
+- [x] Add marker(group) support to render models
+- [x] Add vertex colors support to render models
+- [ ] Add functionality for exporting scenario structure BSP
+- [ ] Add functionality to preview bitmaps
+- [x] Add functionality to preview sound tags
+- [x] Add option to sound exporter to transcode to formats other than OGG
+- [x] Add functionality to preview sound_looping tags
+- [x] Add functionality for exporting sound tags
+- [ ] Add documentation to publicly exposed classes and members.
+- [ ] Refactor intermediate formats; most of them are very ad hoc and generally unorganized.
+- [x] Replace each tags bespoke meta commands with a proper serialization system
+- [x] Expand shader command to more accurately expose functions and internal data
+- [x] Add support for reading functions
+- [x] Unify model and render-model intermediate formats
