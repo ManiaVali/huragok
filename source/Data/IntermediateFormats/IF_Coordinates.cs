@@ -1,4 +1,3 @@
-
 using System.Numerics;
 using Huragok.Utilities;
 
@@ -39,9 +38,10 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// </summary>
         internal Vector3 AsMetric => this.backingXYZ * GlobalConstants.WU_TO_METERS;
         /// <summary>
-        /// Read this coordinate in a +Z Up, +Y forward coordinate system, instead of +Z up, -X forward.
+        /// <para>Blam internally appears to use X fwd, Y left, Z up and is left handed.</para>
+        /// <para><see cref="FlipAxes"/> converts this point to X right, Y fwd, Z up, right handed.</para>
         /// </summary>
-        internal IF_RealPoint3d FlipAxes => new(this.backingXYZ.Y, this.backingXYZ.Z, -this.backingXYZ.X, IF_CoordinateUnit.Blam);
+        internal IF_RealPoint3d FlipAxes => new(-this.backingXYZ.Y, this.backingXYZ.Z, -this.backingXYZ.X, IF_CoordinateUnit.Blam);
 
         private readonly Vector3 backingXYZ;
 
@@ -128,15 +128,32 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
     /// </summary>
     internal sealed class IF_RealQuaterion {
         /// <summary>
-        /// Read this quaternion in a +Y Up, +Z forward coordinate system, instead of +Z up, -X forward.
-        /// </summary>
-        internal IF_RealQuaterion FlipAxes => new(this.backingXYZW.Y, this.backingXYZW.Z, -this.backingXYZW.X, this.backingXYZW.W);
-        /// <summary>
         /// <para>Value of the quaternion in the original Blam coordinate space.</para>
         /// </summary>
         internal Quaternion Value => this.backingXYZW;
 
+        /// <summary>
+        /// <para>Blam internally appears to use X fwd, Y left, Z up and is left handed.</para>
+        /// <para><see cref="FlipAxes"/> converts this quaternion to X right, Y fwd, Z up, right handed.</para>
+        /// </summary>
+        internal IF_RealQuaterion FlipAxes {
+            get {
+                var original = Matrix4x4.CreateFromQuaternion(this.Value);
+
+                var converted = original * this.rotBasis * Matrix4x4.Transpose(this.rotBasis);
+                var result = Quaternion.CreateFromRotationMatrix(converted);
+                return new(result.X, result.Y, result.Z, result.W);
+            }
+        }
+
         private readonly Quaternion backingXYZW;
+
+        private readonly Matrix4x4 rotBasis = new(
+            0, -1, 0, 0,
+            0, 0, 1, 0,
+            -1, 0, 0, 0,
+            0, 0, 0, 1
+        );
 
         internal IF_RealQuaterion(float x, float y, float z, float w) {
             this.backingXYZW = new(x, y, z, w);
