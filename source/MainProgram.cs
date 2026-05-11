@@ -30,7 +30,7 @@ namespace Huragok {
             rootCmd.AddCommand(Commands.Export.Base.Register());
             rootCmd.AddCommand(Commands.Preview.Base.Register());
 #if DEBUG
-            rootCmd.AddCommand(Commands.Debug.Base.Register());
+            rootCmd.AddCommand(Commands.Debugging.Base.Register());
 #endif
 
             var configOption = CommonArgsAndOpts.ConfigFile;

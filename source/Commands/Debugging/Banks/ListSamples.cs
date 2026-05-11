@@ -3,7 +3,7 @@ using System.CommandLine;
 using Fmod5Sharp;
 using Fmod5Sharp.FmodTypes;
 
-namespace Huragok.Commands.Debug {
+namespace Huragok.Commands.Debugging {
     internal static class EnumerateBank {
         internal static Command Register() {
             // Command Setup
@@ -25,7 +25,7 @@ namespace Huragok.Commands.Debug {
         }
 
         private static void EnumerateSamples(string bankPath) {
-            var fmodBytes = File.ReadAllBytes(bankPath);
+            byte[] fmodBytes = File.ReadAllBytes(bankPath);
             var bankFile = FsbLoader.LoadFsbFromByteArray(fmodBytes);
             var samples = bankFile.Samples;
 

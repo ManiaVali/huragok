@@ -7,7 +7,6 @@
     <Nullable>enable</Nullable>
     <HighEntropyVA>false</HighEntropyVA>
     <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <TargetName>Huragok</TargetName>
     <AssemblyName>Huragok</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

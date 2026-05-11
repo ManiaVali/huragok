@@ -5,7 +5,7 @@ namespace Huragok.Utilities {
             basePath = Path.GetFullPath(basePath);
             fullPath = Path.GetFullPath(fullPath);
 
-            var relative = Path.GetRelativePath(basePath, fullPath);
+            string relative = Path.GetRelativePath(basePath, fullPath);
 
             return !relative.StartsWith("..") && !Path.IsPathRooted(relative);
         }

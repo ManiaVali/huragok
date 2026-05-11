@@ -3,7 +3,7 @@ using System.CommandLine;
 using System.Reflection;
 using Huragok.Utilities.Sound;
 
-namespace Huragok.Commands.Debug {
+namespace Huragok.Commands.Debugging {
     internal static class DumpFMODInfo {
         internal static Command Register() {
             // Command Setup

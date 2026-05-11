@@ -2,7 +2,7 @@
 using System.CommandLine;
 using Huragok.Utilities.Sound;
 
-namespace Huragok.Commands.Debug {
+namespace Huragok.Commands.Debugging {
     internal static class ProbeDisagree {
         internal static Command Register() {
             // Command Setup

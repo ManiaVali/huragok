@@ -61,7 +61,6 @@ namespace Huragok.Utilities.Serializer {
         private static Dictionary<string, bool> ReadFlags(TagFieldFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => flags.TestBit(v.FlagName));
         private static Dictionary<string, bool> ReadBlockFlags(TagFieldBlockFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => v.IsSet);
 
-        // TODO: Convert these to truly use RealPoints so we can autoconvert their coordinate spaces later.
         private static Vector2 ReadPoint2d(TagFieldElementArrayInteger integerArray) => new(integerArray.Data[0], integerArray.Data[1]);
         private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
         private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
@@ -71,9 +70,9 @@ namespace Huragok.Utilities.Serializer {
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static IF_Color ReadColorRGBA(TagFieldElementArraySingle floatArray) {
             int? alpha = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[0]) : null;
-            var red = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[1]) : FloatToColorInt(floatArray.Data[0]);
-            var green = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[2]) : FloatToColorInt(floatArray.Data[1]);
-            var blue = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[3]) : FloatToColorInt(floatArray.Data[2]);
+            int red = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[1]) : FloatToColorInt(floatArray.Data[0]);
+            int green = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[2]) : FloatToColorInt(floatArray.Data[1]);
+            int blue = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[3]) : FloatToColorInt(floatArray.Data[2]);
 
             return new(red, green, blue, alpha, IF_ColorMode.Xbox);
 
@@ -92,7 +91,6 @@ namespace Huragok.Utilities.Serializer {
 
             return list;
         }
-        // END
 
         private static object ReadCustom(TagFieldCustom customElement) {
             if (customElement.GetType() == typeof(TagFieldCustomFunctionEditor)) {

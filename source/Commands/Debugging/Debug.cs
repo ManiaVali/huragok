@@ -2,7 +2,7 @@
 using System.CommandLine;
 using Huragok.Utilities;
 
-namespace Huragok.Commands.Debug {
+namespace Huragok.Commands.Debugging {
     internal static class Base {
         internal static Command Register() {
             // Command Setup
