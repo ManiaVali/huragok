@@ -2,12 +2,12 @@ using System.Numerics;
 using Huragok.Data.IntermediateFormats;
 using Huragok.Data.IntermediateFormats.Color;
 
-namespace Huragok.Utilities.Serializer {
+namespace Huragok.Utilities {
     /// <summary>
-    /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="DataSerializer"/>.</para>
+    /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="Serializer.DataSerializer"/>.</para>
     /// <para>Should not be used when constructing tags for export, as it processes the entire tag when we rarely need that.</para>
     /// </summary>
-    internal static class TagSerializer {
+    internal static class TagDataReader {
         // Do not bother parsing these types of fields. (Yet)
         private static readonly List<TagFieldType> skipTypes = [
             TagFieldType.Explanation,
@@ -20,6 +20,7 @@ namespace Huragok.Utilities.Serializer {
             return ReadFields(tagFile.Fields);
         }
 
+        #region Group Reading
         private static Dictionary<string, object?> ReadFields(IEnumerable<TagField> fields) {
             var result = new Dictionary<string, object?>();
 
@@ -56,16 +57,22 @@ namespace Huragok.Utilities.Serializer {
 
             return list;
         }
+        #endregion
 
+        #region Type Handling
         private static Dictionary<string, bool> ReadFlags(TagFieldFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => flags.TestBit(v.FlagName));
         private static Dictionary<string, bool> ReadBlockFlags(TagFieldBlockFlags flags) => flags.Items.ToDictionary(k => k.FlagName, v => v.IsSet);
 
         private static Vector2 ReadPoint2d(TagFieldElementArrayInteger integerArray) => new(integerArray.Data[0], integerArray.Data[1]);
-        private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
-        private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
-        private static (float low, float high) ReadBounds(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
-        private static (float i, float j, float k) ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
-        private static (float i, float j, float k, float d) ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
+        private static Vector2 ReadPoint2d(TagFieldElementArraySingle floatArray) => FromTagFloatArray<Vector2>(floatArray);
+        private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => FromTagFloatArray<Vector3>(floatArray);
+
+        private readonly record struct IF_RealBounds(float low, float high);
+        private static IF_RealBounds ReadBounds(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
+        private readonly record struct IF_RealPlane2d(float i, float j, float k);
+        private static IF_RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
+        private readonly record struct IF_RealPlane3d(float i, float j, float k, float d);
+        private static IF_RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static IF_Color ReadColorRGBA(TagFieldElementArraySingle floatArray) {
@@ -118,7 +125,57 @@ namespace Huragok.Utilities.Serializer {
             return null;
 #endif
         }
+        #endregion
 
+        #region Helpers
+        internal static T FromTagFloatArray<T>(TagFieldElementArraySingle floats)
+            where T : struct {
+            float[] data = floats.Data;
+
+            object result = typeof(T) switch {
+                var t when t == typeof(Vector2) => CreateVector2(data, floats),
+                var t when t == typeof(Vector3) => CreateVector3(data, floats),
+                var t when t == typeof(Quaternion) => CreateQuaternion(data, floats),
+
+                _ => throw new NotSupportedException(
+                    $"Unsupported type `{typeof(T).Name}`.")
+            };
+
+            return (T)result;
+        }
+
+        private static Vector2 CreateVector2(
+            float[] data,
+            TagFieldElementArraySingle floats) {
+            if (data.Length != 2) {
+                throw new ArgumentException($"Cannot create {nameof(Vector2)} from field `{floats.FieldName}`.");
+            }
+
+            return new Vector2(data[0], data[1]);
+        }
+
+        private static Vector3 CreateVector3(
+            float[] data,
+            TagFieldElementArraySingle floats) {
+            if (data.Length != 3) {
+                throw new ArgumentException($"Cannot create {nameof(Vector3)} from field `{floats.FieldName}`.");
+            }
+
+            return new Vector3(data[0], data[1], data[2]);
+        }
+
+        private static Quaternion CreateQuaternion(
+            float[] data,
+            TagFieldElementArraySingle floats) {
+            if (data.Length != 4) {
+                throw new ArgumentException($"Cannot create {nameof(Quaternion)} from field `{floats.FieldName}`.");
+            }
+
+            return new Quaternion(data[0], data[1], data[2], data[3]);
+        }
+        #endregion
+
+        #region Type Switch
         private static object? ReadField(TagField field) {
             return field.FieldType switch {
                 TagFieldType.String => ((TagFieldElementString)field).Data,
@@ -187,5 +244,6 @@ namespace Huragok.Utilities.Serializer {
                 _ => throw new NotImplementedException(),
             };
         }
+        #endregion
     }
 }

@@ -57,9 +57,9 @@ namespace Huragok.Data.IntermediateFormats.Markers {
             this.permutationIndex = markerElement.SelectFieldType<TagFieldElementInteger>("permutation index").Data;
             this.nodeIndex = markerElement.SelectFieldType<TagFieldElementInteger>("node index").Data;
 
-            this.translation = BlamMathematics.FromTagFloatArray<Vector3>(markerElement.SelectFieldType<TagFieldElementArraySingle>("translation"));
-            this.rotation = BlamMathematics.FromTagFloatArray<Quaternion>(markerElement.SelectFieldType<TagFieldElementArraySingle>("rotation"));
-            this.direction = BlamMathematics.FromTagFloatArray<Vector3>(markerElement.SelectFieldType<TagFieldElementArraySingle>("direction"));
+            this.translation = TagDataReader.FromTagFloatArray<Vector3>(markerElement.SelectFieldType<TagFieldElementArraySingle>("translation"));
+            this.rotation = TagDataReader.FromTagFloatArray<Quaternion>(markerElement.SelectFieldType<TagFieldElementArraySingle>("rotation"));
+            this.direction = TagDataReader.FromTagFloatArray<Vector3>(markerElement.SelectFieldType<TagFieldElementArraySingle>("direction"));
             this.scale = markerElement.SelectFieldType<TagFieldElementSingle>("scale");
 
             var flags = markerElement.SelectFieldType<TagFieldFlags>("flags");

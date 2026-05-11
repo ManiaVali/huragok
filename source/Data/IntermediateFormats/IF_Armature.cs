@@ -36,9 +36,9 @@ namespace Huragok.Data.IntermediateFormats.Armature {
             this.name = nodeElement.SelectFieldType<TagFieldElementStringID>(nodeNameField).Data;
             this.index = nodeElement.ElementIndex;
 
-            this.defaultTranslation = BlamMathematics.FromTagFloatArray<Vector3>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
+            this.defaultTranslation = TagDataReader.FromTagFloatArray<Vector3>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
 
-            this.defaultRotation = BlamMathematics.FromTagFloatArray<Quaternion>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation"));
+            this.defaultRotation = TagDataReader.FromTagFloatArray<Quaternion>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation"));
         }
 
         /// <summary>

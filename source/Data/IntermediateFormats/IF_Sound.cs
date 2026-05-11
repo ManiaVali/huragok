@@ -1,4 +1,5 @@
 
+using Fmod5Sharp.FmodTypes;
 using Huragok.Data.Tags;
 using Huragok.Utilities.Sound;
 
@@ -28,7 +29,7 @@ namespace Huragok.Data.IntermediateFormats.Sound {
         internal float lengthSeconds;
         internal IF_PitchRange belongsToRange;
 
-        private readonly (Fmod5Sharp.FmodTypes.FmodSample sample, string samplePath) rawSampleData;
+        private readonly (FmodSample sample, string samplePath) rawSampleData;
 
         internal byte[] SampleAsVorbisBytes {
             get {
