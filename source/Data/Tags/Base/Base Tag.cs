@@ -1,6 +1,7 @@
-using Huragok.Configuration;
-using Huragok.Exceptions.ManagedBlam;
-using Huragok.ManagedBlam;
+
+using Huragok.Application;
+using Huragok.Application.Configuration;
+using Huragok.Blam;
 using Huragok.Utilities;
 
 namespace Huragok.Data.Tags {
@@ -35,7 +36,7 @@ namespace Huragok.Data.Tags {
         }
 
         // TODO: Find a way to validate the tag data other than just its ext
-        internal bool ValidateTag() => BlamFunctions.ValidateTag(this.sourceTag, this.TagExtension);
+        internal bool ValidateTag() => BlamEngine.ValidateTag(this.sourceTag, this.TagExtension);
 
         internal virtual bool TryExportToDisk(string outputDirectory, TFileExt fileExtension, out List<string> finalFileLocations) => throw new NotSupportedException($"Export of {this.GetType().Name} not supported!");
 

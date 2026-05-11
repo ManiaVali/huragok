@@ -20,7 +20,7 @@
 	  <BlamVariant>HR</BlamVariant>
 	</PropertyGroup>
 
-  <Import Project="properties/BlamVariants.props"/>
+  <Import Project="source/Blam/Variants.props"/>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <VersionSuffix>$(BlamVariant)-debug</VersionSuffix>
@@ -44,11 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="source\Utilities\Blender\glb2fbx.py">
+    <Content Include="source\Interop\Blender\glb2fbx.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>utils\blender\glb2fbx.py</Link>
     </Content>
-    <Content Include="source\Configuration\defaultConfig.json">
+    <Content Include="source\Application\Configuration\defaultConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>config\HuragokConfiguration.json</Link>
     </Content>
