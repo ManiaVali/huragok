@@ -194,21 +194,21 @@ huragok export sound --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\
         <tr>
             <td>
                 <p><b><i>exit_hp_lp1.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://cdn.discordapp.com/attachments/1502577765101342912/1502578469257609346/exit_hp_lp1.ogg?ex=6a0232ff&is=6a00e17f&hm=4df02735e766639da85416589fe81d62b24066e4be7aa7e095cf59c2d522ed9a&">Your browser does not support the audio tag.</audio>
+                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp1.mp3">Failed to load audio file.</audio>
             </td>
             <td>
                 <p><b><i>exit_hp_lp2.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://cdn.discordapp.com/attachments/1502577765101342912/1502578469693821000/exit_hp_lp2.ogg?ex=6a0232ff&is=6a00e17f&hm=eba3d5d52431fec39bf0388e2b7f3eb301f5859bdefad70dd73759eba990f016&">Your browser does not support the audio tag.</audio>
+                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp2.mp3">Failed to load audio file.</audio>
             </td>
         </tr>
         <tr>
             <td>
                 <p><b><i>exit_hp_lp3.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://cdn.discordapp.com/attachments/1502577765101342912/1502578470017040465/exit_hp_lp3.ogg?ex=6a0232ff&is=6a00e17f&hm=c3ce293944a288626716a55b0fb28015d8c1472b24349c887c32ba7760fe101f&">Your browser does not support the audio tag.</audio>
+                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp3.mp3">Failed to load audio file.</audio>
             </td>
             <td>
                 <p><b><i>exit_hp_lp4.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://cdn.discordapp.com/attachments/1502577765101342912/1502578470545395732/exit_hp_lp4.ogg?ex=6a0232ff&is=6a00e17f&hm=bd1d4d1fe6eacf225532c629766dca5cbfdb536269d0c27449774b65450db4a9&">Your browser does not support the audio tag.</audio>
+                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp4.mp3">Failed to load audio file.</audio>
             </td>
         </tr>
     </tbody>
