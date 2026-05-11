@@ -308,8 +308,8 @@ namespace Huragok.Data.Tags {
                         var vOut2 = new VertexBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>(vp2, vm2, skin2);
                         var vOut3 = new VertexBuilder<VertexPositionNormal, VertexColor1Texture1, VertexJoints4>(vp3, vm3, skin3);
 
-                        // Add to primitive
-                        prim.AddTriangle(vOut1, vOut2, vOut3);
+                        // Add to primitive -- verts 2 and 3 swapped due to handedness change in IF_RealPoint3d.FlipAxes()
+                        prim.AddTriangle(vOut1, vOut3, vOut2);
                     }
 
                     // Construct the inverse bind matrix for armature support

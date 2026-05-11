@@ -39,7 +39,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// </summary>
         internal Vector3 AsMetric => this.backingXYZ * GlobalConstants.WU_TO_METERS;
         /// <summary>
-        /// Read this coordinate in a +Y Up, +Z forward coordinate system, instead of +Z up, -X forward.
+        /// Read this coordinate in a +Z Up, +Y forward coordinate system, instead of +Z up, -X forward.
         /// </summary>
         internal IF_RealPoint3d FlipAxes => new(this.backingXYZ.Y, this.backingXYZ.Z, -this.backingXYZ.X, IF_CoordinateUnit.Blam);
 
