@@ -194,21 +194,21 @@ huragok export sound --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\
         <tr>
             <td>
                 <p><b><i>exit_hp_lp1.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp1.mp3">Failed to load audio file.</audio>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp1.mp3">Listen to audio file</a>
             </td>
             <td>
                 <p><b><i>exit_hp_lp2.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp2.mp3">Failed to load audio file.</audio>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp2.mp3">Listen to audio file</a>
             </td>
         </tr>
         <tr>
             <td>
                 <p><b><i>exit_hp_lp3.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp3.mp3">Failed to load audio file.</audio>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp3.mp3">Listen to audio file</a>
             </td>
             <td>
                 <p><b><i>exit_hp_lp4.sound</i></b></p>
-                <audio controls="1" controlslist="nofullscreen noremoteplayback" src="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp4.mp3">Failed to load audio file.</audio>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp4.mp3">Listen to audio file</a>
             </td>
         </tr>
     </tbody>
