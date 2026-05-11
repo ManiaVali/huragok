@@ -294,8 +294,16 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
 
             var rawVertsBlock = thisPerMeshTemp.SelectFieldType<TagFieldBlock>("Block:raw vertices");
             foreach (var element in rawVertsBlock.Elements.Cast<TagFieldBlockElement>()) {
-                var vertexColor = IF_RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
-                this.vtxColors.Add(vertexColor);
+                var tmpColors = IF_RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
+
+                const float VTX_COLOR_POW = 2.2f;
+                Vector3 vertexColors = new(
+                    MathF.Pow(tmpColors.X, 1 / VTX_COLOR_POW),
+                    MathF.Pow(tmpColors.Y, 1 / VTX_COLOR_POW),
+                    MathF.Pow(tmpColors.Z, 1 / VTX_COLOR_POW)
+                );
+
+                this.vtxColors.Add(vertexColors);
             }
 
             // This section decodes triangle strips into triangle faces.
