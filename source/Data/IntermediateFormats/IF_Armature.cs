@@ -1,6 +1,6 @@
 
 using System.Numerics;
-using Huragok.Data.IntermediateFormats.Coordinates;
+using Huragok.Utilities;
 
 namespace Huragok.Data.IntermediateFormats.Armature {
     /// <summary>
@@ -19,9 +19,9 @@ namespace Huragok.Data.IntermediateFormats.Armature {
         internal List<IF_ArmatureNode>? children = new();
 
         /// <summary>
-        /// An <see cref="IF_RealPoint3d"/> representing this nodes translation from its parent.
+        /// A <see cref="Vector3"/> representing this nodes translation from its parent.
         /// </summary>
-        internal readonly IF_RealPoint3d defaultTranslation;
+        internal readonly Vector3 defaultTranslation;
         /// <summary>
         /// A <see cref="Quaternion"/> representing the default relative rotation from the node's parent.
         /// </summary>
@@ -36,9 +36,9 @@ namespace Huragok.Data.IntermediateFormats.Armature {
             this.name = nodeElement.SelectFieldType<TagFieldElementStringID>(nodeNameField).Data;
             this.index = nodeElement.ElementIndex;
 
-            this.defaultTranslation = IF_RealPoint3d.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
+            this.defaultTranslation = BlamMathematics.FromTagFloatArray<Vector3>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:default translation"));
 
-            this.defaultRotation = IF_RealQuaterion.FromTagFloatArray(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation")).FlipAxes.Value;
+            this.defaultRotation = BlamMathematics.FromTagFloatArray<Quaternion>(nodeElement.SelectFieldType<TagFieldElementArraySingle>("default rotation"));
         }
 
         /// <summary>

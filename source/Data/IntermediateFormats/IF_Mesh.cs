@@ -184,11 +184,8 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             this.uvCoords1 = new(firstUV[1], secondUV[1]);
         }
 
-        internal IF_RealPoint3d Decompress(Vector3 compressedPosition) {
-            var tmpV3 = this.posBounds0 + compressedPosition * (this.posBounds1 - this.posBounds0);
-            return new IF_RealPoint3d(tmpV3, IF_CoordinateUnit.Blam); // Decompress in blam space. Final scaling is done later.
-        }
-
+        // Decompress in blam space. Final scaling is done later.
+        internal Vector3 Decompress(Vector3 compressedPosition) => this.posBounds0 + compressedPosition * (this.posBounds1 - this.posBounds0);
         internal Vector2 Decompress(Vector2 compressedTexCoord) => this.uvCoords0 + compressedTexCoord * (this.uvCoords1 - this.uvCoords0);
 
     }
@@ -258,15 +255,15 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             if (rawPositions.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex position list not divisible by 3.");
             for (int i = 0; i < rawPositions.Length; i += 3) {
                 var originalPositions = bounds.Decompress(new Vector3(rawPositions[i], rawPositions[i + 1], rawPositions[i + 2]));
-                var convertedSpacePositions = originalPositions.ConvertToUnits(coordinateSpace);
+                var convertedSpacePositions = originalPositions;
                 this.positions.Add(convertedSpacePositions);
             }
 
             float[] rawNorms = GameRenderModel.GetNormalsFromMesh(perMeshTempDataBlock, (int)this.meshIndex);
             if (rawNorms.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex normals list not divisible by 3.");
             for (int i = 0; i < rawNorms.Length; i += 3) {
-                var originalNorms = new IF_RealPoint3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], IF_CoordinateUnit.Blam);
-                var convertedSpaceNorms = originalNorms.ConvertToUnits(coordinateSpace);
+                var originalNorms = new Vector3(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2]);
+                var convertedSpaceNorms = originalNorms;
 
                 this.vtxNormals.Add(convertedSpaceNorms);
             }
@@ -294,7 +291,10 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
 
             var rawVertsBlock = thisPerMeshTemp.SelectFieldType<TagFieldBlock>("Block:raw vertices");
             foreach (var element in rawVertsBlock.Elements.Cast<TagFieldBlockElement>()) {
-                var tmpColors = IF_RealPoint3d.FromTagFloatArray(element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color")).AsBlam;
+                float[] rawColors = element.SelectFieldType<TagFieldElementArraySingle>("RealPoint3d:vertex color").Data;
+                if (rawColors.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; rawColors list not divisible by 3.");
+
+                var tmpColors = new Vector3(rawColors[0], rawColors[1], rawColors[2]);
 
                 const float VTX_COLOR_POW = 2.2f;
                 Vector3 vertexColors = new(

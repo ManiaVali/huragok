@@ -220,6 +220,7 @@ namespace Huragok.Data.Tags {
             // Build the skeleton
             var skeletonRootNode = new NodeBuilder($"{this.TagNameNoExtension}:armature");
             basisCorrectionRoot.AddNode(skeletonRootNode);
+
             scene.AddNode(basisCorrectionRoot);
 
             var gltfNodes = new Dictionary<int, NodeBuilder>();
@@ -229,7 +230,7 @@ namespace Huragok.Data.Tags {
                     new AffineTransform(
                         Vector3.One,
                         node.defaultRotation,
-                        node.defaultTranslation.ConvertToUnits(this.distanceUnits)
+                        node.defaultTranslation
                     ), true);
 
                 gltfNodes[(int)node.index] = gltfNode;
@@ -330,7 +331,7 @@ namespace Huragok.Data.Tags {
                     Matrix4x4 ComputeGlobal(IF_ArmatureNode node) {
                         var local =
                             Matrix4x4.CreateFromQuaternion(node.defaultRotation) *
-                            Matrix4x4.CreateTranslation(node.defaultTranslation.ConvertToUnits(this.distanceUnits));
+                            Matrix4x4.CreateTranslation(node.defaultTranslation);
 
                         if (node.parent == null) return local;
 
@@ -364,13 +365,13 @@ namespace Huragok.Data.Tags {
                     var gltfNode = gltfNodes[(int)marker.nodeIndex];
                     var markerNode = new NodeBuilder($"marker:{markerGroup.name}:{marker.index}");
 
-                    var markerScale = new IF_RealPoint3d(marker.scale, marker.scale, marker.scale, IF_CoordinateUnit.Blam);
+                    var markerScale = new Vector3(marker.scale, marker.scale, marker.scale);
 
                     markerNode.SetLocalTransform(
                         new AffineTransform(
-                            markerScale.ConvertToUnits(this.distanceUnits),
+                            markerScale,
                             marker.rotation,
-                            marker.translation.ConvertToUnits(this.distanceUnits)
+                            marker.translation
                         ), true
                     );
 
