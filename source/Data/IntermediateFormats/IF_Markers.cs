@@ -58,7 +58,7 @@ namespace Huragok.Data.IntermediateFormats.Markers {
             this.nodeIndex = markerElement.SelectFieldType<TagFieldElementInteger>("node index").Data;
 
             this.translation = IF_RealPoint3d.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("translation"));
-            this.rotation = IF_RealQuaterion.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("rotation")).FlipAxes.Value;
+            this.rotation = IF_RealQuaterion.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("rotation")).Value;
             this.direction = IF_RealPoint3d.FromTagFloatArray(markerElement.SelectFieldType<TagFieldElementArraySingle>("direction")).AsBlam;
             this.scale = markerElement.SelectFieldType<TagFieldElementSingle>("scale");
 

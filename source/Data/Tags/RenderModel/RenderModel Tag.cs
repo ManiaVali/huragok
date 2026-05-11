@@ -189,9 +189,19 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region GLTF Construction
-        [Obsolete("Something is going horribly wrong when calculating the orientations for markers. This MUST BE FIXED before the next release.", true)]
         private ModelRoot DumpGLTF() {
             var scene = new SceneBuilder();
+
+            var basisCorrectionRoot = new NodeBuilder("root");
+            var basis = Matrix4x4.CreateRotationZ(MathF.PI * 0.5f) * Matrix4x4.CreateRotationX(-MathF.PI * 0.5f);
+
+            basisCorrectionRoot.SetLocalTransform(
+                new AffineTransform(
+                    Vector3.One,
+                    Quaternion.CreateFromRotationMatrix(basis),
+                    Vector3.Zero
+                ), true
+            );
 
             // Create all materials
             var materialMap = new Dictionary<int, MaterialBuilder>();
@@ -209,7 +219,8 @@ namespace Huragok.Data.Tags {
 
             // Build the skeleton
             var skeletonRootNode = new NodeBuilder($"{this.TagNameNoExtension}:armature");
-            scene.AddNode(skeletonRootNode);
+            basisCorrectionRoot.AddNode(skeletonRootNode);
+            scene.AddNode(basisCorrectionRoot);
 
             var gltfNodes = new Dictionary<int, NodeBuilder>();
             foreach (var node in this.armatureNodes) {
@@ -218,7 +229,7 @@ namespace Huragok.Data.Tags {
                     new AffineTransform(
                         Vector3.One,
                         node.defaultRotation,
-                        node.defaultTranslation.FlipAxes.ConvertToUnits(this.distanceUnits)
+                        node.defaultTranslation.ConvertToUnits(this.distanceUnits)
                     ), true);
 
                 gltfNodes[(int)node.index] = gltfNode;
@@ -319,7 +330,7 @@ namespace Huragok.Data.Tags {
                     Matrix4x4 ComputeGlobal(IF_ArmatureNode node) {
                         var local =
                             Matrix4x4.CreateFromQuaternion(node.defaultRotation) *
-                            Matrix4x4.CreateTranslation(node.defaultTranslation.FlipAxes.ConvertToUnits(this.distanceUnits));
+                            Matrix4x4.CreateTranslation(node.defaultTranslation.ConvertToUnits(this.distanceUnits));
 
                         if (node.parent == null) return local;
 
@@ -359,7 +370,7 @@ namespace Huragok.Data.Tags {
                         new AffineTransform(
                             markerScale.ConvertToUnits(this.distanceUnits),
                             marker.rotation,
-                            marker.translation.FlipAxes.ConvertToUnits(this.distanceUnits)
+                            marker.translation.ConvertToUnits(this.distanceUnits)
                         ), true
                     );
 

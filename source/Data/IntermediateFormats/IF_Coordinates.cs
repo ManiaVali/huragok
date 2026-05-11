@@ -38,7 +38,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         /// </summary>
         internal Vector3 AsMetric => this.backingXYZ * GlobalConstants.WU_TO_METERS;
         /// <summary>
-        /// <para>Blam internally appears to use X fwd, Y left, Z up and is left handed.</para>
+        /// <para>Blam internally appears to use X fwd, Y left, Z up and is right handed.</para>
         /// <para><see cref="FlipAxes"/> converts this point to X right, Y fwd, Z up, right handed.</para>
         /// </summary>
         internal IF_RealPoint3d FlipAxes => new(-this.backingXYZ.Y, this.backingXYZ.Z, -this.backingXYZ.X, IF_CoordinateUnit.Blam);
@@ -133,7 +133,7 @@ namespace Huragok.Data.IntermediateFormats.Coordinates {
         internal Quaternion Value => this.backingXYZW;
 
         /// <summary>
-        /// <para>Blam internally appears to use X fwd, Y left, Z up and is left handed.</para>
+        /// <para>Blam internally appears to use X fwd, Y left, Z up and is right handed.</para>
         /// <para><see cref="FlipAxes"/> converts this quaternion to X right, Y fwd, Z up, right handed.</para>
         /// </summary>
         internal IF_RealQuaterion FlipAxes {

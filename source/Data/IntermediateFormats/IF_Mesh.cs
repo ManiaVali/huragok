@@ -258,7 +258,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             if (rawPositions.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex position list not divisible by 3.");
             for (int i = 0; i < rawPositions.Length; i += 3) {
                 var originalPositions = bounds.Decompress(new Vector3(rawPositions[i], rawPositions[i + 1], rawPositions[i + 2]));
-                var convertedSpacePositions = originalPositions.FlipAxes.ConvertToUnits(coordinateSpace);
+                var convertedSpacePositions = originalPositions.ConvertToUnits(coordinateSpace);
                 this.positions.Add(convertedSpacePositions);
             }
 
@@ -266,7 +266,7 @@ namespace Huragok.Data.IntermediateFormats.Mesh {
             if (rawNorms.Length % 3 != 0) throw new InvalidDataException($"Error decoding {tagPath.ShortNameWithExtension}; vertex normals list not divisible by 3.");
             for (int i = 0; i < rawNorms.Length; i += 3) {
                 var originalNorms = new IF_RealPoint3d(rawNorms[i], rawNorms[i + 1], rawNorms[i + 2], IF_CoordinateUnit.Blam);
-                var convertedSpaceNorms = originalNorms.FlipAxes.ConvertToUnits(coordinateSpace);
+                var convertedSpaceNorms = originalNorms.ConvertToUnits(coordinateSpace);
 
                 this.vtxNormals.Add(convertedSpaceNorms);
             }
