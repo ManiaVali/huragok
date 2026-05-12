@@ -34,6 +34,7 @@ internal enum RenderModelFormat {
     FBX
 }
 
+[Obsolete($"New version of {nameof(RenderModelTag)}.{nameof(TryExportToDisk)} has not yet been updated to handle coordinate space conversions. This must be fixed before next release.", true)]
 internal sealed class RenderModelTag : BaseTag<RenderModelFormat> {
     #region Properties/Fields
 
