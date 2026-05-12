@@ -23,7 +23,9 @@ internal static class MainProgram {
                 Commands.Serialize.Base.Register(),
                 Commands.Export.Base.Register(),
                 Commands.Preview.Base.Register(),
+                #if DEBUG
                 Commands.Debug.Base.Register(),
+                #endif
                 Arguments.ConfigFile,
                 Arguments.SerializerFormat,
                 Arguments.LogLevel
