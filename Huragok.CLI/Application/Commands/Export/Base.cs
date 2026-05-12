@@ -9,11 +9,12 @@ internal static class Base {
         var cmd = new Command(
             name: "export",
             description: "Parse and convert tags into more useful formats."
-        );
-
-        cmd.Add(Bitmap.Register());
-        cmd.Add(RenderModel.Register());
-        cmd.Add(Sound.Register());
+        ) {
+            // Command attachment
+            Bitmap.Register(),
+            RenderModel.Register(),
+            Sound.Register()
+        };
 
         return cmd;
     }

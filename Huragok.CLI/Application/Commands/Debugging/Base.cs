@@ -9,12 +9,12 @@ internal static class Base {
         var cmd = new Command(
             name: "debug",
             description: $"Debug commands for {Application.Constants.PROGRAM_NAME}. Should not be visible in release builds."
-        );
-
-        // Command attachment
-        cmd.Add(DumpFMODInfo.Register());
-        cmd.Add(EnumerateBank.Register());
-        cmd.Add(ProbeDisagree.Register());
+        ) {
+            // Command attachment
+            DumpFMODInfo.Register(),
+            EnumerateBank.Register(),
+            ProbeDisagree.Register()
+        };
 
         return cmd;
     }
