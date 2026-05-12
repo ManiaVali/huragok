@@ -191,7 +191,7 @@ internal sealed class RenderModelTag : BaseTag<RenderModelFormat> {
     private ModelRoot DumpGLTF() {
         var scene = new SceneBuilder();
 
-        var basisCorrectionRoot = new NodeBuilder("root");
+        var basisCorrectionRoot = new NodeBuilder($"root:{this.TagNameNoExtension}");
         var basis = Matrix4x4.CreateRotationZ(MathF.PI * 0.5f) * Matrix4x4.CreateRotationX(-MathF.PI * 0.5f);
 
         basisCorrectionRoot.SetLocalTransform(
@@ -217,7 +217,7 @@ internal sealed class RenderModelTag : BaseTag<RenderModelFormat> {
         Logger.Debug($"{this.TagName}: {nameof(DumpGLTF)}: Created {materialMap.Count} materials.");
 
         // Build the skeleton
-        var skeletonRootNode = new NodeBuilder($"{this.TagNameNoExtension}:armature");
+        var skeletonRootNode = new NodeBuilder($"armature:{this.TagNameNoExtension}");
         basisCorrectionRoot.AddNode(skeletonRootNode);
 
         scene.AddNode(basisCorrectionRoot);
