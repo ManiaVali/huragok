@@ -1,0 +1,46 @@
+<Project>
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H2AMP'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H2AMP</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H2AMP'">
+		<Reference Include="Blam/ManagedBlam/H2AMP/ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H3'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H3</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H3'">
+		<Reference Include="Blam/ManagedBlam/H3/ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H3ODST'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H3ODST</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H3ODST'">
+		<Reference Include="Blam/ManagedBlam/ODST/ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(BlamVariant)' == 'HR'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_HR</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'HR'">
+		<Reference Include="Blam/ManagedBlam/HR/ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(BlamVariant)' == 'H4'">
+		<DefineConstants>$(DefineConstants);USING_BLAM_H4</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(BlamVariant)' == 'H4'">
+		<Reference Include="Blam/ManagedBlam/H4/ManagedBlam.dll">
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+</Project>

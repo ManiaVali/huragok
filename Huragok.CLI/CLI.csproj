@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <HighEntropyVA>false</HighEntropyVA>
+    <LangVersion>latest</LangVersion>
+    <TargetName>Huragok</TargetName>
+    <AssemblyName>Huragok</AssemblyName>
+    <RootNamespace>Huragok</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <VersionPrefix>0.5.3</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+		<!-- Determines which version of Blam we are targeting, as each one is different under the hood. -->
+		<!-- Change at build-time with the `-p:BlamVariant=IDENTIFIER` compile option. -->
+		<!-- Must be one of either H2AMP, H3, H3ODST, HR, or H4 -->
+	  <BlamVariant>HR</BlamVariant>
+	</PropertyGroup>
+
+  <Import Project="Blam/Variants.props"/>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <VersionSuffix>$(BlamVariant)-debug</VersionSuffix>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <VersionSuffix>$(BlamVariant)-alpha</VersionSuffix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.8" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.8" />
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.6" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.6" />
+    <PackageReference Include="Fmod5Sharp" Version="3.1.0" />
+    <PackageReference Include="YamlDotNet" Version="17.0.1" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="FFMpegCore" Version="5.4.0" />
+    <PackageReference Include="FFMpegCore.Extensions.Downloader" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Interop\Blender\glb2fbx.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>utils\blender\glb2fbx.py</Link>
+    </Content>
+    <Content Include="Application\Configuration\defaultConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\HuragokConfiguration.json</Link>
+    </Content>
+  </ItemGroup>
+
+</Project>
