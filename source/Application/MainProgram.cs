@@ -24,7 +24,7 @@ internal static class MainProgram {
         originalWorkingDirectory = Environment.CurrentDirectory;
 
 #if !USING_BLAM_HR
-                Panic($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
+        Panic($"Engine variant `{Huragok.Utilities.GlobalConstants.EnginePrettyName}` not yet supported.");
 #endif
 
         rootCmd.AddCommand(Commands.Serialize.Base.Register());
