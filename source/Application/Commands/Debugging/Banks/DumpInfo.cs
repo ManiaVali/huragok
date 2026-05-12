@@ -1,7 +1,7 @@
 #if DEBUG
 using System.CommandLine;
 using System.Reflection;
-using Huragok.Audio.FMOD;
+using Huragok.Data.Processing.Audio;
 
 namespace Huragok.Application.Commands.Debug;
 

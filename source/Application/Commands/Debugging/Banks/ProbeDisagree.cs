@@ -1,6 +1,7 @@
 #if DEBUG
 using System.CommandLine;
-using Huragok.Audio.FMOD;
+using Huragok.Application.Logging;
+using Huragok.Data.Processing.Audio;
 
 namespace Huragok.Application.Commands.Debug;
 

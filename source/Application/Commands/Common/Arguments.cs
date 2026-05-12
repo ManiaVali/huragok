@@ -1,9 +1,8 @@
 
 using System.CommandLine;
-using System.CommandLine.Parsing;
-using Huragok.Utilities;
 
 namespace Huragok.Application.Commands;
+
 internal class Arguments {
     /// <summary>
     /// The path to a tag file on the disk.

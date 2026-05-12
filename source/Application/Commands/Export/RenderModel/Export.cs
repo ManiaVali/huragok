@@ -1,9 +1,8 @@
 
 using System.CommandLine;
-using Huragok.Application.Commands;
 using Huragok.Application.Logging;
 using Huragok.Blam;
-using Huragok.Data.IntermediateFormats.Coordinates;
+using Huragok.Data.RuntimeFormats;
 using Huragok.Data.Tags;
 
 namespace Huragok.Application.Commands.Export;
@@ -50,7 +49,7 @@ internal static class RenderModel {
         return cmd;
     }
 
-    private static void DumpRenderModelTagData(IEnumerable<string> tagFilePaths, string outDirectory, RenderModelFormat modelFormat, IF_CoordinateUnit coordinateSystem) {
+    private static void DumpRenderModelTagData(IEnumerable<string> tagFilePaths, string outDirectory, RenderModelFormat modelFormat, CoordinateUnit coordinateSystem) {
         if (!tagFilePaths.Any()) {
             Logger.Message("No files provided -- there is nothing to do.\n   If using `--directory` or `--folder`, pass `--recurse` to look in subdirectories.");
             return;

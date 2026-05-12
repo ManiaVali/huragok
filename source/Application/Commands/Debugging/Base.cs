@@ -1,8 +1,8 @@
 #if DEBUG
 using System.CommandLine;
-using Huragok.Utilities;
 
 namespace Huragok.Application.Commands.Debug;
+
 internal static class Base {
     internal static Command Register() {
         // Command Setup

@@ -1,7 +1,7 @@
 using System.CommandLine;
 using Huragok.Application.Logging;
 using Huragok.Blam;
-using Huragok.Data.Tags;
+using Huragok.Data.RuntimeFormats;
 
 namespace Huragok.Application.Commands.Export;
 

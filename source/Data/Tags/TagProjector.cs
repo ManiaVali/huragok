@@ -1,13 +1,12 @@
 using System.Numerics;
-using Huragok.Data.IntermediateFormats;
-using Huragok.Data.IntermediateFormats.Color;
+using Huragok.Data.RuntimeFormats;
 
-namespace Huragok.Utilities {
+namespace Huragok.Data.Tags {
     /// <summary>
-    /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="Serialization.Serializer"/>.</para>
+    /// <para>Class used to read an entire tag and prepare it for serialization via <see cref="Serialization.DataSerializer"/>.</para>
     /// <para>Should not be used when constructing tags for export, as it processes the entire tag when we rarely need that.</para>
     /// </summary>
-    internal static class TagDataReader {
+    internal static class TagProjector {
         // Do not bother parsing these types of fields. (Yet)
         private static readonly List<TagFieldType> skipTypes = [
             TagFieldType.Explanation,
@@ -75,13 +74,13 @@ namespace Huragok.Utilities {
         private static IF_RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
-        private static IF_Color ReadColorRGBA(TagFieldElementArraySingle floatArray) {
+        private static BlamColor ReadColorRGBA(TagFieldElementArraySingle floatArray) {
             int? alpha = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[0]) : null;
             int red = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[1]) : FloatToColorInt(floatArray.Data[0]);
             int green = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[2]) : FloatToColorInt(floatArray.Data[1]);
             int blue = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[3]) : FloatToColorInt(floatArray.Data[2]);
 
-            return new(red, green, blue, alpha, IF_ColorMode.Xbox);
+            return new(red, green, blue, alpha, ColorMode.Xbox);
 
             int FloatToColorInt(float floatValue) {
                 return Convert.ToInt32(floatValue * 255);
@@ -108,7 +107,7 @@ namespace Huragok.Utilities {
                     return $"unsupported function type: {editor.MasterType} ({customElement.GetType().Name})";
                 }
 
-                return new IF_Function((TagFieldCustomFunctionEditor)customElement);
+                return new CustomFunction((TagFieldCustomFunctionEditor)customElement);
             } else {
 #if DEBUG
                 return $"unsupported custom type: {customElement.CustomType} ({customElement.GetType().Name})";

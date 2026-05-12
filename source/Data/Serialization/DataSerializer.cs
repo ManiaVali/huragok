@@ -4,43 +4,43 @@ using System.Text.Json.Serialization;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Huragok.Utilities.Serialization {
-    internal enum SerializationFormat {
-        JSON,
-        YAML
-    }
+namespace Huragok.Data.Serialization;
 
-    internal static class Serializer {
+internal enum SerializationFormat {
+    JSON,
+    YAML
+}
 
-        private static readonly JsonSerializerOptions jsonSerializerOptions = new() {
-            WriteIndented = true,
-            IncludeFields = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        };
+internal static class DataSerializer {
 
-        private static readonly ISerializer yamlSerializer = new SerializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .ConfigureDefaultValuesHandling(
-                DefaultValuesHandling.OmitNull | DefaultValuesHandling.OmitEmptyCollections
-            )
-            .Build();
+    private static readonly JsonSerializerOptions jsonSerializerOptions = new() {
+        WriteIndented = true,
+        IncludeFields = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
 
-        internal static void Serialize(Stream stream, object serializingObject, SerializationFormat serializationFormat) {
-            switch (serializationFormat) {
-                case SerializationFormat.JSON:
-                    JsonSerializer.Serialize(stream, serializingObject, jsonSerializerOptions);
-                    break;
+    private static readonly ISerializer yamlSerializer = new SerializerBuilder()
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .ConfigureDefaultValuesHandling(
+            DefaultValuesHandling.OmitNull | DefaultValuesHandling.OmitEmptyCollections
+        )
+        .Build();
 
-                case SerializationFormat.YAML:
-                    using (var writer = new StreamWriter(stream, leaveOpen: true)) {
-                        yamlSerializer.Serialize(writer, serializingObject);
-                        writer.Flush();
-                    }
-                    break;
+    internal static void Serialize(Stream stream, object serializingObject, SerializationFormat serializationFormat) {
+        switch (serializationFormat) {
+            case SerializationFormat.JSON:
+                JsonSerializer.Serialize(stream, serializingObject, jsonSerializerOptions);
+                break;
 
-                default:
-                    throw new ArgumentException($"Invalid format");
-            }
+            case SerializationFormat.YAML:
+                using (var writer = new StreamWriter(stream, leaveOpen: true)) {
+                    yamlSerializer.Serialize(writer, serializingObject);
+                    writer.Flush();
+                }
+                break;
+
+            default:
+                throw new ArgumentException($"Invalid format");
         }
     }
 }

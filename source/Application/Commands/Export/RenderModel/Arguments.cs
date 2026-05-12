@@ -1,7 +1,7 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using Huragok.Data.IntermediateFormats.Coordinates;
+using Huragok.Data.RuntimeFormats;
 using Huragok.Data.Tags;
 
 namespace Huragok.Application.Commands.Export;
@@ -41,7 +41,7 @@ internal static class CommandExtensions {
 
 internal class RenderModelExportSettings {
     internal RenderModelFormat ModelFormat { get; init; } = RenderModelFormat.FBX;
-    internal IF_CoordinateUnit CoordinateSystem { get; init; } = IF_CoordinateUnit.Metric;
+    internal CoordinateUnit CoordinateSystem { get; init; } = CoordinateUnit.Metric;
 }
 
 internal static class RenderModelExportResolver {
@@ -55,11 +55,11 @@ internal static class RenderModelExportResolver {
         };
     }
 
-    private static IF_CoordinateUnit CoordStringToUnit(string unit) {
+    private static CoordinateUnit CoordStringToUnit(string unit) {
         return unit.ToLowerInvariant() switch {
-            "blam" => IF_CoordinateUnit.Blam,
-            "jms" => IF_CoordinateUnit.JMS,
-            "metric" => IF_CoordinateUnit.Metric,
+            "blam" => CoordinateUnit.Blam,
+            "jms" => CoordinateUnit.JMS,
+            "metric" => CoordinateUnit.Metric,
             _ => throw new ArgumentException($"Invalid model format type `{unit.ToLowerInvariant()}`.")
         };
     }

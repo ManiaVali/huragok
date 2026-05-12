@@ -1,210 +1,211 @@
 using System.CommandLine;
 using Huragok.Application.Logging;
 using Huragok.Blam;
+using Huragok.Data.Processing.Audio.Vorbis;
+using Huragok.Data.RuntimeFormats;
 using Huragok.Data.Tags;
-using Huragok.Utilities.Sound;
 using NAudio.Wave;
 
 namespace Huragok.Application.Commands.Preview;
 
-    internal enum PlaybackPhase {
-        In,
-        Loop,
-        Out,
-        Done
+internal enum PlaybackPhase {
+    In,
+    Loop,
+    Out,
+    Done
+}
+
+internal static class SoundLooping {
+    internal static Command Register() {
+        // Command Setup
+        var cmd = new Command(
+            name: "sound-looping",
+            description: "Preview a sound_looping tag."
+        );
+
+        // Common Arguments
+        var tagHandler = new TagInputOptions(
+            allowSingle: true,
+            allowMultiple: false,
+            allowDirectory: false,
+            allowListFile: false
+        );
+        cmd.AddTagInput(tagHandler);
+
+        var trackOption = SoundArguments.TrackOption;
+        cmd.AddOption(trackOption);
+        var altTracksOption = SoundArguments.AltTrackOption;
+        cmd.AddOption(altTracksOption);
+
+        // Command Handler
+        cmd.SetHandler(ctx => {
+            var tagInputContext = ctx.ParseResult.Resolve(tagHandler);
+            string tag = tagInputContext.Paths.ToArray()[0];
+
+            int trackOpt = ctx.ParseResult.GetValueForOption(trackOption);
+            bool playingAltTracks = ctx.ParseResult.GetValueForOption(altTracksOption);
+
+            PreviewLoopingSoundFile(tag ?? "", trackOpt, playingAltTracks);
+        });
+
+        return cmd;
     }
 
-    internal static class SoundLooping {
-        internal static Command Register() {
-            // Command Setup
-            var cmd = new Command(
-                name: "sound-looping",
-                description: "Preview a sound_looping tag."
-            );
+    private static void PreviewLoopingSoundFile(string soundTagFilepath, int trackIndex, bool altTracks) {
+        if (string.IsNullOrWhiteSpace(soundTagFilepath))
+            throw new Exception(Constants.NO_VALID_TAGS);
 
-            // Common Arguments
-            var tagHandler = new TagInputOptions(
-                allowSingle: true,
-                allowMultiple: false,
-                allowDirectory: false,
-                allowListFile: false
-            );
-            cmd.AddTagInput(tagHandler);
+        BlamEngine.Initialize();
 
-            var trackOption = SoundArguments.TrackOption;
-            cmd.AddOption(trackOption);
-            var altTracksOption = SoundArguments.AltTrackOption;
-            cmd.AddOption(altTracksOption);
-
-            // Command Handler
-            cmd.SetHandler(ctx => {
-                var tagInputContext = ctx.ParseResult.Resolve(tagHandler);
-                string tag = tagInputContext.Paths.ToArray()[0];
-
-                int trackOpt = ctx.ParseResult.GetValueForOption(trackOption);
-                bool playingAltTracks = ctx.ParseResult.GetValueForOption(altTracksOption);
-
-                PreviewLoopingSoundFile(tag ?? "", trackOpt, playingAltTracks);
-            });
-
-            return cmd;
-        }
-
-        private static void PreviewLoopingSoundFile(string soundTagFilepath, int trackIndex, bool altTracks) {
+        try {
             if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                throw new Exception(Constants.NO_VALID_TAGS);
+                throw new ArgumentNullException(nameof(soundTagFilepath));
 
-            BlamEngine.Initialize();
+            var tagPath = TagPath.FromPathAndExtension(BlamEngine.GetValidTagPath(soundTagFilepath), "sound_looping");
+            if (!BlamEngine.ValidateTag(tagPath, "sound_looping"))
+                throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
 
-            try {
-                if (string.IsNullOrWhiteSpace(soundTagFilepath))
-                    throw new ArgumentNullException(nameof(soundTagFilepath));
+            string tagRelPath = BlamEngine.GetValidTagPath(soundTagFilepath);
 
-                var tagPath = TagPath.FromPathAndExtension(BlamEngine.GetValidTagPath(soundTagFilepath), "sound_looping");
-                if (!BlamEngine.ValidateTag(tagPath, "sound_looping"))
-                    throw new ArgumentException($"Sound extraction failed; tag file `{soundTagFilepath}` is invalid.");
+            var soundTagPath = TagPath.FromPathAndExtension(tagRelPath, "sound_looping");
+            using var soundLoopingTag = new SoundLoopingTag(soundTagPath);
 
-                string tagRelPath = BlamEngine.GetValidTagPath(soundTagFilepath);
+            if (trackIndex > soundLoopingTag.Tracks.Count - 1)
+                throw new IndexOutOfRangeException($"Track index too large! Sound tag only has {soundLoopingTag.Tracks.Count} range(s)!");
 
-                var soundTagPath = TagPath.FromPathAndExtension(tagRelPath, "sound_looping");
-                using var soundLoopingTag = new SoundLoopingTag(soundTagPath);
+            var track = soundLoopingTag.Tracks[trackIndex];
+            var player = new VorbisSoundPlayer();
 
-                if (trackIndex > soundLoopingTag.Tracks.Count - 1)
-                    throw new IndexOutOfRangeException($"Track index too large! Sound tag only has {soundLoopingTag.Tracks.Count} range(s)!");
+            SoundTag? inClip = null;
+            SoundTag? loopClip = null;
+            SoundTag? outClip = null;
 
-                var track = soundLoopingTag.Tracks[trackIndex];
-                var player = new VorbisSoundPlayer();
+            if (!altTracks) {
+                if (track.soundIn is not null)
+                    inClip = track.soundIn;
+                if (track.soundLoop is not null)
+                    loopClip = track.soundLoop;
+                if (track.soundOut is not null)
+                    outClip = track.soundOut;
+            } else {
+                if (track.soundAltTransIn is not null)
+                    inClip = track.soundAltTransIn;
+                if (track.soundAltLoop is not null)
+                    loopClip = track.soundAltLoop;
+                if (track.soundAltTransOut is not null)
+                    outClip = track.soundAltTransOut;
+            }
 
-                SoundTag? inClip = null;
-                SoundTag? loopClip = null;
-                SoundTag? outClip = null;
+            if (loopClip is null)
+                throw new InvalidDataException($"Looping sound tag `{soundLoopingTag.sourceTag.Path.ShortNameWithExtension}` has no loop track!");
 
-                if (!altTracks) {
-                    if (track.soundIn is not null)
-                        inClip = track.soundIn;
-                    if (track.soundLoop is not null)
-                        loopClip = track.soundLoop;
-                    if (track.soundOut is not null)
-                        outClip = track.soundOut;
-                } else {
-                    if (track.soundAltTransIn is not null)
-                        inClip = track.soundAltTransIn;
-                    if (track.soundAltLoop is not null)
-                        loopClip = track.soundAltLoop;
-                    if (track.soundAltTransOut is not null)
-                        outClip = track.soundAltTransOut;
-                }
+            // holy booleans, batman!
+            bool paused = false;
+            bool exitTransitionRequested = false;
+            var phase = PlaybackPhase.In;
+            bool startedIn = false;
+            bool startedOut = false;
+            double lastProgress = 0;
+            bool exitedByUser = false;
+            while (phase != PlaybackPhase.Done) {
+                Console.CursorVisible = false;
+                string stage = phase switch {
+                    PlaybackPhase.In => "in",
+                    PlaybackPhase.Loop => exitTransitionRequested ? "loop, waiting to exit..." : "loop",
+                    PlaybackPhase.Out => "out",
+                    PlaybackPhase.Done => "done",
+                    _ => throw new NotImplementedException(),
+                };
 
-                if (loopClip is null)
-                    throw new InvalidDataException($"Looping sound tag `{soundLoopingTag.sourceTag.Path.ShortNameWithExtension}` has no loop track!");
+                Logger.Message($"\r> looping sound preview: [space] {(paused ? "resume" : "pause")}{(phase == PlaybackPhase.Loop && !exitTransitionRequested ? ", [right arrow] transition out" : "")}, [esc] exit -- ({stage})", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
 
-                // holy booleans, batman!
-                bool paused = false;
-                bool exitTransitionRequested = false;
-                var phase = PlaybackPhase.In;
-                bool startedIn = false;
-                bool startedOut = false;
-                double lastProgress = 0;
-                bool exitedByUser = false;
-                while (phase != PlaybackPhase.Done) {
-                    Console.CursorVisible = false;
-                    string stage = phase switch {
-                        PlaybackPhase.In => "in",
-                        PlaybackPhase.Loop => exitTransitionRequested ? "loop, waiting to exit..." : "loop",
-                        PlaybackPhase.Out => "out",
-                        PlaybackPhase.Done => "done",
-                        _ => throw new NotImplementedException(),
-                    };
+                HandleInput();
 
-                    Logger.Message($"\r> looping sound preview: [space] {(paused ? "resume" : "pause")}{(phase == PlaybackPhase.Loop && !exitTransitionRequested ? ", [right arrow] transition out" : "")}, [esc] exit -- ({stage})", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
-
-                    HandleInput();
-
-                    switch (phase) {
-                        case PlaybackPhase.In:
-                            if (inClip != null) {
-                                if (player.State == PlaybackState.Stopped && !startedIn) {
-                                    player.Load(inClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
-                                    player.Play();
-                                    startedIn = true;
-                                } else if (startedIn && player.State == PlaybackState.Stopped) {
-                                    phase = PlaybackPhase.Loop;
-                                }
-                            } else {
+                switch (phase) {
+                    case PlaybackPhase.In:
+                        if (inClip != null) {
+                            if (player.State == PlaybackState.Stopped && !startedIn) {
+                                player.Load(inClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
+                                player.Play();
+                                startedIn = true;
+                            } else if (startedIn && player.State == PlaybackState.Stopped) {
                                 phase = PlaybackPhase.Loop;
                             }
-                            break;
+                        } else {
+                            phase = PlaybackPhase.Loop;
+                        }
+                        break;
 
-                        case PlaybackPhase.Loop:
-                            if (player.State == PlaybackState.Stopped && !exitTransitionRequested) {
-                                player.Load(loopClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes, looping: true);
+                    case PlaybackPhase.Loop:
+                        if (player.State == PlaybackState.Stopped && !exitTransitionRequested) {
+                            player.Load(loopClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes, looping: true);
+                            player.Play();
+                        }
+
+                        double currentProgress = player.Progress;
+                        bool looped = currentProgress < lastProgress;
+
+                        if (exitTransitionRequested && looped) {
+                            player.Dispose();
+                            phase = PlaybackPhase.Out;
+                            startedOut = false;
+                        }
+
+                        lastProgress = currentProgress;
+                        break;
+
+                    case PlaybackPhase.Out:
+                        if (outClip != null) {
+                            if (player.State == PlaybackState.Stopped && !startedOut) {
+                                player.Load(outClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
                                 player.Play();
-                            }
-
-                            double currentProgress = player.Progress;
-                            bool looped = currentProgress < lastProgress;
-
-                            if (exitTransitionRequested && looped) {
-                                player.Dispose();
-                                phase = PlaybackPhase.Out;
-                                startedOut = false;
-                            }
-
-                            lastProgress = currentProgress;
-                            break;
-
-                        case PlaybackPhase.Out:
-                            if (outClip != null) {
-                                if (player.State == PlaybackState.Stopped && !startedOut) {
-                                    player.Load(outClip.PitchRanges[0].permutations[0].SampleAsVorbisBytes);
-                                    player.Play();
-                                    startedOut = true;
-                                } else if (startedOut && player.State == PlaybackState.Stopped) {
-                                    phase = PlaybackPhase.Done;
-                                }
-                            } else {
+                                startedOut = true;
+                            } else if (startedOut && player.State == PlaybackState.Stopped) {
                                 phase = PlaybackPhase.Done;
                             }
-                            break;
-                    }
-
-                    Thread.Sleep(10);
-                }
-
-                player.Dispose();
-                Logger.Message(!exitedByUser ? "\r> looping sound preview: reached end of audio sample." : "\r> looping sound preview: exited.", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
-
-                void HandleInput() {
-                    if (!Console.KeyAvailable) return;
-
-                    var key = Console.ReadKey(true);
-
-                    switch (key.Key) {
-                        case ConsoleKey.Spacebar:
-                            if (player.State == PlaybackState.Playing) {
-                                player.Pause();
-                                paused = true;
-                            } else {
-                                player.Play();
-                                paused = false;
-                            }
-                            break;
-
-                        case ConsoleKey.RightArrow:
-                            if (phase == PlaybackPhase.Loop)
-                                exitTransitionRequested = true;
-                            break;
-
-                        case ConsoleKey.Escape:
-                            player.Dispose();
+                        } else {
                             phase = PlaybackPhase.Done;
-                            exitedByUser = true;
-                            break;
-                    }
+                        }
+                        break;
                 }
-            } finally {
-                BlamEngine.Teardown();
-                Console.CursorVisible = true;
+
+                Thread.Sleep(10);
             }
+
+            player.Dispose();
+            Logger.Message(!exitedByUser ? "\r> looping sound preview: reached end of audio sample." : "\r> looping sound preview: exited.", LoggerNewlineFormat.ReplaceLast, writeHeader: false);
+
+            void HandleInput() {
+                if (!Console.KeyAvailable) return;
+
+                var key = Console.ReadKey(true);
+
+                switch (key.Key) {
+                    case ConsoleKey.Spacebar:
+                        if (player.State == PlaybackState.Playing) {
+                            player.Pause();
+                            paused = true;
+                        } else {
+                            player.Play();
+                            paused = false;
+                        }
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (phase == PlaybackPhase.Loop)
+                            exitTransitionRequested = true;
+                        break;
+
+                    case ConsoleKey.Escape:
+                        player.Dispose();
+                        phase = PlaybackPhase.Done;
+                        exitedByUser = true;
+                        break;
+                }
+            }
+        } finally {
+            BlamEngine.Teardown();
+            Console.CursorVisible = true;
         }
     }
+}

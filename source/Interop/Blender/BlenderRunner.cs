@@ -1,43 +1,43 @@
 
 using System.Diagnostics;
 
-namespace Huragok.Utilities.Blender {
-    internal class Runner {
-        internal static void GLB2FBX(string glbFile, string outFbxLocation) {
+namespace Huragok.Interop.Blender;
 
-            if (!Path.Exists(Path.GetFullPath(glbFile))) throw new FileNotFoundException($"Failed to convert to FBX; glb file expected at `{glbFile}` not found!");
+internal class Runner {
+    internal static void GLB2FBX(string glbFile, string outFbxLocation) {
 
-            string blenderPath = Path.GetFullPath(Locator.FindBlender());
-            string scriptPath = Path.Combine(AppContext.BaseDirectory, "utils", "blender", "glb2fbx.py");
+        if (!Path.Exists(Path.GetFullPath(glbFile))) throw new FileNotFoundException($"Failed to convert to FBX; glb file expected at `{glbFile}` not found!");
 
-            var startInfo = new ProcessStartInfo {
-                FileName = blenderPath,
-                Arguments =
-                    $"--background --factory-startup --disable-autoexec --python \"{scriptPath}\" -- " +
-                    $"\"{glbFile}\" " +
-                    $"\"{outFbxLocation}\"",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+        string blenderPath = Path.GetFullPath(Locator.FindBlender());
+        string scriptPath = Path.Combine(AppContext.BaseDirectory, "utils", "blender", "glb2fbx.py");
 
-            var blender = new Process { StartInfo = startInfo };
-            blender.Start();
+        var startInfo = new ProcessStartInfo {
+            FileName = blenderPath,
+            Arguments =
+                $"--background --factory-startup --disable-autoexec --python \"{scriptPath}\" -- " +
+                $"\"{glbFile}\" " +
+                $"\"{outFbxLocation}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
 
-            var stdOutTask = blender.StandardOutput.ReadToEndAsync();
-            var stdErrTask = blender.StandardError.ReadToEndAsync();
+        var blender = new Process { StartInfo = startInfo };
+        blender.Start();
 
-            blender.WaitForExit();
+        var stdOutTask = blender.StandardOutput.ReadToEndAsync();
+        var stdErrTask = blender.StandardError.ReadToEndAsync();
 
-            string stdOut = stdOutTask.Result;
-            string stdErr = stdErrTask.Result;
+        blender.WaitForExit();
 
-            blender.WaitForExit();
-            if (blender.ExitCode != 0) {
-                if (File.Exists(outFbxLocation)) File.Delete(outFbxLocation);
-                throw new Exception($"Blender failed to convert to FBX!");
-            }
+        string stdOut = stdOutTask.Result;
+        string stdErr = stdErrTask.Result;
+
+        blender.WaitForExit();
+        if (blender.ExitCode != 0) {
+            if (File.Exists(outFbxLocation)) File.Delete(outFbxLocation);
+            throw new Exception($"Blender failed to convert to FBX!");
         }
     }
 }
