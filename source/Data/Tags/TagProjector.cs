@@ -82,7 +82,7 @@ namespace Huragok.Data.Tags {
 
             return new(red, green, blue, alpha, ColorMode.Xbox);
 
-            int FloatToColorInt(float floatValue) {
+            static int FloatToColorInt(float floatValue) {
                 return Convert.ToInt32(floatValue * 255);
             }
         }

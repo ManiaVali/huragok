@@ -34,7 +34,7 @@ internal static class EnumerateBank {
             Console.WriteLine($"#{i}: name: {samples[i].Name}, freq: {samples[i].Metadata.Frequency} Hz, length: {GetLengthSeconds(samples[i])} seconds");
         }
 
-        double GetLengthSeconds(FmodSample sample) {
+        static double GetLengthSeconds(FmodSample sample) {
             return (double)sample.Metadata.SampleCount / sample.Metadata.Frequency;
         }
     }
