@@ -34,6 +34,8 @@ publish:
     - FILE="Huragok-$VERSION-$BLAM_VARIANT.zip"
     - PACKAGE_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/Huragok/$VERSION/$FILE"
     - echo "PACKAGE_URL=$PACKAGE_URL" >> version.env
+
+    - ls
     
     - dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY
     - dotnet publish -c Release -r win-x64 -o publish-$BLAM_VARIANT -p:BlamVariant=$BLAM_VARIANT --no-restore --no-self-contained Huragok.CLI/CLI.csproj
