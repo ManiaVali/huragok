@@ -1,4 +1,4 @@
-image: mcr.microsoft.com/dotnet/sdk:10
+image: mcr.microsoft.com/dotnet/sdk:10.0
 
 # God, I hate working with CI/CD.
 
@@ -22,7 +22,7 @@ stages:
 
 publish:
   stage: publish
-  image: mcr.microsoft.com/dotnet/sdk:10
+  image: mcr.microsoft.com/dotnet/sdk:10.0
 
   parallel:
     matrix:
