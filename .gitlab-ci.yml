@@ -15,7 +15,7 @@ cache:
     - '**/obj/*.csproj.nuget.*'
 
 before_script:
-  - 'dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY'
+  - 'dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY Huragok.slnx'
 
 stages:
   - publish
