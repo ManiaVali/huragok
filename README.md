@@ -1,71 +1,255 @@
 # Huragok
 Huragok is a helper program for extracting and converting data from the Halo engine into formats other programs can understand.
 
+## Quick Start
+- Download the [latest release](https://github.com/ManiaVali/huragok/releases) for the engine version you are working with.<br>Each game has its own version at this time.
+- Once downloaded, extract the archive and then open a command prompt in the folder containing Huragok.exe.
+- Run a supported command; such as `huragok.exe --help` to view the supported commands.<br>You can find examples of supported commands in the "Features & Examples" section.
+
 ## Features & Examples
+<details>
+    <summary><b>Show section</b></summary>
 
 ### Can serialize any tag to either JSON or YAML
-`huragok serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\concrete\concrete_b_diffuse.bitmap"`
+```powershell
+huragok serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\concrete\concrete_b_diffuse.bitmap"
+```
+<details>
+    <summary><b>Show example output</b></summary>
 
-`huragok -s yaml serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\shaders\fire_self_illum.shader"`
+```json
+{
+  "show bitmap": "unsupported custom type: BitmapGroup (TagFieldCustomToolCommand)",
+  "Usage": 0,
+  "Flags": {
+    "bitmap is TILED": false,
+    "use less blurry bump map": false,
+    "dither when compressing": false,
+    "generate random sprites": false,
+    "using tag_interop and tag_resource": false,
+    "alpha channel stores TRANSPARENCY": false,
+    "preserve alpha channel in mipmaps for ALPHA TEST": false,
+    "only use on demand": false,
+    "generate tight bounds": false,
+    "tight bounds from alpha channel": false,
+    "can be sampled": false,
+    "bitmap is double sized": false,
+    "bitmap is triple sized": false
+  },
+  "sprite spacing": 4,
+  "bump map height": 5,
+  ... etc ...
+```
+</details>
+
+
+```powershell
+huragok --serialization-format yaml serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\shaders\fire_self_illum.shader"
+```
+<details>
+    <summary><b>Show example output</b></summary>
+
+```yaml
+render_method:
+- definition: shaders\shader.render_method_definition
+  reference: 
+  options:
+  - short: 2
+  - short: -1
+  - short: -1
+  - short: -1
+  - short: 4
+  - short: -1
+  - short: 3
+  - short: -1
+  - short: -1
+  - short: -1
+  - short: -1
+  - short: -1
+  parameters:
+  - parameter name: albedo_color
+    parameter type: 5
+    bitmap:
+  ... etc ...
+```
+</details>
 
 ### Can export bitmaps
-`huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\concrete\concrete_floor_smooth_a.bitmap" --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\concrete\concrete_floor_smooth_a.bitmap" --out-dir C:\Users\user\Desktop
+```
+<details>
+    <summary><b>Show example output</b></summary>
+
+<table>
+<tr>
+<td align="center">
+    <b><i>concrete_floor_smooth_a.bitmap</i></b>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://maniavali.com/wp-content/uploads/2026/05/concrete_floor_smooth_a.png" width="100%">
+</td>
+</tr>
+</table>
+</details>
 
 ### Can automatically convert cubemaps
-`huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\cubemaps\cubemap_city_a.bitmap" --cubemap-layout equirectangular --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\cubemaps\cubemap_city_a.bitmap" --cubemap-layout equirectangular --out-dir C:\Users\user\Desktop
+```
+
+<details>
+    <summary><b>Show example output</b></summary>
+
+<table>
+<tr>
+<td align="center">
+    <b>Without <code>--cubemap-layout equirectangular</code></b><br>
+    <i>Uses engine-specific cubemap layout; not easy to use elsewhere.</i>
+</td>
+<td align="center">
+    <b>With <code>--cubemap-layout equirectangular</code></b><br>
+    <i>Uses a standardized layout; can be used anywhere!</i>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://maniavali.com/wp-content/uploads/2026/05/m52_cubemap_club.png" width="100%">
+</td>
+<td>
+<img src="https://maniavali.com/wp-content/uploads/2026/05/m52_cubemap_club-1.png" width="100%">
+</td>
+</tr>
+</table>
+
+</details>
 
 ### Can automatically fix normal maps (recomputes missing Z channel), and/or convert them to OpenGL normal maps
-`huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\terrain\rocks_zen\zenrock_reflection_normal.bitmap" --normal-fix --normal-flip-green --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export bitmap --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\bitmaps\terrain\rocks_zen\zenrock_reflection_normal.bitmap" --normal-fix --normal-flip-green --out-dir C:\Users\user\Desktop
+```
+
+<details>
+    <summary><b>Show example output</b></summary>
+
+<table>
+<tr>
+<td align="center">
+    <b>Without <code>--normal-fix</code></b><br>
+    <i>Not usable with missing Z channel!</i>
+</td>
+<td align="center">
+    <b>With <code>--normal-fix</code></b><br>
+    <i>Fully usable in any software!</i>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://media.discordapp.net/attachments/1502577765101342912/1502578994497720362/fountain_carvings_zen_bump.png?ex=6a02337c&is=6a00e1fc&hm=391d1dff0ba8dc83379ad83dd508bb8422767f4a35a55306ef3d5e2d4da0198b&=&format=webp&quality=lossless&width=849&height=849" width="100%">
+</td>
+<td>
+<img src="https://media.discordapp.net/attachments/1502577765101342912/1502578994036605028/fountain_carvings_zen_bump.png?ex=6a02337c&is=6a00e1fc&hm=9bad0530b0cf237299a3b77ba753a034dbb6e05a15a6bf50cee4b364438ba37f&=&format=webp&quality=lossless&width=849&height=849" width="100%">
+</td>
+</tr>
+</table>
+
+</details>
 
 ### Can export render_models
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\phantom\phantom.render_model" --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\phantom\phantom.render_model" --out-dir C:\Users\user\Desktop
+```
+<details>
+    <summary><b>Show example output</b></summary>
 
-### Can automatically convert to different units such as Blam, JMS, or Metric. Converts to metric by default, but can also extract in the original Blam world units.
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\props\covenant\antennae_comm\antennae_comm.render_model" --coordinate-system jms --out-dir $Env:USERPROFILE\Desktop`
+<table>
+<tr>
+<td align="center">
+    <b><i>phantom.render_model</i></b>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://media.discordapp.net/attachments/1502577765101342912/1502577765592072324/Screenshot_20260509_003333.png?ex=6a023257&is=6a00e0d7&hm=8463ad34fcc3e2d708ea2edf701b1a7d8861087858f83efbc23a3912f3d0cc89&=&format=webp&quality=lossless&width=1372&height=849" width="100%">
+</td>
+</tr>
+</table>
+</details>
 
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\props\covenant\antennae_comm\antennae_comm.render_model" --coordinate-system blam --out-dir $Env:USERPROFILE\Desktop`
-
-### Can export to GLB and OBJ as well
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\props\covenant\battery\battery.render_model" --model-format glb --out-dir $Env:USERPROFILE\Desktop`
-
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\props\covenant\battery\battery.render_model" --model-format obj --out-dir $Env:USERPROFILE\Desktop`
+#### Also supports
+- Exporting in different coordinate systems with `--coordinate-system (blam, jms, or metric)`
+- Exporting to different models formats with `--model-format (glb, obj, or fbx)`
 
 ### Can export sounds
-`huragok export sound --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\sound\game_sfx\ui\shield_depleted\deplete\loop.sound" --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export sound --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\sound\game_sfx\ui\shield_depleted\deplete\loop.sound" --out-dir C:\Users\user\Desktop
+```
+<details>
+    <summary><b>Show example output</b></summary>
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <p><b><i>exit_hp_lp1.sound</i></b></p>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp1.mp3">Listen to audio file</a>
+            </td>
+            <td>
+                <p><b><i>exit_hp_lp2.sound</i></b></p>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp2.mp3">Listen to audio file</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b><i>exit_hp_lp3.sound</i></b></p>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp3.mp3">Listen to audio file</a>
+            </td>
+            <td>
+                <p><b><i>exit_hp_lp4.sound</i></b></p>
+                <a href="https://maniavali.com/wp-content/uploads/2026/05/exit_hp_lp4.mp3">Listen to audio file</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</details>
+
+
 
 ### All types of exports can also be done in bulk, by specifying several tag files
-`huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\phantom\phantom.render_model" "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\banshee\banshee.render_model" --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export render-model --tags "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\phantom\phantom.render_model" "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\objects\vehicles\covenant\banshee\banshee.render_model" --out-dir C:\Users\user\Desktop
+```
 
-### By specifying a directory (including subdirectories with --recurse)
-`huragok export sound --directory "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\sound\device_machines" --recurse --out-dir $Env:USERPROFILE\Desktop`
+### By specifying a directory (including subdirectories with `--recurse`)
+```powershell
+huragok export sound --directory "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\sound\device_machines" --recurse --out-dir C:\Users\user\Desktop
+```
 
 ### Or even using a text file full of tags
-`huragok export bitmap --from-file "Z:\some_bitmaps.txt" --out-dir $Env:USERPROFILE\Desktop`
+```powershell
+huragok export bitmap --from-file "Z:\some_bitmaps.txt" --out-dir C:\Users\user\Desktop
+```
+</details>
 
-## Credits & Attributions
-- ManiaVali -- primary developer.
-- ILoveAGoodCrisp -- general guidance on using ManagedBlam and creator of [Foundry](https://github.com/ILoveAGoodCrisp/Foundry), the code of which I studied.
-- Gravemind2401 -- creator of [Reclaimer](https://github.com/Gravemind2401/Reclaimer), the code of which I studied.
+## Credits & Thanks
+- [**ManiaVali**](https://github.com/ManiaVali)
+    - Primary developer.
+- [**ILoveAGoodCrisp**](https://github.com/ILoveAGoodCrisp)
+    - General guidance on using ManagedBlam.
+    - Creator of [Foundry](https://github.com/ILoveAGoodCrisp/Foundry), the code of which I studied.
+- [**Gravemind2401**](https://github.com/Gravemind2401)
+    - Creator of [Reclaimer](https://github.com/Gravemind2401/Reclaimer), the code of which I studied.
+- The_Heavynator
+    - Early testing
 
-## To do, for now.
-- [x] Add option for batch exporting of bitmaps
-- [x] Add option for batch exporting of render models
-- [ ] Add functionality for exporting scenario structure BSP
-- [ ] Add functionality to preview bitmaps
-- [x] Add functionality to preview sound tags
-- [ ] Add option to sound exporter to transcode to formats other than OGG
-- [ ] Add functionality to preview sound_looping tags
-- [x] Add functionality for exporting sound tags
-- [x] Add new intermediate formats with conversion modes
-    - [x] RealPoint2d
-    - [x] RealPoint3d
-    - [ ] RealQuaternion
-    - [ ] RealVector2d
-    - [ ] RealVector3d
-    - [ ] RealPlane2d
-    - [ ] RealPlane3d
-- [ ] Add documentation to publicly exposed classes and members.
-- [x] Replace each tags bespoke meta commands with a proper serialization system
-- [x] Expand shader command to more accurately expose functions and internal data
-- [x] Add support for reading functions
-- [x] Unify model and render-model intermediate formats
+## Attributions
+This project includes code, libraries, and/or assets from:
+- [**SharpGLTF**](https://github.com/vpenades/SharpGLTF)
+- [**Fmod5Sharp**](https://github.com/SamboyCoding/Fmod5Sharp)
+- [**YamlDotNet**](https://github.com/aaubry/yamldotnet)
+- [**NVorbis**](https://github.com/NVorbis/NVorbis)
+- [**NAudio**](https://github.com/naudio/naudio)
+- [**FFMpegCore**](https://github.com/rosenbjerg/FFMpegCore)

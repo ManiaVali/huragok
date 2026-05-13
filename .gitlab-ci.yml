@@ -3,7 +3,7 @@ image: mcr.microsoft.com/dotnet/sdk:8.0
 variables:
   OBJECTS_DIRECTORY: 'obj'
   NUGET_PACKAGES_DIRECTORY: '.nuget'
-  SOURCE_CODE_PATH: 'source'
+  SOURCE_CODE_PATH: 'Huragok.CLI'
   PROJECT_NAME: 'Huragok'
   BLAM_VARIANTS: "HR H3 ODST H2AMP H4"
 
@@ -30,14 +30,14 @@ publish:
       - BLAM_VARIANT: ["HR"]
 
   script:
-    - VERSION=$(dotnet msbuild Huragok.csproj -getProperty:VersionPrefix)
+    - VERSION=$(dotnet msbuild Huragok.CLI/CLI.csproj -getProperty:VersionPrefix)
     - echo "VERSION=$VERSION" > version.env
     - FILE="Huragok-$VERSION-$BLAM_VARIANT.zip"
     - PACKAGE_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/Huragok/$VERSION/$FILE"
     - echo "PACKAGE_URL=$PACKAGE_URL" >> version.env
     
     - dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY
-    - dotnet publish -c Release -r win-x64 -o publish-$BLAM_VARIANT -p:BlamVariant=$BLAM_VARIANT --no-restore --no-self-contained Huragok.csproj
+    - dotnet publish -c Release -r win-x64 -o publish-$BLAM_VARIANT -p:BlamVariant=$BLAM_VARIANT --no-restore --no-self-contained Huragok.CLI/CLI.csproj
 
     - apt-get update && apt-get install -y zip curl
     - cd publish-$BLAM_VARIANT
