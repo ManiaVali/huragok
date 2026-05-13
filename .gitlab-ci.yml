@@ -1,10 +1,12 @@
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
+# God, I hate working with CI/CD.
+
+# Note to self, do not ever force push while working on this again.
+# You're just going to break branches again.
+
 variables:
-  OBJECTS_DIRECTORY: 'obj'
   NUGET_PACKAGES_DIRECTORY: '.nuget'
-  SOURCE_CODE_PATH: 'Huragok.CLI'
-  PROJECT_NAME: 'Huragok'
   BLAM_VARIANTS: "HR H3 ODST H2AMP H4"
 
 cache:
@@ -13,9 +15,6 @@ cache:
     - .nuget/packages
     - '**/obj/project.assets.json'
     - '**/obj/*.csproj.nuget.*'
-
-before_script:
-  - 'dotnet restore -r win-x64 --packages $NUGET_PACKAGES_DIRECTORY'
 
 stages:
   - publish
@@ -71,7 +70,7 @@ publish:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
 release:
-  stage: publish
+  stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   needs:
     - job: publish
