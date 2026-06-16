@@ -6,6 +6,7 @@
 - [ ] Add functionality for exporting scenario structure BSP
 - [ ] Add functionality to preview bitmaps
 - [x] Add functionality to preview sound tags
+- [ ] Add functionality to query individual fields by their field path.
 - [x] Add option to sound exporter to transcode to formats other than OGG
 - [x] Add functionality to preview sound_looping tags
 - [x] Add functionality for exporting sound tags
