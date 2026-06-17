@@ -1,3 +1,6 @@
+## 0.5.4
+- Added ability to read specific tag fields via `query-field`
+
 ## 0.5.3
 - Tag serializer can now serialize:
     - RealRgbColor
