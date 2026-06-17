@@ -42,5 +42,6 @@ internal static class DataSerializer {
             default:
                 throw new ArgumentException($"Invalid format");
         }
+        Console.WriteLine();
     }
 }
