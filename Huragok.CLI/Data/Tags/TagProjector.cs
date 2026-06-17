@@ -175,7 +175,7 @@ namespace Huragok.Data.Tags {
         #endregion
 
         #region Type Switch
-        private static object? ReadField(TagField field) {
+        internal static object? ReadField(TagField field) {
             return field.FieldType switch {
                 TagFieldType.String => ((TagFieldElementString)field).Data,
                 TagFieldType.LongString => ((TagFieldElementLongString)field).Data,

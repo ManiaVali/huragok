@@ -21,6 +21,7 @@ internal static class MainProgram {
         try {
             RootCommand rootCmd = new($"Helper program for extracting and converting data from the Halo engine into formats other programs can understand.\n {Constants.ENGINE_PRETTY_NAME} build.") {
                 Commands.Serialize.Base.Register(),
+                Commands.Query.Base.Register(),
                 Commands.Export.Base.Register(),
                 Commands.Preview.Base.Register(),
                 #if DEBUG
