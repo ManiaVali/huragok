@@ -44,7 +44,7 @@ huragok serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags
 
 
 ```powershell
-huragok --serialization-format yaml serialize --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\shaders\fire_self_illum.shader"
+huragok serialize --serialization-format yaml --tag "C:\Program Files (x86)\Steam\steamapps\common\HREK\tags\levels\solo\m52\shaders\fire_self_illum.shader"
 ```
 <details>
     <summary><b>Show example output</b></summary>

@@ -28,7 +28,6 @@ internal static class MainProgram {
                 Commands.Debug.Base.Register(),
                 #endif
                 Arguments.ConfigFile,
-                Arguments.SerializerFormat,
                 Arguments.LogLevel
             };
 
@@ -47,13 +46,6 @@ internal static class MainProgram {
                 "warning" => LoggingLevel.Warning,
                 "error" => LoggingLevel.Error,
                 _ => throw new ArgumentException($"Invalid log level: {logLevelString}")
-            };
-
-            string fmt = parseResult.GetRequiredValue(Arguments.SerializerFormat);
-            defaultSerializationFormat = fmt?.ToLower() switch {
-                "json" => SerializationFormat.JSON,
-                "yaml" => SerializationFormat.YAML,
-                _ => throw new ArgumentException($"Invalid serialization format: {defaultSerializationFormat}")
             };
 
             string configArgPath = parseResult.GetRequiredValue(Arguments.ConfigFile);

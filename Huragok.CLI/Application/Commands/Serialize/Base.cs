@@ -23,9 +23,19 @@ internal static class Base {
         );
         cmd.AddTagInput(tagHandler);
 
+        var serializerFormatOpt = SerializeArguments.SerializerFormat;
+        cmd.Add(serializerFormatOpt);
+
         // Command Handler
         cmd.SetAction(ctx => {
             var tagInputContext = ctx.Resolve(tagHandler);
+            string fmt = ctx.GetRequiredValue(serializerFormatOpt);
+
+            MainProgram.defaultSerializationFormat = fmt?.ToLower() switch {
+                "json" => SerializationFormat.JSON,
+                "yaml" => SerializationFormat.YAML,
+                _ => throw new ArgumentException($"Invalid serialization format: {MainProgram.defaultSerializationFormat}")
+            };
 
             SerializeTagData(
                 tagInputContext.Paths.ToArray()[0]
