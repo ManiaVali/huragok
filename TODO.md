@@ -10,8 +10,9 @@
 - [x] Add functionality to preview sound_looping tags
 - [x] Add functionality for exporting sound tags
 - [ ] Add documentation to publicly exposed classes and members.
-- [ ] Refactor intermediate formats; most of them are very ad hoc and generally unorganized.
+- [x] Refactor intermediate formats; most of them are very ad hoc and generally unorganized.
 - [x] Replace each tags bespoke meta commands with a proper serialization system
 - [x] Expand shader command to more accurately expose functions and internal data
 - [x] Add support for reading functions
 - [x] Unify model and render-model intermediate formats
+- [ ] Fix broken images in the README
