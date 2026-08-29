@@ -1,12 +1,12 @@
 namespace Huragok.Application.Logging;
 
-internal enum LoggerNewlineFormat {
+internal enum LoggerNewlineFormat : byte {
     CreateNewline,
     DontCreateNewline,
     ReplaceLast
 }
 
-internal enum LoggingLevel {
+internal enum LoggingLevel : byte {
     Debug,
     Info,
     Warning,

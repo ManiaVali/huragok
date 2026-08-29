@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace Huragok.Data.Processing.Images;
 
-internal enum CubemapFace {
+internal enum CubemapFace : byte {
     PositiveX,
     NegativeX,
     PositiveY,
@@ -15,7 +15,7 @@ internal struct CubemapFaces {
     internal Bitmap PX, NX, PY, NY, PZ, NZ;
 }
 
-internal enum CubemapFormat {
+internal enum CubemapFormat : byte {
     Raw,
     Equirectangular
 }

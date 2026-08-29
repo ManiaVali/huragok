@@ -4,7 +4,7 @@ namespace Huragok.Data.RuntimeFormats;
 /// <para>Available modes which colors can be represented in.</para>
 /// <para><see cref="PC"/> represents Gamma, and <see cref="Xbox"/> is linear.</para>
 /// </summary>
-internal enum ColorMode {
+internal enum ColorMode : byte {
     PC,
     Xbox
 }

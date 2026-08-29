@@ -6,7 +6,7 @@ using Huragok.Data.Processing.Images;
 
 namespace Huragok.Data.Tags;
 
-internal enum BitmapFormat {
+internal enum BitmapFormat : byte {
     PNG,
     JPG,
     TIFF,
@@ -14,7 +14,7 @@ internal enum BitmapFormat {
 }
 
 [Flags]
-internal enum BitmapExportFlags {
+internal enum BitmapExportFlags : byte {
     None = 0,
     CubemapsToSphere = 1 << 0,
     ReconstructZ = 1 << 1,

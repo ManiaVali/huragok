@@ -5,7 +5,7 @@ using Huragok.Data.Tags;
 
 namespace Huragok.Data.RuntimeFormats;
 
-internal enum SoundOutExtension {
+internal enum SoundOutExtension : byte {
     OGG,
     WAV,
     MP3

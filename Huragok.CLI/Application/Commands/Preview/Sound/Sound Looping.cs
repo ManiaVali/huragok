@@ -8,7 +8,7 @@ using NAudio.Wave;
 
 namespace Huragok.Application.Commands.Preview;
 
-internal enum PlaybackPhase {
+internal enum PlaybackPhase : byte {
     In,
     Loop,
     Out,

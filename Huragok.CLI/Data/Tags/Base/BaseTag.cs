@@ -5,7 +5,7 @@ using Huragok.Blam;
 
 namespace Huragok.Data.Tags;
 
-internal enum BaseTagExtension {
+internal enum BaseTagExtension : byte {
     None
 }
 

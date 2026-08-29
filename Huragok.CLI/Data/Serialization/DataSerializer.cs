@@ -6,7 +6,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Huragok.Data.Serialization;
 
-internal enum SerializationFormat {
+internal enum SerializationFormat : byte {
     JSON,
     YAML
 }

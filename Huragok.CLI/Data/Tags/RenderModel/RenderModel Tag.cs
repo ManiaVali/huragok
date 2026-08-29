@@ -14,7 +14,7 @@ using Material = Huragok.Data.RuntimeFormats.Material;
 
 namespace Huragok.Data.Tags;
 
-internal enum RenderModelFormat {
+internal enum RenderModelFormat : byte {
     /// <summary>
     /// Simple model format; supports materials, but does not support rigging or animations.
     /// <para>Built-in export format.</para>

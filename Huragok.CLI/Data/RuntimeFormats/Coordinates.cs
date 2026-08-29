@@ -3,7 +3,7 @@ namespace Huragok.Data.RuntimeFormats;
 /// <summary>
 /// An <see cref="Enum"/> representing the possible coordinate unit sizes we are working with.
 /// </summary>
-internal enum CoordinateUnit {
+internal enum CoordinateUnit : byte {
     /// <summary>
     /// The Blam native unit; exactly 3.048 meters (10 feet).
     /// </summary>

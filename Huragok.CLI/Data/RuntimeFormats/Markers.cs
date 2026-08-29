@@ -3,7 +3,7 @@ using Huragok.Data.Tags;
 
 namespace Huragok.Data.RuntimeFormats;
 
-internal enum MarkerGroupType {
+internal enum MarkerGroupType : byte {
     Model,
     Effects,
     Target,
