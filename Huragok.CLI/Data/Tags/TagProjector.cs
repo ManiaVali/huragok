@@ -67,11 +67,12 @@ namespace Huragok.Data.Tags {
         private static Vector3 ReadPoint3d(TagFieldElementArraySingle floatArray) => FromTagFloatArray<Vector3>(floatArray);
 
         private readonly record struct IF_RealBounds(float low, float high);
-        private static IF_RealBounds ReadBounds(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
         private readonly record struct IF_RealPlane2d(float i, float j, float k);
-        private static IF_RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
         private readonly record struct IF_RealPlane3d(float i, float j, float k, float d);
+        private static IF_RealBounds ReadBounds(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1]);
+        private static IF_RealPlane2d ReadPlane2d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2]);
         private static IF_RealPlane3d ReadPlane3d(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
+
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static BlamColor ReadColorRGBA(TagFieldElementArraySingle floatArray) {
@@ -109,21 +110,11 @@ namespace Huragok.Data.Tags {
 
                 return new CustomFunction((TagFieldCustomFunctionEditor)customElement);
             } else {
-#if DEBUG
                 return $"unsupported custom type: {customElement.CustomType} ({customElement.GetType().Name})";
-#else
-                return null;
-#endif
             }
         }
 
-        private static object UnsupportedType(TagField field) {
-#if DEBUG
-            return $"field not readable, unsupported field type: {field.FieldType} ({field.GetType().Name})";
-#else
-            return null;
-#endif
-        }
+        private static object UnsupportedType(TagField field) => $"field not readable, unsupported field type: {field.FieldType} ({field.GetType().Name})";
         #endregion
 
         #region Helpers
