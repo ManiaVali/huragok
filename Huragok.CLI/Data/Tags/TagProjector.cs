@@ -25,7 +25,7 @@ namespace Huragok.Data.Tags {
 
             foreach (var field in fields) {
                 if (skipTypes.Contains(field.FieldType)) continue;
-                if (skipFields is not null && skipFields.Contains(field.FieldName)) continue;
+                if (skipFields != null && skipFields.Contains(field.FieldName)) continue;
                 if (field.Visible == false) continue;
 
                 if (field.FieldType is TagFieldType.Block) {
@@ -76,10 +76,10 @@ namespace Huragok.Data.Tags {
         private static float ReadAngle(TagFieldElementSingle angle) => angle.Data;
         private static Quaternion ReadQuaternion(TagFieldElementArraySingle floatArray) => new(floatArray.Data[0], floatArray.Data[1], floatArray.Data[2], floatArray.Data[3]);
         private static BlamColor ReadColorRGBA(TagFieldElementArraySingle floatArray) {
-            int? alpha = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[0]) : null;
-            int red = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[1]) : FloatToColorInt(floatArray.Data[0]);
-            int green = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[2]) : FloatToColorInt(floatArray.Data[1]);
-            int blue = floatArray.Count == 4 ? FloatToColorInt(floatArray.Data[3]) : FloatToColorInt(floatArray.Data[2]);
+            byte? alpha = floatArray.Count == 4 ? (byte)FloatToColorInt(floatArray.Data[0]) : null;
+            byte red = floatArray.Count == 4 ? (byte)FloatToColorInt(floatArray.Data[1]) : (byte)FloatToColorInt(floatArray.Data[0]);
+            byte green = floatArray.Count == 4 ? (byte)FloatToColorInt(floatArray.Data[2]) : (byte)FloatToColorInt(floatArray.Data[1]);
+            byte blue = floatArray.Count == 4 ? (byte)FloatToColorInt(floatArray.Data[3]) : (byte)FloatToColorInt(floatArray.Data[2]);
 
             return new(red, green, blue, alpha, ColorMode.Xbox);
 

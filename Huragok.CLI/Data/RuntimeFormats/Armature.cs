@@ -17,7 +17,7 @@ internal sealed class ArmatureNode {
     /// <summary>
     /// List of all nodes whose parent is this node.
     /// </summary>
-    internal List<ArmatureNode>? children = new();
+    internal List<ArmatureNode> children = new();
 
     /// <summary>
     /// A <see cref="Vector3"/> representing this nodes translation from its parent.

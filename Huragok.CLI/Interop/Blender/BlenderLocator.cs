@@ -20,9 +20,9 @@ internal static class Locator {
 
     private static string? FindBlenderFromInstallDirs() {
         string[] possibleDirs = {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Blender Foundation"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Blender Foundation"),
-            };
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Blender Foundation"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Blender Foundation"),
+        };
 
         foreach (string dir in possibleDirs) {
             if (Directory.Exists(dir)) {

@@ -16,19 +16,19 @@ internal readonly struct BlamColor {
     /// <summary>
     /// Value of the red channel, spanning from 0 to 255.
     /// </summary>
-    public readonly int red;
+    public readonly byte red;
     /// <summary>
     /// Value of the green channel, spanning from 0 to 255.
     /// </summary>
-    public readonly int green;
+    public readonly byte green;
     /// <summary>
     /// Value of the blue channel, spanning from 0 to 255.
     /// </summary>
-    public readonly int blue;
+    public readonly byte blue;
     /// <summary>
     /// Optional value for the alpha channel, spanning from 0 to 255. If empty, color is assumed to be RGB only.
     /// </summary>
-    public readonly int? alpha;
+    public readonly byte? alpha;
     /// <summary>
     /// Hexadecimal representation of this color. #RRGGBB
     /// </summary>
@@ -46,7 +46,7 @@ internal readonly struct BlamColor {
     /// <param name="b">Blue component. (0-255)</param>
     /// <param name="a">Optional alpha component. (0-255)</param>
     /// <param name="colormode">The <see cref="ColorMode"/> this color is in.</param>
-    internal BlamColor(int r, int g, int b, int? a = null, ColorMode colormode = ColorMode.PC) {
+    internal BlamColor(byte r, byte g, byte b, byte? a = null, ColorMode colormode = ColorMode.PC) {
         this.red = r;
         this.green = g;
         this.blue = b;

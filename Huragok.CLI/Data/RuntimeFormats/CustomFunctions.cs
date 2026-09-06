@@ -64,9 +64,9 @@ internal sealed class CustomFunction {
                 .Select(editor.GetColor)
                 .Select(c => c.ReGamma())
                 .Select((c, i) => new BlamColor(
-                    (int)Math.Round(Math.Clamp(c.Red, 0f, 1f) * 255),
-                    (int)Math.Round(Math.Clamp(c.Green, 0f, 1f) * 255),
-                    (int)Math.Round(Math.Clamp(c.Blue, 0f, 1f) * 255),
+                    (byte)Math.Round(Math.Clamp(c.Red, 0f, 1f) * 255),
+                    (byte)Math.Round(Math.Clamp(c.Green, 0f, 1f) * 255),
+                    (byte)Math.Round(Math.Clamp(c.Blue, 0f, 1f) * 255),
                     colormode: ColorMode.PC))
                 .ToList();
         }
